@@ -26,7 +26,7 @@ namespace ConfigurationTests
             };
 
             // Act
-            bool actual = controller.UpdateControllerType(data.Controller);
+            bool actual = controller.CheckNewController(data.Controller);
 
             // Assert
             Assert.IsTrue(actual);
@@ -45,10 +45,10 @@ namespace ConfigurationTests
                 RutaProyNuevo = @"C:\Sistema\PROY_NUEVO"
             };
 
-            _ = controller.UpdateControllerType(data.Controller);
+            _ = controller.CheckNewController(data.Controller);
 
             // Act
-            bool actual = controller.UpdateControllerType(data.Controller);
+            bool actual = controller.CheckNewController(data.Controller);
 
             // Assert
             Assert.IsTrue(actual);
@@ -67,10 +67,10 @@ namespace ConfigurationTests
                 RutaProyNuevo = @"C:\Sistema\PROY_NUEVO"
             };
 
-            _ = controller.UpdateControllerType(data.Controller);
+            _ = controller.CheckNewController(data.Controller);
 
             // Act
-            bool actual = controller.UpdateControllerType("MIDEX");
+            bool actual = controller.CheckNewController("MIDEX");
 
             // Assert
             Assert.IsFalse(actual);

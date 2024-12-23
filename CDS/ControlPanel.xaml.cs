@@ -23,15 +23,18 @@ namespace CDS
     /// </summary>
     public partial class ControlPanel : Window
     {
+        private PumpController pumpController;
         private NotifyIcon notifyIcon;
         private StackPanel stackPanel;
         private Label label;
 
         public Label Label { get; private set; }
+        public PumpController PumpController { get; private set; }
 
         public ControlPanel()
         {
             InitializeComponent();
+            PumpController = new PumpController();
             Loaded += ControlPanel_Loaded;
         }
 
@@ -65,15 +68,22 @@ namespace CDS
         {
             ConfigureExpander(Configuration.GetConfiguration().StationFlag, Configuration.GetConfiguration().Controller);
 
-            if (PumpController.Instance.Init(Configuration.GetConfiguration(), this))
+            if (PumpController.Data == null || !PumpController.Data.Controller.Equals(Configuration.GetConfiguration().Controller))
             {
-                _ = MessageBox.Show("Datos cargados correctamente, verifique el estado del controlador.");
+                if (PumpController.InitProcess(Configuration.GetConfiguration()))
+                {
+                    _ = MessageBox.Show("Datos cargados correctamente, verifique el estado del controlador.");
+                }
+                else
+                {
+                    _ = MessageBox.Show("Error al cargar los parametros.\n" +
+                                    "Por favor, revise e intente nuevamente.");
+                    Log.Instance.WriteLog("No fue posible iniciar el proceso", LogType.t_error);
+                }
             }
             else
             {
-                _ = MessageBox.Show("Error al cargar los parametros.\n" +
-                                    "Por favor, revise e intente nuevamente.");
-                Log.Instance.WriteLog("No fue posible iniciar", LogType.t_error);
+                PumpController.Data = Configuration.GetConfiguration();
             }
         }
 
@@ -109,7 +119,7 @@ namespace CDS
             // Verificar la respuesta del usuario
             if (result == MessageBoxResult.Yes)
             {
-                PumpController.Instance.StopProcess();
+                PumpController.EndProcess();
                 notifyIcon.Dispose();
                 base.OnClosed(e);
                 Close();

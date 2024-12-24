@@ -8,3 +8,5 @@ Therefore, the key to the CDS is:
   2. Capture every sale at the service station forecourt, both volume and dollar amount.
   3. Obtain fuel measurements, know the prices or configure them.
   4. Es muy importante poder realizar cortes de turno, para encapsular las ventas y poder tener unbuen control de los turnos.
+
+This information would be reflected in a SQLite database, which is automatically created by the system once it manages to communicate with the corresponding controller.

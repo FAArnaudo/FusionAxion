@@ -4,6 +4,7 @@ This system is an implementation for a few dispenser controller hardware such as
 
 The management system needs certain functions to achieve sales automation and avoid errors due to mishandling of handwritten data.
 Therefore, the key to the CDS is:
-1- Obtain the station configuration (Dispensers, hoses, products, tanks, etc).
-2- Capture every sale at the service station forecourt, both volume and dollar amount.
-3- Obtain fuel measurements, know the prices or configure them.
+  1. Obtain the station configuration (Dispensers, hoses, products, tanks, etc).
+  2. Capture every sale at the service station forecourt, both volume and dollar amount.
+  3. Obtain fuel measurements, know the prices or configure them.
+  4. Es muy importante poder realizar cortes de turno, para encapsular las ventas y poder tener unbuen control de los turnos.

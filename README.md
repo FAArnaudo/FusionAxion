@@ -7,6 +7,6 @@ Therefore, the key to the CDS is:
   1. Obtain the station configuration (Dispensers, hoses, products, tanks, etc).
   2. Capture every sale at the service station forecourt, both volume and payment amount.
   3. Obtain fuel measurements, know the prices or configure them.
-  4. Its very important that .
+  4. Its very important that this system has a method to do shift closing.
 
 This information would be reflected in a SQLite database, which is automatically created by the system once it manages to communicate with the corresponding controller.

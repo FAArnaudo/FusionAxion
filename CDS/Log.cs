@@ -97,9 +97,12 @@ namespace CDS
                     case LogType.t_error:
                         if (GetLogLevel() <= type)
                         {
-                            using (StreamWriter outputFile = new StreamWriter(Path.Combine(path, logFile), true))
+                            lock (_lockObject)
                             {
-                                outputFile.WriteLine(DateTime.Now.ToString("hh:mm:ss") + "  ERROR:   " + message);
+                                using (StreamWriter outputFile = new StreamWriter(Path.Combine(path, logFile), true))
+                                {
+                                    outputFile.WriteLine(DateTime.Now.ToString("hh:mm:ss") + "  ERROR:   " + message);
+                                }
                             }
                         }
                         break;

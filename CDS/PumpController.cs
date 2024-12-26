@@ -31,12 +31,12 @@ namespace CDS
             }
             catch (NullReferenceException e)
             {
-                Log.Instance.WriteLog($"Error al Iniciar un proceso nuevo. Excepción: {e.Message}", LogType.t_error);
+                Log.Instance.WriteLog($"Error al Iniciar un nuevo proceso. Excepción: {e.Message}", LogType.t_error);
                 return false;
             }
             catch (ArgumentNullException e)
             {
-                Log.Instance.WriteLog($"Error al Iniciar un proceso nuevo. Excepción: {e.Message}", LogType.t_error);
+                Log.Instance.WriteLog($"Error al Iniciar un nuevo proceso. Excepción: {e.Message}", LogType.t_error);
                 return false;
             }
         }
@@ -65,6 +65,11 @@ namespace CDS
                 return false;
             }
             catch (ArgumentNullException e)
+            {
+                Log.Instance.WriteLog($"Error al actualizar el proceso. Excepción: {e.Message}", LogType.t_error);
+                return false;
+            }
+            catch (Exception e)
             {
                 Log.Instance.WriteLog($"Error al actualizar el proceso. Excepción: {e.Message}", LogType.t_error);
                 return false;

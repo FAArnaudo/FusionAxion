@@ -11,7 +11,6 @@ namespace ConfigurationTests
     [TestClass]
     public class PumpControllerTest
     {
-
         [TestMethod]
         public void StartProcess_True()
         {

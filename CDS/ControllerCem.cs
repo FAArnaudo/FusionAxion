@@ -10,13 +10,13 @@ namespace CDS
     {
         private string id;
         private string protocolo;
-        public ControllerCem(string ip, string protocolo) : base(ip)
+        public ControllerCem(string ip, string protocolo)
         {
-            ID = id;
+            IP = id;
             Protocolo = protocolo;
         }
 
-        public string ID
+        public string IP
         {
             get => id;
             set

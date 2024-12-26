@@ -9,9 +9,15 @@ namespace CDS
     public class ControllerFusion : Controller
     {
         private string ip;
-        public ControllerFusion(string ip) : base(ip)
+        private string estacion;
+        private IDiscount discount;
+
+
+        public ControllerFusion(string ip, string estacion)
         {
             IP = ip;
+            Estacion = estacion;
+            SetFlagDiscount();
         }
 
         public string IP
@@ -24,6 +30,42 @@ namespace CDS
                     ip = value;
                 }
             }
+        }
+
+        public string Estacion
+        {
+            get => estacion;
+            set
+            {
+                if (estacion == null || !estacion.Equals(value))
+                {
+                    estacion = value;
+                }
+            }
+        }
+
+        private void SetFlagDiscount()
+        {
+            switch (Estacion)
+            {
+                case "AXION":
+                    SetDiscount(new DiscountAxion());
+                    break;
+                case "PUMA":
+                    SetDiscount(new DiscountPuma());
+                    break;
+                default:
+                    break;
+            }
+        }
+        private IDiscount GetDiscount()
+        {
+            return discount;
+        }
+
+        private void SetDiscount(IDiscount value)
+        {
+            discount = value;
         }
 
         public override void ActualizarProductos()
@@ -47,6 +89,34 @@ namespace CDS
         }
 
         public override void GrabarDespachos()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void CheckDiscount()
+        {
+            GetDiscount().CheckDiscount();
+        }
+    }
+    internal interface IDiscount
+    {
+        void CheckDiscount();
+    }
+
+    public class DiscountPuma : IDiscount
+    {
+        public DiscountPuma() { }
+
+        public void CheckDiscount()
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public class DiscountAxion : IDiscount
+    {
+        public DiscountAxion() { }
+        public void CheckDiscount()
         {
             throw new NotImplementedException();
         }

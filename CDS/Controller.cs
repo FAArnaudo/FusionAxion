@@ -8,11 +8,7 @@ namespace CDS
 {
     public abstract class Controller
     {
-        protected string ip;
-        public Controller(string ip)
-        {
-            this.ip = ip;
-        }
+        public Controller() { }
 
         /// <summary>
         /// Este método estático es el encargado de configurar la estructura de la estacion,

@@ -13,10 +13,10 @@ namespace ConfigurationTests
     {
 
         [TestMethod]
-        public void UpdateControllerType_ReturnTrue()
+        public void StartProcess_True()
         {
             // Arrange
-            PumpController controller = PumpController.Instance;
+            PumpController pumpController = new PumpController();
 
             Data data = new Data
             {
@@ -26,51 +26,155 @@ namespace ConfigurationTests
             };
 
             // Act
-            bool actual = controller.CheckNewController(data.Controller);
+            bool actual = pumpController.StartProcess(data);
 
             // Assert
             Assert.IsTrue(actual);
         }
 
         [TestMethod]
-        public void UpdateControllerType_SameController_ReturnTrue()
+        public void StartProcess_NullReferenceFalse()
         {
             // Arrange
-            PumpController controller = PumpController.Instance;
+            PumpController pumpController = new PumpController();
+
+            Data data = new Data();
+
+            // Act
+            bool actual = pumpController.StartProcess(data);
+
+            // Assert
+            Assert.IsFalse(actual);
+        }
+
+        [TestMethod]
+        public void StartProcess_NullArgumentFalse()
+        {
+            // Arrange
+            PumpController pumpController = new PumpController();
+
+            Data data = null;
+
+            // Act
+            bool actual = pumpController.StartProcess(data);
+
+            // Assert
+            Assert.IsFalse(actual);
+        }
+
+        [TestMethod]
+        public void UpdateProcess_True()
+        {
+            // Arrange
+            PumpController pumpController = new PumpController();
 
             Data data = new Data
+            {
+                Controller = "FUSION",
+                Timer = "8",
+                RutaProyNuevo = @"C:\Sistema\PROY_NUEVO"
+            };
+
+            _ = pumpController.StartProcess(data);
+
+            data = new Data
             {
                 Controller = "CEM-44",
                 Timer = "8",
                 RutaProyNuevo = @"C:\Sistema\PROY_NUEVO"
             };
 
-            _ = controller.CheckNewController(data.Controller);
-
             // Act
-            bool actual = controller.CheckNewController(data.Controller);
+            bool actual = pumpController.UpdateProcess(data);
 
             // Assert
             Assert.IsTrue(actual);
         }
 
         [TestMethod]
-        public void UpdateControllerType_NoController_ReturnFalse()
+        public void UpdateProcess_NullReferenceFalse()
         {
             // Arrange
-            PumpController controller = PumpController.Instance;
+            PumpController pumpController = new PumpController();
+
+            Data data = new Data();
+
+            // Act
+            bool actual = pumpController.UpdateProcess(data);
+
+            // Assert
+            Assert.IsFalse(actual);
+        }
+
+        [TestMethod]
+        public void UpdateProcess_NullArgumentFalse()
+        {
+            // Arrange
+            PumpController pumpController = new PumpController();
+
+            Data data = null;
+
+            // Act
+            bool actual = pumpController.UpdateProcess(data);
+
+            // Assert
+            Assert.IsFalse(actual);
+        }
+
+        [TestMethod]
+        public void SetNewData_True()
+        {
+            // Arrange
+            PumpController pumpController = new PumpController();
 
             Data data = new Data
             {
                 Controller = "CEM-44",
-                Timer = "8",
+                Timer = "4",
                 RutaProyNuevo = @"C:\Sistema\PROY_NUEVO"
             };
 
-            _ = controller.CheckNewController(data.Controller);
+            _ = pumpController.StartProcess(data);
+
+            data = new Data
+            {
+                Controller = "CEM-44",
+                Timer = "10",
+                RutaProyNuevo = @"C:\Sistema\PROY_NUEVO"
+            };
 
             // Act
-            bool actual = controller.CheckNewController("MIDEX");
+            bool actual = pumpController.UpdateProcess(data);
+
+            // Assert
+            Assert.IsTrue(actual);
+        }
+
+        [TestMethod]
+        public void SetNewData_NullReferenceFalse()
+        {
+            // Arrange
+            PumpController pumpController = new PumpController();
+
+            Data data = new Data();
+
+            // Act
+            bool actual = pumpController.SetNewData(data);
+
+            // Assert
+            Assert.IsFalse(actual);
+        }
+
+        [TestMethod]
+        public void SetNewData_NullArgumentFalse()
+        {
+            // Arrange
+            PumpController pumpController = new PumpController();
+
+            Data data = null;
+
+            // Act
+            bool actual = pumpController.SetNewData(data);
 
             // Assert
             Assert.IsFalse(actual);

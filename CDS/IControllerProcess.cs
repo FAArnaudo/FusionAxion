@@ -9,96 +9,113 @@ namespace CDS
 {
     public interface IControllerProcess
     {
-        CancellationTokenSource TokenSource { get; set; }
-        void RunProcess(Task mainProcess);
+        CancellationTokenSource CancellationToken { get; set; }
         Data Data { get; set; }
+        void RunProcess(Task mainProcess);
+        void StopProcess();
     }
 
     public class CemProcess : IControllerProcess
     {
-        public Data Data { get; set; }
-        public CancellationTokenSource TokenSource { get; set; }
+        public CancellationTokenSource CancellationToken { get; set; }
         public ControllerCem ControllerCem { get; set; }
+        public Data Data { get; set; }
 
-        public CemProcess() { }
+        private bool IsRunning { get; set; }
+
+        public CemProcess()
+        {
+            CancellationToken = new CancellationTokenSource();
+            IsRunning = false;
+        }
 
         public void RunProcess(Task mainProcess)
         {
-            int timerProcess = Convert.ToInt32(Data.Timer);
-
             ControllerCem = new ControllerCem(Data.IP, Data.Protocol);
 
             Log.Instance.WriteLog($"Nuevo proceso principal iniciado. ID: {mainProcess.Id}, Estado: {mainProcess.Status}.\n", LogType.t_info);
 
-            while (!TokenSource.IsCancellationRequested)
+            while (!CancellationToken.Token.IsCancellationRequested)
             {
+                IsRunning = true;
+
                 try
                 {
-                    bool cierreDetectado = false;
+                    Log.Instance.WriteLog($" Estado del hilo {mainProcess.Id}: {mainProcess.Status}. TimerProcess {Data.Timer}\n", LogType.t_info);
 
-                    while (!cierreDetectado && !TokenSource.IsCancellationRequested)
-                    {
-                        Thread.Sleep(1000 * timerProcess);              // Timer in seconds
-
-                        cierreDetectado = ConnectorSQLite.Instance.ExecuteStateQuery($"SELECT hacerCierre FROM cierreBandera LIMIT 1");
-                    }
-
-                    if (cierreDetectado)
-                    {
-                        Log.Instance.WriteLog($"Pedido de Cierre detectado...\n", LogType.t_info);
-                    }
+                    Thread.Sleep(Convert.ToInt32(1000 * Convert.ToInt32(Data.Timer)));
                 }
                 catch (Exception e)
                 {
-                    Log.Instance.WriteLog($" Estado del hilo: {mainProcess.Status} - Error en el loop del controlador.\n\t  Excepción: {e.Message}\n", LogType.t_error);
+                    Log.Instance.WriteLog($" Estado del hilo {mainProcess.Id}: {mainProcess.Status} - Error en el loop del controlador.\n\t  Excepción: {e.Message}\n", LogType.t_error);
                 }
             }
 
-            Log.Instance.WriteLog($" Estado del hilo: {mainProcess.Status} - Finalizando.", LogType.t_info);
+            Log.Instance.WriteLog($" Estado del hilo: {mainProcess.Id} - Finalizando.", LogType.t_info);
+
+            IsRunning = false;
+        }
+
+        public void StopProcess()
+        {
+            CancellationToken?.Cancel();
+
+            while (IsRunning) { }
+
+            Log.Instance.WriteLog($" Proceso Finalizado.\n", LogType.t_info);
         }
     }
 
     public class FusionProcess : IControllerProcess
     {
-        public Data Data { get; set; }
-        public CancellationTokenSource TokenSource { get; set; }
+        public CancellationTokenSource CancellationToken { get; set; }
         public ControllerFusion ControllerFusion { get; set; }
+        public Data Data { get; set; }
+        private bool IsRunning { get; set; }
 
-        public FusionProcess() { }
+        public FusionProcess()
+        {
+            CancellationToken = new CancellationTokenSource();
+            IsRunning = false;
+        }
 
         public void RunProcess(Task mainProcess)
         {
-            ControllerFusion = new ControllerFusion(Data.IP);
-
-            int timerProcess = Convert.ToInt32(Data.Timer);
+            ControllerFusion = new ControllerFusion(Data.IP, Data.StationFlag);
 
             Log.Instance.WriteLog($"Nuevo proceso principal iniciado. ID: {mainProcess.Id}, Estado: {mainProcess.Status}.\n", LogType.t_info);
 
-            while (!TokenSource.Token.IsCancellationRequested)
+            while (!CancellationToken.Token.IsCancellationRequested)
             {
+                IsRunning = true;
+
                 try
                 {
-                    bool cierreDetectado = false;
+                    Log.Instance.WriteLog($" Estado del hilo {mainProcess.Id}: {mainProcess.Status}. TimerProcess {Data.Timer}\n", LogType.t_info);
 
-                    while (!cierreDetectado && !TokenSource.IsCancellationRequested)
-                    {
-                        Thread.Sleep(1000 * timerProcess);              // Timer in seconds
-
-                        cierreDetectado = ConnectorSQLite.Instance.ExecuteStateQuery($"SELECT hacerCierre FROM cierreBandera LIMIT 1");
-                    }
-
-                    if (cierreDetectado)
-                    {
-                        Log.Instance.WriteLog($"Pedido de Cierre detectado...\n", LogType.t_info);
-                    }
+                    Thread.Sleep(Convert.ToInt32(1000 * Convert.ToInt32(Data.Timer)));
                 }
                 catch (Exception e)
                 {
-                    Log.Instance.WriteLog($" Estado del hilo: {mainProcess.Status} - Error en el loop del controlador.\n\t  Excepción: {e.Message}\n", LogType.t_error);
+                    Log.Instance.WriteLog($" Estado del hilo {mainProcess.Id}: {mainProcess.Status} - Error en el loop del controlador.\n\t  Excepción: {e.Message}\n", LogType.t_error);
                 }
             }
 
-            Log.Instance.WriteLog($" Estado del hilo: {mainProcess.Status} - Finalizando.", LogType.t_info);
+            Log.Instance.WriteLog($" Estado del hilo: {mainProcess.Id} - Finalizando.", LogType.t_info);
+
+            IsRunning = false;
+        }
+
+        public void StopProcess()
+        {
+            CancellationToken?.Cancel();
+
+            while (IsRunning == true)
+            {
+
+            }
+
+            Log.Instance.WriteLog($" Proceso Finalizado.\n", LogType.t_info);
         }
     }
 }

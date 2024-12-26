@@ -23,7 +23,6 @@ namespace CDS
     /// </summary>
     public partial class ControlPanel : Window
     {
-        private PumpController pumpController;
         private NotifyIcon notifyIcon;
         private StackPanel stackPanel;
         private Label label;
@@ -68,22 +67,41 @@ namespace CDS
         {
             ConfigureExpander(Configuration.GetConfiguration().StationFlag, Configuration.GetConfiguration().Controller);
 
-            if (PumpController.Data == null || !PumpController.Data.Controller.Equals(Configuration.GetConfiguration().Controller))
+            if (PumpController.Data == null)
             {
-                if (PumpController.InitProcess(Configuration.GetConfiguration()))
+                if (PumpController.StartProcess(Configuration.GetConfiguration()))
                 {
-                    _ = MessageBox.Show("Datos cargados correctamente, verifique el estado del controlador.");
+                    _ = MessageBox.Show("Conexión iniciada, verifique el estado del controlador.");
                 }
                 else
                 {
                     _ = MessageBox.Show("Error al cargar los parametros.\n" +
                                     "Por favor, revise e intente nuevamente.");
+
+                    Log.Instance.WriteLog("No fue posible iniciar el proceso", LogType.t_error);
+                }
+            }
+            else if (!PumpController.Data.Controller.Equals(Configuration.GetConfiguration().Controller))
+            {
+                if (PumpController.UpdateProcess(Configuration.GetConfiguration()))
+                {
+                    _ = MessageBox.Show("Nueva conexión iniciada, verifique el estado del controlador.");
+                }
+                else
+                {
+                    _ = MessageBox.Show("Error al cargar los parametros.\n" +
+                                    "Por favor, revise e intente nuevamente.");
+
                     Log.Instance.WriteLog("No fue posible iniciar el proceso", LogType.t_error);
                 }
             }
             else
             {
-                PumpController.Data = Configuration.GetConfiguration();
+                if (PumpController.SetNewData(Configuration.GetConfiguration()))
+                {
+                    _ = MessageBox.Show("Datos actualizados.");
+                }
+
             }
         }
 

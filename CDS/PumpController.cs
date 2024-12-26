@@ -6,81 +6,137 @@ namespace CDS
 {
     public class PumpController
     {
-        private IControllerProcess controllerProcess;           // Se almacena la instancia del proceso segun el controlador
-        private Task task;                                      // Almacena la instancia del proceso que realizara la tarea
-        private Data data;                                      // Información obtenida de la vista de configuración
-
-        public PumpController() { }
-
-        public bool InitProcess(Data data)
+        public PumpController()
         {
-            if (Data != null)
-            {
-                EndProcess();
-            }
+            ControllerProcess = null;
+            Task = null;
+            Data = null;
+        }
 
-            CheckController(data);
-
-            if (ControllerProcess != null)
+        /// <summary>
+        /// StartProcess inicia el proceso que se conecta con el controlador indicado y
+        /// le provee la información necesaria de la configuración.
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        public bool StartProcess(Data data)
+        {
+            try
             {
                 Data = data;
 
-                Task = Task.Run(() => ControllerProcess.RunProcess(Task));
+                CheckController();
 
-                return true;
+                return ControllerProcess != null;
             }
-
-            return false;
+            catch (NullReferenceException e)
+            {
+                Log.Instance.WriteLog($"Error al Iniciar un proceso nuevo. Excepción: {e.Message}", LogType.t_error);
+                return false;
+            }
+            catch (ArgumentNullException e)
+            {
+                Log.Instance.WriteLog($"Error al Iniciar un proceso nuevo. Excepción: {e.Message}", LogType.t_error);
+                return false;
+            }
         }
 
-        private void CheckController(Data data)
+        /// <summary>
+        /// UpdateProcess actualiza el procesador corriendo actualmente. Le pone fin al proceso anterior
+        /// e inicia uno nuevo actual y diferente.
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        public bool UpdateProcess(Data data)
         {
-            switch (data.Controller)
+            try
+            {
+                Data = data;
+
+                EndProcess();
+
+                CheckController();
+
+                return ControllerProcess != null;
+            }
+            catch (NullReferenceException e)
+            {
+                Log.Instance.WriteLog($"Error al actualizar el proceso. Excepción: {e.Message}", LogType.t_error);
+                return false;
+            }
+            catch (ArgumentNullException e)
+            {
+                Log.Instance.WriteLog($"Error al actualizar el proceso. Excepción: {e.Message}", LogType.t_error);
+                return false;
+            }
+        }
+
+        private void CheckController()
+        {
+            switch (Data.Controller)
             {
                 case "CEM-44":
                     ControllerProcess = new CemProcess
                     {
-                        Data = data,
-                        TokenSource = new CancellationTokenSource()
+                        Data = Data,
                     };
+
+                    Task = Task.Run(() => ControllerProcess.RunProcess(Task));
+
                     break;
                 case "FUSION":
                     ControllerProcess = new FusionProcess
                     {
-                        Data = data,
-                        TokenSource = new CancellationTokenSource()
+                        Data = Data,
                     };
+
+                    Task = Task.Run(() => ControllerProcess.RunProcess(Task));
+
                     break;
                 default:
-                    Log.Instance.WriteLog($"Error al iniciar el nuevo proceso: Controlador no reconocido.", LogType.t_error);
+                    Log.Instance.WriteLog($"Error al iniciar el proceso: Controlador no reconocido.", LogType.t_error);
                     ControllerProcess = null;
                     break;
             }
         }
 
+        /// <summary>
+        /// SetNewData mantiene el controlador actual pero actualiza los datos de configuración.
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        public bool SetNewData(Data data)
+        {
+            try
+            {
+                Data = data;
+                ControllerProcess.Data = data;
+
+                return true;
+            }
+            catch (NullReferenceException e)
+            {
+                Log.Instance.WriteLog($"Error al actualizar el proceso. Excepción: {e.Message}", LogType.t_error);
+                return false;
+            }
+            catch (ArgumentNullException e)
+            {
+                Log.Instance.WriteLog($"Error al actualizar el proceso. Excepción: {e.Message}", LogType.t_error);
+                return false;
+            }
+        }
+
         public void EndProcess()
         {
-            ControllerProcess.TokenSource?.Cancel();
+            ControllerProcess.StopProcess();
 
-            Thread.Sleep(2000 * Convert.ToInt32(data.Timer));
+            ControllerProcess = null;
         }
 
-        public Data Data
-        {
-            get => data;
-            set => data = value;
-        }
+        public Data Data { get; set; }
 
-        public IControllerProcess ControllerProcess
-        {
-            get => controllerProcess;
-            set => controllerProcess = value;
-        }
+        private IControllerProcess ControllerProcess { get; set; }
 
-        public Task Task
-        {
-            get => task;
-            set => task = value;
-        }
+        public Task Task { get; set; }
     }
 }

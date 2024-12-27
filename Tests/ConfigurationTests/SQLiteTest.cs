@@ -26,7 +26,7 @@ namespace ConfigurationTests
 
             string databasePath = Path.Combine(testFolderPath, testDatabaseName);
 
-            // Crear la base de datos si no existe
+            // Elimina la base de datos si existe
             if (File.Exists(databasePath))
             {
                 File.Delete(databasePath);

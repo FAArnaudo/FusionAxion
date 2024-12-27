@@ -21,6 +21,9 @@ namespace CDS
         // Conexión a la base de datos SQLite
         private readonly SQLiteConnection connection;
 
+        // Un objeto que se utilizará para la sincronización
+        private static readonly object lockObjectDB = new object();
+
         // Constructor privado
         private ConnectorSQLite()
         {
@@ -55,18 +58,21 @@ namespace CDS
                 string folderPath = Configuration.GetConfiguration().RutaProyNuevo + "\\CDS\\";
                 string databasePath = Path.Combine(folderPath, databaseName);
 
-                // Crear la carpeta si no existe
-                if (!Directory.Exists(folderPath))
+                lock (lockObjectDB)
                 {
-                    _ = Directory.CreateDirectory(folderPath);
-                }
+                    // Crear la carpeta si no existe
+                    if (!Directory.Exists(folderPath))
+                    {
+                        _ = Directory.CreateDirectory(folderPath);
+                    }
 
-                // Crear la base de datos si no existe
-                if (!File.Exists(databasePath))
-                {
-                    SQLiteConnection.CreateFile(databasePath);
+                    // Crear la base de datos si no existe
+                    if (!File.Exists(databasePath))
+                    {
+                        SQLiteConnection.CreateFile(databasePath);
 
-                    CreateTables();
+                        CreateTables();
+                    }
                 }
 
                 return true;

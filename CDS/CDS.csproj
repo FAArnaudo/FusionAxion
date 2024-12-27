@@ -65,6 +65,10 @@
     </ApplicationDefinition>
     <Compile Include="Configuration.cs" />
     <Compile Include="ConnectorSQLite.cs" />
+    <Compile Include="Controller.cs" />
+    <Compile Include="ControllerCem.cs" />
+    <Compile Include="ControllerFusion.cs" />
+    <Compile Include="IControllerProcess.cs" />
     <Compile Include="PumpController.cs" />
     <Compile Include="Log.cs" />
     <Compile Include="Views\CierresViews.xaml.cs">

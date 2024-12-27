@@ -11,6 +11,8 @@ namespace CDS
     {
         private static Log instance = null;
         private LogType logLevel = LogType.t_info;
+        // Un objeto que se utilizará para la sincronización
+        private static readonly object _lockObject = new object();
         private Log() { }
         public static Log Instance
         {
@@ -74,9 +76,12 @@ namespace CDS
                     case LogType.t_info:
                         if (GetLogLevel() <= type)
                         {
-                            using (StreamWriter outputFile = new StreamWriter(Path.Combine(path, logFile), true))
+                            lock (_lockObject)
                             {
-                                outputFile.WriteLine(DateTime.Now.ToString("hh:mm:ss") + "  INFO:    " + message);
+                                using (StreamWriter outputFile = new StreamWriter(Path.Combine(path, logFile), true))
+                                {
+                                    outputFile.WriteLine(DateTime.Now.ToString("hh:mm:ss") + "  INFO:    " + message);
+                                }
                             }
                         }
                         break;
@@ -92,9 +97,12 @@ namespace CDS
                     case LogType.t_error:
                         if (GetLogLevel() <= type)
                         {
-                            using (StreamWriter outputFile = new StreamWriter(Path.Combine(path, logFile), true))
+                            lock (_lockObject)
                             {
-                                outputFile.WriteLine(DateTime.Now.ToString("hh:mm:ss") + "  ERROR:   " + message);
+                                using (StreamWriter outputFile = new StreamWriter(Path.Combine(path, logFile), true))
+                                {
+                                    outputFile.WriteLine(DateTime.Now.ToString("hh:mm:ss") + "  ERROR:   " + message);
+                                }
                             }
                         }
                         break;

@@ -26,7 +26,7 @@ namespace ConfigurationTests
 
             string databasePath = Path.Combine(testFolderPath, testDatabaseName);
 
-            // Crear la base de datos si no existe
+            // Elimina la base de datos si existe
             if (File.Exists(databasePath))
             {
                 File.Delete(databasePath);
@@ -43,6 +43,8 @@ namespace ConfigurationTests
             {
                 File.Delete(databasePath);
             }
+
+            Directory.Delete(testPath, true); // Elimina el directorio y su contenido
         }
 
         [TestMethod]
@@ -65,6 +67,9 @@ namespace ConfigurationTests
         {
             // Arrange
             ConnectorSQLite connector = ConnectorSQLite.Instance;
+
+            // Crear el directorio
+            _ = Directory.CreateDirectory(testPath);
 
             _ = connector.CreateDatabase();
 

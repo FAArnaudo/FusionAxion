@@ -11,6 +11,13 @@ namespace CDS
         public Controller() { }
 
         /// <summary>
+        /// Este método es el encargado de verificar la conexión con el controlador y no tificarlo
+        /// en la base de datos.
+        /// </summary>
+        /// <returns> true: conexión activa. false: sin conexión </returns>
+        public abstract bool VerificarConexión();
+
+        /// <summary>
         /// Este método estático es el encargado de configurar la estructura de la estacion,
         /// para obtener los productos, los tanques, las mangueras y surtidores, etc.
         /// Y se guarda la informacion en la tabla de la base de datos correspondiente.

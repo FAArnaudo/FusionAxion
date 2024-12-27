@@ -40,6 +40,11 @@ namespace CDS
             }
         }
 
+        public override bool VerificarConexión()
+        {
+            throw new NotImplementedException();
+        }
+
         public override void ConfigurarEstacion()
         {
             throw new NotImplementedException();

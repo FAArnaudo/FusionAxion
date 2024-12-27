@@ -68,6 +68,11 @@ namespace CDS
             discount = value;
         }
 
+        public override bool VerificarConexión()
+        {
+            throw new NotImplementedException();
+        }
+
         public override void ActualizarProductos()
         {
             throw new NotImplementedException();

@@ -20,7 +20,6 @@ namespace CDS
         public CancellationTokenSource CancellationToken { get; set; }
         public ControllerCem ControllerCem { get; set; }
         public Data Data { get; set; }
-
         private bool IsRunning { get; set; }
 
         public CemProcess()
@@ -44,6 +43,8 @@ namespace CDS
                     Log.Instance.WriteLog($" Estado del hilo {mainProcess.Id}: {mainProcess.Status}. TimerProcess {Data.Timer}\n", LogType.t_info);
 
                     Thread.Sleep(Convert.ToInt32(1000 * Convert.ToInt32(Data.Timer)));
+
+                    _ = ConnectorSQLite.Instance.ExecuteNonQuery($"UPDATE CheckConnection SET isConnected = 1, fecha = '{DateTime.Now:dd-MM-yyyy HH:mm:ss}' WHERE idConnection = 1");
                 }
                 catch (Exception e)
                 {
@@ -52,6 +53,8 @@ namespace CDS
             }
 
             Log.Instance.WriteLog($" Estado del hilo: {mainProcess.Id} - Finalizando.", LogType.t_info);
+
+            _ = ConnectorSQLite.Instance.ExecuteNonQuery($"UPDATE CheckConnection SET isConnected = 0, fecha = '{DateTime.Now:dd-MM-yyyy HH:mm:ss}' WHERE idConnection = 1");
 
             IsRunning = false;
         }
@@ -83,17 +86,23 @@ namespace CDS
         {
             ControllerFusion = new ControllerFusion(Data.IP, Data.StationFlag);
 
+            bool isConnected = false;
+            bool hacerCorte = false;
+            bool traerCorteAnterior = false;
+
+            IsRunning = true;
+
             Log.Instance.WriteLog($"Nuevo proceso principal iniciado. ID: {mainProcess.Id}, Estado: {mainProcess.Status}.\n", LogType.t_info);
 
             while (!CancellationToken.Token.IsCancellationRequested)
             {
-                IsRunning = true;
-
                 try
                 {
                     Log.Instance.WriteLog($" Estado del hilo {mainProcess.Id}: {mainProcess.Status}. TimerProcess {Data.Timer}\n", LogType.t_info);
 
                     Thread.Sleep(Convert.ToInt32(1000 * Convert.ToInt32(Data.Timer)));
+
+                    _ = ConnectorSQLite.Instance.ExecuteNonQuery($"UPDATE CheckConnection SET isConnected = 0, fecha = '{DateTime.Now:dd-MM-yyyy HH:mm:ss}' WHERE idConnection = 1");
                 }
                 catch (Exception e)
                 {
@@ -103,6 +112,8 @@ namespace CDS
 
             Log.Instance.WriteLog($" Estado del hilo: {mainProcess.Id} - Finalizando.", LogType.t_info);
 
+            _ = ConnectorSQLite.Instance.ExecuteNonQuery($"UPDATE CheckConnection SET isConnected = 0, fecha = '{DateTime.Now:dd-MM-yyyy HH:mm:ss}' WHERE idConnection = 1");
+
             IsRunning = false;
         }
 
@@ -110,10 +121,7 @@ namespace CDS
         {
             CancellationToken?.Cancel();
 
-            while (IsRunning == true)
-            {
-
-            }
+            while (IsRunning) { }
 
             Log.Instance.WriteLog($" Proceso Finalizado.\n", LogType.t_info);
         }

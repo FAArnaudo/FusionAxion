@@ -7,6 +7,7 @@ using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Threading;
 using Brushes = System.Windows.Media.Brushes;
 using Button = System.Windows.Controls.Button;
 using Color = System.Windows.Media.Color;
@@ -26,6 +27,7 @@ namespace CDS
         private NotifyIcon notifyIcon;
         private StackPanel stackPanel;
         private Label label;
+        private DispatcherTimer timer;
 
         public Label Label { get; private set; }
         public PumpController PumpController { get; private set; }
@@ -72,6 +74,14 @@ namespace CDS
                 if (PumpController.StartProcess(Configuration.GetConfiguration()))
                 {
                     _ = MessageBox.Show("Conexión iniciada, verifique el estado del controlador.");
+
+                    timer = new DispatcherTimer
+                    {
+                        Interval = TimeSpan.FromSeconds(5)  // El intervalo es de 5 segundos
+                    };
+
+                    timer.Tick += Timer_Tick;               // Event handler cuando el timer "hace tic"
+                    timer.Start();                          // Iniciar el temporizador
                 }
                 else
                 {
@@ -85,7 +95,7 @@ namespace CDS
             {
                 if (PumpController.UpdateProcess(Configuration.GetConfiguration()))
                 {
-                    _ = MessageBox.Show("Nueva conexión iniciada, verifique el estado del controlador.");
+                    Log.Instance.WriteLog("Nueva conexión iniciada, verifique el estado del controlador.", LogType.t_info);
                 }
                 else
                 {
@@ -100,6 +110,8 @@ namespace CDS
                 if (PumpController.SetNewData(Configuration.GetConfiguration()))
                 {
                     _ = MessageBox.Show("Datos actualizados.");
+
+                    Log.Instance.WriteLog("Datos actualizados.", LogType.t_info);
                 }
 
             }
@@ -372,6 +384,28 @@ namespace CDS
         }
 
         /// <summary>
+        /// Se ejecuta el metodo que comprueba la conexión con el controlador, segun lo guardado en la base de datos.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Timer_Tick(object sender, EventArgs e)
+        {
+            string state = "Controlador OnLine";
+            string color = "#00FF00";               // Green Color
+
+            if (!ConnectorSQLite.Instance.ExecuteStateQuery("SELECT isConnected FROM CheckConnection WHERE idConnection = 1"))
+            {
+                state = "Controlador OffLine";
+                color = "#FF0000";                 // Red Color
+            }
+
+            if (Label != null && !Label.Content.Equals(state))
+            {
+                CreateCustomLabel(state, color);
+            }
+        }
+
+        /// <summary>
         /// Se encarga de actualizar la leyenda del label con su color de fondo. Es util para saber el estado de la conexión entre
         /// el sistema y el controlador.
         /// </summary>
@@ -392,7 +426,7 @@ namespace CDS
                 // Cambia el color de fondo usando el valor hexadecimal recibido
                 Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString(colorHex)),
 
-                // También puedes personalizar otras propiedades, como el tamaño, el margen, etc.
+                // Personalizacion de otras propiedades.
                 FontSize = 16,
                 HorizontalAlignment = System.Windows.HorizontalAlignment.Center,
                 VerticalAlignment = VerticalAlignment.Center,

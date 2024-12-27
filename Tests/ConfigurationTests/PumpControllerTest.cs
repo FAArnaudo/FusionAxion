@@ -24,6 +24,8 @@ namespace ConfigurationTests
                 RutaProyNuevo = @"C:\Sistema\PROY_NUEVO"
             };
 
+            _ = Configuration.SaveConfiguration(data);
+
             // Act
             bool actual = pumpController.StartProcess(data);
 

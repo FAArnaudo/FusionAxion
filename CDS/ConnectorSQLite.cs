@@ -178,7 +178,7 @@ namespace CDS
         /// <summary>
         /// Crea todas las tablas necesarias para que el sistema pueda almacenar la informacón
         /// </summary>
-        public void CreateTables()
+        private void CreateTables()
         {
             try
             {

@@ -25,10 +25,7 @@ namespace CDS
             {
                 Data = data;
 
-                if (ConnectorSQLite.Instance.CreateDatabase())
-                {
-                    CheckController();
-                }
+                CheckController();
 
                 return ControllerProcess != null;
             }

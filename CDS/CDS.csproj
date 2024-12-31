@@ -71,6 +71,7 @@
     <Compile Include="IControllerProcess.cs" />
     <Compile Include="PumpController.cs" />
     <Compile Include="Log.cs" />
+    <Compile Include="Structure.cs" />
     <Compile Include="Views\CierresViews.xaml.cs">
       <DependentUpon>CierresViews.xaml</DependentUpon>
     </Compile>

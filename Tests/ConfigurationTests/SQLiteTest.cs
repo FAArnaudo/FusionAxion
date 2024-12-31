@@ -33,19 +33,7 @@ namespace ConfigurationTests
             }
         }
 
-        [TestCleanup]
-        public void TestCleanup()
-        {
-            string databasePath = Path.Combine(testFolderPath, testDatabaseName);
-
-            // Limpiar cualquier archivo de base de datos creado después de las pruebas
-            if (File.Exists(databasePath))
-            {
-                File.Delete(databasePath);
-            }
-
-            Directory.Delete(testPath, true); // Elimina el directorio y su contenido
-        }
+        
 
         [TestMethod]
         public void CreateDatabase_ReturnTrue_WhenItDoesNotExist()

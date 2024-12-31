@@ -64,6 +64,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Configuration.cs" />
+    <Compile Include="ConnectorCem.cs" />
     <Compile Include="ConnectorSQLite.cs" />
     <Compile Include="Controller.cs" />
     <Compile Include="ControllerCem.cs" />

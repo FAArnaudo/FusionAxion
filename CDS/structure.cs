@@ -185,4 +185,31 @@ namespace CDS
             }
         }
     }
+
+    public class Despacho
+    {
+        private int idProducto;
+        private double monto;
+        private double volumen;
+        private double ppu;
+        private int id;
+        public Despacho() { }
+        public int IdProducto { get => idProducto; set => idProducto = value; }
+        public double Monto { get => monto; set => monto = value; }
+        public double Volumen { get => volumen; set => volumen = value; }
+        public double PPU { get => ppu; set => ppu = value; }
+        public int ID { get => id; set => id = value; }
+
+        public class DespachoCem : Despacho
+        {
+            private string status;
+            private bool ventaFacturada;
+            public DespachoCem()
+            {
+                
+            }
+            public string Status { get => status; set => status = value; }
+            public bool VentaFacturada { get => ventaFacturada; set => ventaFacturada = value; }
+        }
+    }
 }

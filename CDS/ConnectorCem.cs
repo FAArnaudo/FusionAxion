@@ -1,33 +1,54 @@
-﻿using System;
+﻿using Polly;
+using System;
 using System.Collections.Generic;
+using System.IO.Pipes;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace CDS
 {
-    class ConnectorCem
+    public class ConnectorCem
     {
+        private readonly byte separador = 0x7E;
+        private readonly string pipeName = "CEM44POSPIPE";
+        private string ipController;
+        private string protocol;
+
+        public string IpController { get => ipController; set => ipController = value; }
+        public string Protocol { get => protocol; set => protocol = value; }
+
         public ConnectorCem() { }
+
+        public bool PoleoEnLinea()
+        {
+            return false;
+        }
+
         public Station ComandoConfiguracionDeLaEstacion()
         {
-            Station station = null;
-
-            return station;
+            return null;
         }
 
         public Tank ComandoStockDeTanques()
         {
-            Tank tank = null;
-
-            return tank;
+            return null;
         }
 
         public Despacho ComandoInformacionDeDespacho()
         {
-            Despacho despacho = null;
+            return null;
+        }
 
-            return despacho;
+        public CierreDeTurno ComandoCierresDeTurno()
+        {
+            return null;
+        }
+
+        private byte[] EnviarComando(byte[] mensaje)
+        {
+            throw new NotImplementedException();
         }
     }
+
 }

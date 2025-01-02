@@ -212,4 +212,17 @@ namespace CDS
             public bool VentaFacturada { get => ventaFacturada; set => ventaFacturada = value; }
         }
     }
+    public class CierreDeTurno
+    {
+        private int id;
+        private DateTime fechaCierre;
+        private double totalesMonto;
+        private double totalesVolumen;
+        public CierreDeTurno() { }
+
+        public int Id { get => id; set => id = value; }
+        public DateTime FechaCierre { get => fechaCierre; set => fechaCierre = value; }
+        public double TotalesMonto { get => totalesMonto; set => totalesMonto = value; }
+        public double TotalesVolumen { get => totalesVolumen; set => totalesVolumen = value; }
+    }
 }

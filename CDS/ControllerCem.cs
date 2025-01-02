@@ -10,10 +10,12 @@ namespace CDS
     {
         private string id;
         private string protocolo;
+        private ConnectorCem ConnectorCem;
         public ControllerCem(string ip, string protocolo)
         {
             IP = id;
             Protocolo = protocolo;
+            ConnectorCem = new ConnectorCem();
         }
 
         public string IP

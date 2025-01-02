@@ -45,9 +45,74 @@ namespace CDS
             return null;
         }
 
-        private byte[] EnviarComando(byte[] mensaje)
+        private byte[] EnviarComando(byte[] comando)
         {
-            throw new NotImplementedException();
+            byte[] buffer = null;
+            NamedPipeClientStream pipeClient = null;
+
+            try
+            {
+                int retries = 1;
+
+                // Política de reintentos
+                PolicyResult policyResult = Policy.Handle<Exception>()
+                    .WaitAndRetry(retryCount: 4,
+                                  sleepDurationProvider: retryAttempt => TimeSpan.FromSeconds(Math.Pow(3, retryAttempt)),
+                                  onRetry: (exception, TimeSpan, conttext) =>
+                                  {
+                                      // Cerrar el pipe en caso de fallo
+                                      if (pipeClient != null)
+                                      {
+                                          pipeClient.Dispose();
+                                          pipeClient = null; // Limpiar el pipe para la nueva conexión
+                                      }
+                                      Log.Instance.WriteLog($"\n\t  Excepción: {exception.Message.Trim()} Intento: {retries}", LogType.t_error);
+                                      retries++;
+                                  }).ExecuteAndCapture(() =>
+                                  {
+                                      // Crear el pipeClient si está cerrado
+                                      if (pipeClient == null)
+                                      {
+                                          pipeClient = new NamedPipeClientStream(ipController, pipeName);
+                                      }
+
+                                      // Conectar con tiempo de espera
+                                      pipeClient.Connect(5000);
+
+                                      // Enviar el comando
+                                      pipeClient.Write(comando, 0, comando.Length);
+
+                                      // Leer respuesta
+                                      buffer = new byte[pipeClient.OutBufferSize];
+                                      _ = pipeClient.Read(buffer, 0, buffer.Length);
+                                  });
+                // Verificación de resultado de conexión
+                if (policyResult.Outcome != 0)
+                {
+                    Log.Instance.WriteLog($"  Fin de intentos...\n", LogType.t_error);
+                    ReloadData();
+                }
+            }
+            catch (Exception e)
+            {
+                Log.Instance.WriteLog($"Error al enviar comando. Excepcón: {e.Message}", LogType.t_error);
+            }
+            finally
+            {
+                // Asegurarse de cerrar el pipe al final
+                if (pipeClient != null)
+                {
+                    pipeClient.Dispose();
+                }
+            }
+
+            return buffer;
+        }
+
+        public void ReloadData()
+        {
+            ipController = Configuration.GetConfiguration().IP;
+            protocol = Configuration.GetConfiguration().Protocol;
         }
     }
 

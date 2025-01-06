@@ -33,8 +33,6 @@ namespace ConfigurationTests
             }
         }
 
-        
-
         [TestMethod]
         public void CreateDatabase_ReturnTrue_WhenItDoesNotExist()
         {

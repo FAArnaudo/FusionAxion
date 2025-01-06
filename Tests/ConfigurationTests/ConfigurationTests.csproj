@@ -122,6 +122,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ConfigurationTest.cs" />
+    <Compile Include="ConnectorCemTest.cs" />
     <Compile Include="PumpControllerTest.cs" />
     <Compile Include="LogTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

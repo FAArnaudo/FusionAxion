@@ -66,6 +66,7 @@ namespace CDS
             }
             return true;
         }
+
         public static bool ExistConfiguracion()
         {
             return File.Exists(configFile);
@@ -166,7 +167,7 @@ namespace CDS
             get => modo.ToString();
             set
             {
-                switch (value.ToString())
+                switch (value)
                 {
                     case "NORMAL":
                         modo = MODO.NORMAL;

@@ -32,6 +32,11 @@ namespace CDS
         {
             ControllerCem = new ControllerCem(Data.IP, Data.Protocol);
 
+            if (ControllerCem.VerificarConexión())
+            {
+
+            }
+
             Log.Instance.WriteLog($"Nuevo proceso principal iniciado. ID: {mainProcess.Id}, Estado: {mainProcess.Status}.\n", LogType.t_info);
 
             while (!CancellationToken.Token.IsCancellationRequested)

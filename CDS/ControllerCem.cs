@@ -15,7 +15,7 @@ namespace CDS
         {
             IP = id;
             Protocolo = protocolo;
-            ConnectorCem = new ConnectorCem();
+            ConnectorCem = new ConnectorCem(new CemCommunication());
         }
 
         public string IP
@@ -44,7 +44,12 @@ namespace CDS
 
         public override bool VerificarConexión()
         {
-            throw new NotImplementedException();
+            if (ConnectorCem.PoleoEnLinea(new byte[] { 0x00 }))
+            {
+                return true;
+            }
+
+            return false;
         }
 
         public override void ConfigurarEstacion()

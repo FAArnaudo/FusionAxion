@@ -61,5 +61,5 @@ gitignore.txt
 Responses/
 
 # Excepciones para la carpeta Reply
-!Tests/ConfigurationTests/bin/Debug/Reply/**
+!Tests/ConfigurationTests/bin/Debug/Responses/**
 

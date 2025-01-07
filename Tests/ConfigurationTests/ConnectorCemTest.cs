@@ -21,7 +21,7 @@ namespace ConfigurationTests
 
             byte[] command = new byte[] { 0x00 };
 
-            connections.Setup(a => a.EnviarComando(command)).Returns(new byte[] { 0x00 });
+            _ = connections.Setup(a => a.EnviarComando(command)).Returns(new byte[] { 0x00 });
 
             ConnectorCem connectorCem = new ConnectorCem(connections.Object);
 

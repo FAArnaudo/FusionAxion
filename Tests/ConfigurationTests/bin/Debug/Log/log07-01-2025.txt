@@ -36,3 +36,22 @@ no such table: CheckConnection
 no such column: name
 11:50:01  ERROR:   Error al ejecutar SELECT: SQL logic error
 no such table: Users
+12:35:07  ERROR:   Error al actualizar el proceso. Excepción: Object reference not set to an instance of an object.
+12:35:07  ERROR:   Error al actualizar el proceso. Excepción: Object reference not set to an instance of an object.
+12:35:07  INFO:     Proceso Finalizado.
+
+12:35:07  ERROR:   Error al Iniciar un nuevo proceso. Excepción: Object reference not set to an instance of an object.
+12:35:07  ERROR:   Error al iniciar el proceso: Controlador no reconocido.
+12:35:07  ERROR:   Error al actualizar el proceso. Excepción: Object reference not set to an instance of an object.
+12:35:07  ERROR:   Error al actualizar el proceso. Excepción: Object reference not set to an instance of an object.
+12:35:07  INFO:     Proceso Finalizado.
+
+12:35:07  INFO:    Nuevo proceso principal iniciado. ID: 5, Estado: Running.
+
+12:35:07  INFO:     Estado del hilo: 5 - Finalizando.
+12:35:07  ERROR:   Error al ejecutar INSERT/UPDATE/DELETE: SQL logic error
+no such table: CheckConnection
+12:35:08  ERROR:   Error al ejecutar INSERT/UPDATE/DELETE: SQL logic error
+no such column: name
+12:35:08  ERROR:   Error al ejecutar SELECT: SQL logic error
+no such table: Users

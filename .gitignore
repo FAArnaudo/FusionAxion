@@ -58,6 +58,7 @@ _ReSharper*/
 
 # Extras
 gitignore.txt
+Responses/
 
 # Excepciones para la carpeta Reply
 !Tests/ConfigurationTests/bin/Debug/Reply/**

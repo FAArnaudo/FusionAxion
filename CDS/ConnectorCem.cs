@@ -31,7 +31,7 @@ namespace CDS
                 {
                     reply = Connections.EnviarComando(command);
 
-                    if (!File.Exists(Environment.CurrentDirectory + "Reply\\poleo.txt"))
+                    if (!File.Exists(Environment.CurrentDirectory + "Responses\\poleo.txt"))
                     {
                         SaveAnswer(reply, "poleo");
                     }
@@ -100,10 +100,11 @@ namespace CDS
         {
             nombreArchivo = string.Concat(nombreArchivo.Split(Path.GetInvalidFileNameChars())) + ".txt";
 
-            string directorio = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Reply");
+            string directorio = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Responses");
+
             if (!Directory.Exists(directorio))
             {
-                Directory.CreateDirectory(directorio);
+                _ = Directory.CreateDirectory(directorio);
             }
 
             string rutaCompleta = Path.Combine(directorio, nombreArchivo);
@@ -144,7 +145,7 @@ namespace CDS
             string directorioEjecucion = AppDomain.CurrentDomain.BaseDirectory;
 
             // Combinar la ruta del directorio con el nombre del archivo
-            string rutaArchivo = Path.Combine(directorioEjecucion, "Reply", nombreArchivo + ".txt");
+            string rutaArchivo = Path.Combine(directorioEjecucion, "Responses", nombreArchivo + ".txt");
 
             // Verificar si el archivo existe
             if (!File.Exists(rutaArchivo))

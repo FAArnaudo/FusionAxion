@@ -78,6 +78,24 @@ namespace CDS
 
         public Tank ComandoStockDeTanques(byte[] command)
         {
+            int confirmacion = 0;
+
+            byte[] reply = Configuration.GetConfiguration().Modo.Equals(MODO.TEST) ? ReadAnswer("ConfiguracionDeLaEstacion") : Connections.EnviarComando(command);
+
+            try
+            {
+                if (reply == null || reply[confirmacion] != 0x0)
+                {
+                    return null;
+                }
+            }
+            catch (Exception e)
+            {
+                Log.Instance.WriteLog($"Error al enviar el comando de stock de tanques. Excepción: {e.Message}", LogType.t_error);
+
+                return null;
+            }
+
             return null;
         }
 

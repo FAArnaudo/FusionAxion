@@ -9,17 +9,16 @@ namespace CDS
     public class Station
     {
         private static Station instance = null;
-        private int productsNumber;
-        private int tanksNumber;
-        private int pumpsNumber;
-        private List<Product> products;
-        private List<Tank> tanks;
-        private List<Pump> pumps;
+
         private Station()
         {
-            productsNumber = 0;
-            tanksNumber = 0;
-            pumpsNumber = 0;
+            ProductsNumber = 0;
+            TanksNumber = 0;
+            PumpsNumber = 0;
+
+            Products = new List<Product>();
+            Tanks = new List<Tank>();
+            Pumps = new List<Pump>();
         }
 
         public static Station Instance
@@ -34,28 +33,25 @@ namespace CDS
                 return instance;
             }
         }
-        public int ProductsNumber { get => productsNumber; set => productsNumber = value; }
-        public int TanksNumber { get => tanksNumber; set => tanksNumber = value; }
-        public int PumpsNumber { get => pumpsNumber; set => pumpsNumber = value; }
-        public List<Product> Products { get => products; set => products = value; }
-        public List<Tank> Tanks { get => tanks; set => tanks = value; }
-        public List<Pump> Pumps { get => pumps; set => pumps = value; }
+        public int ProductsNumber { get; set; }
+        public int TanksNumber { get; set; }
+        public int PumpsNumber { get; set; }
+        public List<Product> Products { get; set; }
+        public List<Tank> Tanks { get; set; }
+        public List<Pump> Pumps { get; set; }
     }
     public class Pump
     {
-        private int id;
-        private int hosesNumber;
-        private List<Hose> hoses;
         public Pump()
         {
-            id = 0;
-            hosesNumber = 0;
-            hoses = null;
+            Id = 0;
+            HosesNumber = 0;
+            Hoses = null;
         }
 
-        public int Id { get => id; set => id = value; }
-        public int HosesNumber { get => hosesNumber; set => hosesNumber = value; }
-        public List<Hose> Hoses { get => hoses; set => hoses = value; }
+        public int Id { get; set; }
+        public int HosesNumber { get; set; }
+        public List<Hose> Hoses { get; set; }
     }
     public class Hose
     {
@@ -66,6 +62,7 @@ namespace CDS
             id = 0;
             product = null;
         }
+
         public int ID
         {
             get => id;
@@ -226,17 +223,14 @@ namespace CDS
             public bool VentaFacturada { get => ventaFacturada; set => ventaFacturada = value; }
         }
     }
+
     public class CierreDeTurno
     {
-        private int id;
-        private DateTime fechaCierre;
-        private double totalesMonto;
-        private double totalesVolumen;
         public CierreDeTurno() { }
 
-        public int Id { get => id; set => id = value; }
-        public DateTime FechaCierre { get => fechaCierre; set => fechaCierre = value; }
-        public double TotalesMonto { get => totalesMonto; set => totalesMonto = value; }
-        public double TotalesVolumen { get => totalesVolumen; set => totalesVolumen = value; }
+        public int Id { get; set; }
+        public string FechaCierre { get; set; }
+        public double TotalesMonto { get; set; }
+        public double TotalesVolumen { get; set; }
     }
 }

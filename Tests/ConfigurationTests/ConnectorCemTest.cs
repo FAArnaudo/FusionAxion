@@ -152,5 +152,64 @@ namespace ConfigurationTests
             //Assert
             Assert.AreEqual(expected, actual.Message);
         }
+
+        [TestMethod]
+        public void ComandoStockDeTanques()
+        {
+            // Arange
+            Mock<IConnections> connections = new Mock<IConnections>();
+
+            ConnectorCem connectorCem = new ConnectorCem(connections.Object);
+
+            byte[] reply = new byte[] { 0x00 };
+
+            byte[] command = new byte[] { 0x68 };
+
+            _ = connections.Setup(a => a.EnviarComando(command)).Returns(reply);
+
+            //Act
+            Tank actual = connectorCem.ComandoStockDeTanques(command);
+
+            // Assert
+            Assert.IsNotNull(actual);
+        }
+
+        [TestMethod]
+        public void ComandoStockDeTanques_ReturnNull_NotConfirmation()
+        {
+            // Arange
+            Mock<IConnections> connections = new Mock<IConnections>();
+
+            ConnectorCem connectorCem = new ConnectorCem(connections.Object);
+
+            byte[] reply = new byte[] { 0x01 };
+
+            byte[] command = new byte[] { 0x68 };
+
+            _ = connections.Setup(a => a.EnviarComando(command)).Returns(reply);
+
+            //Act
+            Tank actual = connectorCem.ComandoStockDeTanques(command);
+
+            // Assert
+            Assert.IsNull(actual);
+        }
+
+        [TestMethod]
+        public void ComandoStockDeTanques_ThrowException_ReturnNull()
+        {
+            // Arange
+            Mock<IConnections> connections = new Mock<IConnections>();
+
+            ConnectorCem connectorCem = new ConnectorCem(connections.Object);
+
+            byte[] command = new byte[] { 0x68 };
+
+            //Act
+            Tank actual = connectorCem.ComandoStockDeTanques(command);
+
+            // Assert
+            Assert.IsNull(actual);
+        }
     }
 }

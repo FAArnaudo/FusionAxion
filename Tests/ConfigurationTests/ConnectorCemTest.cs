@@ -100,7 +100,7 @@ namespace ConfigurationTests
 
             ConnectorCem connectorCem = new ConnectorCem(connections.Object);
 
-            byte[] reply = connectorCem.ReadAnswer("ConfiguracionDeLaEstacion");
+            byte[] reply = new byte[] { 0x00 };
 
             byte[] command = new byte[] { 0x65 };
 

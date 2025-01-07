@@ -1,0 +1,38 @@
+11:41:30  ERROR:   Error al actualizar el proceso. Excepción: Object reference not set to an instance of an object.
+11:41:30  ERROR:   Error al actualizar el proceso. Excepción: Object reference not set to an instance of an object.
+11:41:30  INFO:     Proceso Finalizado.
+
+11:41:30  ERROR:   Error al Iniciar un nuevo proceso. Excepción: Object reference not set to an instance of an object.
+11:41:30  ERROR:   Error al iniciar el proceso: Controlador no reconocido.
+11:41:30  ERROR:   Error al actualizar el proceso. Excepción: Object reference not set to an instance of an object.
+11:41:30  ERROR:   Error al actualizar el proceso. Excepción: Object reference not set to an instance of an object.
+11:41:30  INFO:     Proceso Finalizado.
+
+11:41:30  INFO:    Nuevo proceso principal iniciado. ID: 5, Estado: Running.
+
+11:41:30  INFO:     Estado del hilo: 5 - Finalizando.
+11:41:30  ERROR:   Error al ejecutar INSERT/UPDATE/DELETE: SQL logic error
+no such table: CheckConnection
+11:41:31  ERROR:   Error al ejecutar INSERT/UPDATE/DELETE: SQL logic error
+no such column: name
+11:41:31  ERROR:   Error al ejecutar SELECT: SQL logic error
+no such table: Users
+11:50:00  ERROR:   Error al actualizar el proceso. Excepción: Object reference not set to an instance of an object.
+11:50:00  ERROR:   Error al actualizar el proceso. Excepción: Object reference not set to an instance of an object.
+11:50:00  INFO:     Proceso Finalizado.
+
+11:50:00  ERROR:   Error al Iniciar un nuevo proceso. Excepción: Object reference not set to an instance of an object.
+11:50:00  ERROR:   Error al iniciar el proceso: Controlador no reconocido.
+11:50:00  ERROR:   Error al actualizar el proceso. Excepción: Object reference not set to an instance of an object.
+11:50:00  ERROR:   Error al actualizar el proceso. Excepción: Object reference not set to an instance of an object.
+11:50:00  INFO:     Proceso Finalizado.
+
+11:50:00  INFO:    Nuevo proceso principal iniciado. ID: 5, Estado: Running.
+
+11:50:00  INFO:     Estado del hilo: 5 - Finalizando.
+11:50:00  ERROR:   Error al ejecutar INSERT/UPDATE/DELETE: SQL logic error
+no such table: CheckConnection
+11:50:00  ERROR:   Error al ejecutar INSERT/UPDATE/DELETE: SQL logic error
+no such column: name
+11:50:01  ERROR:   Error al ejecutar SELECT: SQL logic error
+no such table: Users

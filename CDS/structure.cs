@@ -8,17 +8,31 @@ namespace CDS
 {
     public class Station
     {
+        private static Station instance = null;
         private int productsNumber;
         private int tanksNumber;
         private int pumpsNumber;
         private List<Product> products;
         private List<Tank> tanks;
         private List<Pump> pumps;
-        public Station()
+        private Station()
         {
             productsNumber = 0;
             tanksNumber = 0;
             pumpsNumber = 0;
+        }
+
+        public static Station Instance
+        {
+            get
+            {
+                if (instance == null)
+                {
+                    instance = new Station();
+                }
+
+                return instance;
+            }
         }
         public int ProductsNumber { get => productsNumber; set => productsNumber = value; }
         public int TanksNumber { get => tanksNumber; set => tanksNumber = value; }

@@ -1,0 +1,106 @@
+01:26:11  ERROR:   Error al actualizar el proceso. Excepción: Object reference not set to an instance of an object.
+01:26:11  ERROR:   Error al actualizar el proceso. Excepción: Object reference not set to an instance of an object.
+01:26:11  INFO:     Proceso Finalizado.
+
+01:26:11  ERROR:   Error al Iniciar un nuevo proceso. Excepción: Object reference not set to an instance of an object.
+01:26:11  ERROR:   Error al iniciar el proceso: Controlador no reconocido.
+01:26:11  ERROR:   Error al actualizar el proceso. Excepción: Object reference not set to an instance of an object.
+01:26:11  ERROR:   Error al actualizar el proceso. Excepción: Object reference not set to an instance of an object.
+01:26:11  INFO:     Proceso Finalizado.
+
+01:26:11  INFO:    Nuevo proceso principal iniciado. ID: 1, Estado: Running.
+
+01:26:11  INFO:     Estado del hilo: 1 - Finalizando.
+01:26:11  ERROR:   Error al guardar la configuración. Excepción: The process cannot access the file 'D:\C#\CDS\Tests\ConfigurationTests\bin\Debug\Config.ini' because it is being used by another process.
+01:26:12  ERROR:   
+	  Excepción: serverName cannot be null. Use "." for current machine.
+Parameter name: serverName Intento: 1
+01:26:12  ERROR:   
+	  Excepción: serverName cannot be null. Use "." for current machine.
+Parameter name: serverName Intento: 1
+01:26:12  ERROR:   
+	  Excepción: serverName cannot be null. Use "." for current machine.
+Parameter name: serverName Intento: 1
+01:26:12  ERROR:   
+	  Excepción: serverName cannot be null. Use "." for current machine.
+Parameter name: serverName Intento: 1
+01:26:12  ERROR:   Error al ejecutar INSERT/UPDATE/DELETE: SQL logic error
+no such table: CheckConnection
+01:26:12  ERROR:   Error al ejecutar INSERT/UPDATE/DELETE: SQL logic error
+no such column: name
+01:26:13  ERROR:   Error al ejecutar SELECT: SQL logic error
+no such table: Users
+01:26:13  ERROR:   Error al enviar comando. Excepcón: Thread was being aborted.
+01:26:13  ERROR:   Error al enviar comando. Excepcón: Thread was being aborted.
+01:26:13  ERROR:   Error al enviar comando. Excepcón: Thread was being aborted.
+01:26:13  ERROR:   Error al enviar comando. Excepcón: Thread was being aborted.
+03:07:01  ERROR:   Error al actualizar el proceso. Excepción: Object reference not set to an instance of an object.
+03:07:01  ERROR:   Error al actualizar el proceso. Excepción: Object reference not set to an instance of an object.
+03:07:01  INFO:     Proceso Finalizado.
+
+03:07:01  ERROR:   Error al Iniciar un nuevo proceso. Excepción: Object reference not set to an instance of an object.
+03:07:01  ERROR:   Error al iniciar el proceso: Controlador no reconocido.
+03:07:01  ERROR:   Error al actualizar el proceso. Excepción: Object reference not set to an instance of an object.
+03:07:01  ERROR:   Error al actualizar el proceso. Excepción: Object reference not set to an instance of an object.
+03:07:01  INFO:     Proceso Finalizado.
+
+03:07:01  INFO:    Nuevo proceso principal iniciado. ID: 1, Estado: Running.
+
+03:07:01  INFO:     Estado del hilo: 1 - Finalizando.
+03:07:01  ERROR:   
+	  Excepción: serverName cannot be null. Use "." for current machine.
+Parameter name: serverName Intento: 1
+03:07:01  ERROR:   
+	  Excepción: serverName cannot be null. Use "." for current machine.
+Parameter name: serverName Intento: 1
+03:07:01  ERROR:   
+	  Excepción: serverName cannot be null. Use "." for current machine.
+Parameter name: serverName Intento: 1
+03:07:01  ERROR:   
+	  Excepción: serverName cannot be null. Use "." for current machine.
+Parameter name: serverName Intento: 1
+03:07:01  ERROR:   Error al ejecutar INSERT/UPDATE/DELETE: SQL logic error
+no such table: CheckConnection
+03:07:02  ERROR:   Error al ejecutar INSERT/UPDATE/DELETE: SQL logic error
+no such column: name
+03:07:02  ERROR:   Error al ejecutar SELECT: SQL logic error
+no such table: Users
+03:07:02  ERROR:   Error al enviar comando. Excepcón: Thread was being aborted.
+03:07:02  ERROR:   Error al enviar comando. Excepcón: Thread was being aborted.
+03:07:02  ERROR:   Error al enviar comando. Excepcón: Thread was being aborted.
+03:07:02  ERROR:   Error al enviar comando. Excepcón: Thread was being aborted.
+04:56:34  ERROR:   Error al actualizar el proceso. Excepción: Object reference not set to an instance of an object.
+04:56:34  ERROR:   Error al actualizar el proceso. Excepción: Object reference not set to an instance of an object.
+04:56:34  INFO:     Proceso Finalizado.
+
+04:56:34  ERROR:   Error al Iniciar un nuevo proceso. Excepción: Object reference not set to an instance of an object.
+04:56:34  ERROR:   Error al iniciar el proceso: Controlador no reconocido.
+04:56:34  ERROR:   Error al actualizar el proceso. Excepción: Object reference not set to an instance of an object.
+04:56:34  ERROR:   Error al actualizar el proceso. Excepción: Object reference not set to an instance of an object.
+04:56:34  INFO:     Proceso Finalizado.
+
+04:56:34  INFO:    Nuevo proceso principal iniciado. ID: 1, Estado: Running.
+
+04:56:34  INFO:     Estado del hilo: 1 - Finalizando.
+04:56:34  ERROR:   
+	  Excepción: serverName cannot be null. Use "." for current machine.
+Parameter name: serverName Intento: 1
+04:56:34  ERROR:   
+	  Excepción: serverName cannot be null. Use "." for current machine.
+Parameter name: serverName Intento: 1
+04:56:34  ERROR:   
+	  Excepción: serverName cannot be null. Use "." for current machine.
+Parameter name: serverName Intento: 1
+04:56:34  ERROR:   
+	  Excepción: serverName cannot be null. Use "." for current machine.
+Parameter name: serverName Intento: 1
+04:56:34  ERROR:   Error al ejecutar INSERT/UPDATE/DELETE: SQL logic error
+no such table: CheckConnection
+04:56:34  ERROR:   Error al ejecutar INSERT/UPDATE/DELETE: SQL logic error
+no such column: name
+04:56:34  ERROR:   Error al ejecutar SELECT: SQL logic error
+no such table: Users
+04:56:35  ERROR:   Error al enviar comando. Excepcón: Thread was being aborted.
+04:56:35  ERROR:   Error al enviar comando. Excepcón: Thread was being aborted.
+04:56:35  ERROR:   Error al enviar comando. Excepcón: Thread was being aborted.
+04:56:35  ERROR:   Error al enviar comando. Excepcón: Thread was being aborted.

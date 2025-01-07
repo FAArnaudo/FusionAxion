@@ -1,0 +1,45 @@
+10:46:22  ERROR:   Error al actualizar el proceso. Excepción: Object reference not set to an instance of an object.
+10:46:22  ERROR:   Error al actualizar el proceso. Excepción: Object reference not set to an instance of an object.
+10:46:22  INFO:     Proceso Finalizado.
+
+10:46:22  ERROR:   Error al Iniciar un nuevo proceso. Excepción: Object reference not set to an instance of an object.
+10:46:22  INFO:    Nuevo proceso principal iniciado. ID: 2, Estado: Running.
+
+10:46:22  INFO:     Estado del hilo 2: Running. TimerProcess 10
+
+10:46:22  ERROR:   Error al iniciar el proceso: Controlador no reconocido.
+10:46:22  INFO:    Nuevo proceso principal iniciado. ID: 1, Estado: Running.
+
+10:46:22  INFO:     Estado del hilo: 1 - Finalizando.
+10:46:22  INFO:    Nuevo proceso principal iniciado. ID: 3, Estado: Running.
+
+10:46:22  INFO:     Estado del hilo 3: Running. TimerProcess 8
+
+10:46:22  ERROR:   Error al actualizar el proceso. Excepción: Object reference not set to an instance of an object.
+10:46:22  ERROR:   Error al actualizar el proceso. Excepción: Object reference not set to an instance of an object.
+10:46:22  INFO:     Proceso Finalizado.
+
+10:46:22  INFO:    Nuevo proceso principal iniciado. ID: 4, Estado: Running.
+
+10:46:22  INFO:     Estado del hilo 4: Running. TimerProcess 8
+
+10:46:22  INFO:    Nuevo proceso principal iniciado. ID: 5, Estado: Running.
+
+10:46:22  INFO:     Estado del hilo: 5 - Finalizando.
+10:46:22  ERROR:   Error al ejecutar INSERT/UPDATE/DELETE: SQL logic error
+no such table: CheckConnection
+10:46:22  ERROR:   Error al ejecutar INSERT/UPDATE/DELETE: SQL logic error
+no such table: CheckConnection
+10:46:23  ERROR:   Error al ejecutar INSERT/UPDATE/DELETE: SQL logic error
+no such column: name
+10:46:23  ERROR:   Error al ejecutar SELECT: SQL logic error
+no such table: Users
+10:46:23  ERROR:    Estado del hilo 4: Running - Error en el loop del controlador.
+	  Excepción: Thread was being aborted.
+
+10:46:23  ERROR:    Estado del hilo 3: Running - Error en el loop del controlador.
+	  Excepción: Thread was being aborted.
+
+10:46:23  ERROR:    Estado del hilo 2: Running - Error en el loop del controlador.
+	  Excepción: Thread was being aborted.
+

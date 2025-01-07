@@ -12,14 +12,8 @@ namespace CDS
     public class ConnectorCem
     {
         private readonly byte separador = 0x7E;
-        private readonly string pipeName = "CEM44POSPIPE";
-        private string ipController;
-        private string protocol;
-        private IConnections connections;
 
-        public string IpController { get => ipController; set => ipController = value; }
-        public string Protocol { get => protocol; set => protocol = value; }
-        public IConnections Connections { get => connections; set => connections = value; }
+        public IConnections Connections { get; set; }
 
         public ConnectorCem(IConnections connections)
         {
@@ -47,44 +41,166 @@ namespace CDS
                     reply = ReadAnswer("poleo");
                 }
 
-                if (reply[confirmation] == 0x0)
-                {
-                    return true;
-                }
-
-                return false;
-            }
-            catch (FileNotFoundException e)
-            {
-                throw new Exception($"Error al obtener una respuesta guardada: Excepción {e.Message}");
+                return reply[confirmation] == 0x0;
             }
             catch (Exception e)
             {
-                throw new Exception($"Error al obtener la conexión con el controlador CEM: Excepción {e.Message}");
+                throw new Exception($"Error al obtener la conexión con el controlador CEM. Excepción: {e.Message}");
             }
         }
 
-        public Station ComandoConfiguracionDeLaEstacion()
+        public Station ComandoConfiguracionDeLaEstacion(byte[] command)
+        {
+            int confirmacion = 0;
+            int surtidores = 1;
+            int tanques = 3;
+            int productos = 4;
+
+            byte[] reply = Configuration.GetConfiguration().Modo.Equals(MODO.TEST) ? ReadAnswer("ConfiguracionDeLaEstacion") : Connections.EnviarComando(command);
+
+            Station station;
+            try
+            {
+                if (reply == null || reply[confirmacion] != 0x0)
+                {
+                    throw new Exception("No se recibió mensaje de confirmación al solicitar la configuración de la estación.");
+                }
+
+                station = Station.Instance;
+            }
+            catch (Exception e)
+            {
+                throw new Exception($"Error al obtener la configuración de la estación. Excepción: {e.Message}");
+            }
+
+            return station;
+        }
+
+        public Tank ComandoStockDeTanques(byte[] command)
         {
             return null;
         }
 
-        public Tank ComandoStockDeTanques()
+        public Despacho ComandoInformacionDeDespacho(byte[] command)
         {
             return null;
         }
 
-        public Despacho ComandoInformacionDeDespacho()
+        public CierreDeTurno ComandoCierresDeTurno(byte[] command)
         {
             return null;
         }
 
-        public CierreDeTurno ComandoCierresDeTurno()
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="respuesta"></param>
+        /// <param name="nombreArchivo"></param>
+        public void SaveAnswer(byte[] respuesta, string nombreArchivo)
         {
-            return null;
+            nombreArchivo = string.Concat(nombreArchivo.Split(Path.GetInvalidFileNameChars())) + ".txt";
+
+            string directorio = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Reply");
+            if (!Directory.Exists(directorio))
+            {
+                Directory.CreateDirectory(directorio);
+            }
+
+            string rutaCompleta = Path.Combine(directorio, nombreArchivo);
+
+            if (!File.Exists(rutaCompleta))
+            {
+                using (StreamWriter sw = File.AppendText(rutaCompleta))
+                {
+                    int cont = 0;
+                    for (int iteraciones = 0; iteraciones < respuesta.Length; iteraciones++)
+                    {
+                        sw.WriteLine(respuesta[iteraciones].ToString("X2")); // Escribe en formato hexadecimal
+
+                        if (iteraciones > 0)
+                        {
+                            if (respuesta[iteraciones] == 0 && respuesta[iteraciones - 1] == 0 && cont < 6)
+                            {
+                                cont++;
+                            }
+                            else if (respuesta[iteraciones] == 0 && cont >= 6)
+                            {
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
         }
 
-        private byte[] EnviarComando(byte[] comando)
+        /*
+         * Se utiliza para testear las respuestas reales del Cem-44
+         * se lee un .txt que contiene las respuestas y las guarda en un byte,
+         * para simular la respuesta.
+         */
+        public byte[] ReadAnswer(string nombreArchivo)
+        {
+            // Obtener la ruta del directorio donde se ejecuta el programa
+            string directorioEjecucion = AppDomain.CurrentDomain.BaseDirectory;
+
+            // Combinar la ruta del directorio con el nombre del archivo
+            string rutaArchivo = Path.Combine(directorioEjecucion, "Reply", nombreArchivo + ".txt");
+
+            // Verificar si el archivo existe
+            if (!File.Exists(rutaArchivo))
+            {
+                throw new FileNotFoundException($"El archivo '{rutaArchivo}' no existe.");
+            }
+
+            // Leer todas las líneas del archivo
+            string[] lines = File.ReadAllLines(rutaArchivo);
+
+            // Lista para almacenar los bytes leídos
+            List<byte> byteList = new List<byte>();
+
+            // Procesar cada línea del archivo
+            foreach (string line in lines)
+            {
+                // Dividir la línea en valores numéricos individuales
+                string[] numericValues = line.Split(',');
+
+                // Convertir cada valor numérico en un byte y agregarlo a la lista
+                foreach (string value in numericValues)
+                {
+                    if (byte.TryParse(value.Trim(), out byte parsedValue))
+                    {
+                        byteList.Add(parsedValue);
+                    }
+                    else
+                    {
+                        throw new FormatException($"El valor '{value}' no es un byte válido.");
+                    }
+                }
+            }
+
+            // Convertir la lista a un arreglo de bytes y retornarlo
+            return byteList.ToArray();
+        }
+    }
+
+    public interface IConnections
+    {
+        byte[] EnviarComando(byte[] comando);
+    }
+
+    public class CemCommunication : IConnections
+    {
+
+        private readonly string pipeName = "CEM44POSPIPE";
+        private string ipController;
+        private string protocol;
+        public CemCommunication() { }
+
+        public string IpController { get => ipController; set => ipController = value; }
+
+        public string Protocol { get => protocol; set => protocol = value; }
+
+        public byte[] EnviarComando(byte[] comando)
         {
             byte[] buffer = null;
             NamedPipeClientStream pipeClient = null;
@@ -152,108 +268,6 @@ namespace CDS
         {
             ipController = Configuration.GetConfiguration().IP;
             protocol = Configuration.GetConfiguration().Protocol;
-        }
-
-        public void SaveAnswer(byte[] respuesta, string nombreArchivo)
-        {
-            nombreArchivo = string.Concat(nombreArchivo.Split(Path.GetInvalidFileNameChars())) + ".txt";
-
-            string directorio = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Reply");
-            if (!Directory.Exists(directorio))
-            {
-                Directory.CreateDirectory(directorio);
-            }
-
-            string rutaCompleta = Path.Combine(directorio, nombreArchivo);
-
-            if (!File.Exists(rutaCompleta))
-            {
-                using (StreamWriter sw = File.AppendText(rutaCompleta))
-                {
-                    int cont = 0;
-                    for (int iteraciones = 0; iteraciones < respuesta.Length; iteraciones++)
-                    {
-                        sw.WriteLine(respuesta[iteraciones].ToString("X2")); // Escribe en formato hexadecimal
-
-                        if (iteraciones > 0)
-                        {
-                            if (respuesta[iteraciones] == 0 && respuesta[iteraciones - 1] == 0 && cont < 6)
-                            {
-                                cont++;
-                            }
-                            else if (respuesta[iteraciones] == 0 && cont >= 6)
-                            {
-                                break;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        /*
-         * Se utiliza para testear las respuestas reales del Cem-44
-         * se lee un .txt que contiene las respuestas y las guarda en un byte,
-         * para simular la respuesta.
-         */
-
-        public byte[] ReadAnswer(string nombreArchivo)
-        {
-            // Obtener la ruta del directorio donde se ejecuta el programa
-            string directorioEjecucion = AppDomain.CurrentDomain.BaseDirectory;
-
-            // Combinar la ruta del directorio con el nombre del archivo
-            string rutaArchivo = Path.Combine(directorioEjecucion, "Reply", nombreArchivo + ".txt");
-
-            // Verificar si el archivo existe
-            if (!File.Exists(rutaArchivo))
-            {
-                throw new FileNotFoundException($"El archivo '{rutaArchivo}' no existe.");
-            }
-
-            // Leer todas las líneas del archivo
-            string[] lines = File.ReadAllLines(rutaArchivo);
-
-            // Lista para almacenar los bytes leídos
-            List<byte> byteList = new List<byte>();
-
-            // Procesar cada línea del archivo
-            foreach (string line in lines)
-            {
-                // Dividir la línea en valores numéricos individuales
-                string[] numericValues = line.Split(',');
-
-                // Convertir cada valor numérico en un byte y agregarlo a la lista
-                foreach (string value in numericValues)
-                {
-                    if (byte.TryParse(value.Trim(), out byte parsedValue))
-                    {
-                        byteList.Add(parsedValue);
-                    }
-                    else
-                    {
-                        throw new FormatException($"El valor '{value}' no es un byte válido.");
-                    }
-                }
-            }
-
-            // Convertir la lista a un arreglo de bytes y retornarlo
-            return byteList.ToArray();
-        }
-    }
-
-    public interface IConnections
-    {
-        byte[] EnviarComando(byte[] comando);
-    }
-
-    public class CemCommunication : IConnections
-    {
-        public CemCommunication() { }
-
-        public byte[] EnviarComando(byte[] comando)
-        {
-            throw new NotImplementedException();
         }
     }
 }

@@ -1,0 +1,231 @@
+11:31:29  ERROR:   Error en el metodo PumpController.Init. Exception: Object reference not set to an instance of an object.
+11:31:29  ERROR:   Error en el metodo PumpController.Init. Exception: Input string was not in a correct format.
+11:31:30  ERROR:   Error en GetConfiguration. Excepción: Could not find file 'D:\C#\CDS\Tests\ConfigurationTests\bin\Debug\Config.ini'.
+11:31:30  ERROR:   Error en el metodo PumpController.Init. Exception: Object reference not set to an instance of an object.
+11:31:30  ERROR:   Error al ejecutar INSERT/UPDATE/DELETE: SQL logic error
+no such column: name
+11:31:30  ERROR:   Error al ejecutar SELECT: SQL logic error
+no such table: Users
+11:40:53  ERROR:   Error en el metodo PumpController.Init. Exception: Object reference not set to an instance of an object.
+11:40:54  ERROR:   Error en el metodo PumpController.Init. Exception: Input string was not in a correct format.
+11:41:10  INFO:    Nuevo proceso principal iniciado: 1 Running.
+
+11:41:10  ERROR:   Error al ejecutar INSERT/UPDATE/DELETE: SQL logic error
+no such column: name
+11:41:10  ERROR:   Error al ejecutar SELECT: SQL logic error
+no such table: Users
+11:41:10  ERROR:    Estado del hilo: Running - Error en el loop del controlador.
+	  Excepción: Thread was being aborted.
+
+11:42:52  ERROR:   Error en el metodo PumpController.Init. Exception: Object reference not set to an instance of an object.
+11:42:53  ERROR:   Error en el metodo PumpController.Init. Exception: Input string was not in a correct format.
+11:43:09  INFO:    Nuevo proceso principal iniciado: 1 Running.
+
+11:43:09  ERROR:   Error al ejecutar INSERT/UPDATE/DELETE: SQL logic error
+no such column: name
+11:43:09  ERROR:   Error al ejecutar SELECT: SQL logic error
+no such table: Users
+11:43:09  ERROR:    Estado del hilo: Running - Error en el loop del controlador.
+	  Excepción: Thread was being aborted.
+
+11:44:10  ERROR:   Error en el metodo PumpController.Init. Exception: Object reference not set to an instance of an object.
+11:44:10  ERROR:   Error en el metodo PumpController.Init. Exception: Input string was not in a correct format.
+11:44:26  INFO:    Nuevo proceso principal iniciado: 1 Running.
+
+11:44:26  ERROR:   Error al ejecutar INSERT/UPDATE/DELETE: SQL logic error
+no such column: name
+11:44:27  ERROR:   Error al ejecutar SELECT: SQL logic error
+no such table: Users
+11:44:27  ERROR:    Estado del hilo: Running - Error en el loop del controlador.
+	  Excepción: Thread was being aborted.
+
+12:14:06  ERROR:   Error en el metodo PumpController.Init. Exception: Object reference not set to an instance of an object.
+12:14:06  ERROR:   Error en el metodo PumpController.Init. Exception: Input string was not in a correct format.
+12:14:23  INFO:    Nuevo proceso principal iniciado: 1 Running.
+
+12:14:23  ERROR:   Error al ejecutar INSERT/UPDATE/DELETE: SQL logic error
+no such column: name
+12:14:23  ERROR:   Error al ejecutar SELECT: SQL logic error
+no such table: Users
+12:14:24  ERROR:    Estado del hilo: Running - Error en el loop del controlador.
+	  Excepción: Thread was being aborted.
+
+12:15:23  ERROR:   Error en el metodo PumpController.Init. Exception: Object reference not set to an instance of an object.
+12:15:24  ERROR:   Error en el metodo PumpController.Init. Exception: Input string was not in a correct format.
+12:15:40  INFO:    Nuevo proceso principal iniciado: 1 Running.
+
+12:15:40  ERROR:   Error al ejecutar INSERT/UPDATE/DELETE: SQL logic error
+no such column: name
+12:15:41  ERROR:   Error al ejecutar SELECT: SQL logic error
+no such table: Users
+12:15:41  ERROR:    Estado del hilo: Running - Error en el loop del controlador.
+	  Excepción: Thread was being aborted.
+
+12:19:38  ERROR:   Error al ejecutar INSERT/UPDATE/DELETE: SQL logic error
+near "WHERE": syntax error
+12:19:55  ERROR:   Error al ejecutar INSERT/UPDATE/DELETE: SQL logic error
+near "WHERE": syntax error
+12:22:26  ERROR:   Error al ejecutar INSERT/UPDATE/DELETE: SQL logic error
+near "INTO": syntax error
+12:22:26  ERROR:   Error al ejecutar una consulta de estados: SQL logic error
+near "SET": syntax error
+12:24:31  ERROR:   Error al ejecutar INSERT/UPDATE/DELETE: SQL logic error
+no such column: idConnection
+12:28:07  ERROR:   Error en el metodo PumpController.Init. Exception: Object reference not set to an instance of an object.
+12:28:07  ERROR:   Error en el metodo PumpController.Init. Exception: Input string was not in a correct format.
+12:28:07  ERROR:   Error al crear tabla: SQL logic error
+no such table: CheckConexion
+12:28:23  INFO:    Nuevo proceso principal iniciado: 1 Running.
+
+12:28:23  ERROR:   Error al crear tabla: SQL logic error
+no such table: CheckConexion
+12:28:23  ERROR:   Error al crear tabla: SQL logic error
+no such table: CheckConexion
+12:28:23  ERROR:   Error al crear tabla: SQL logic error
+no such table: CheckConexion
+12:28:24  ERROR:   Error al crear tabla: SQL logic error
+no such table: CheckConexion
+12:28:24  ERROR:   Error al crear tabla: SQL logic error
+no such table: CheckConexion
+12:28:24  ERROR:   Error al ejecutar INSERT/UPDATE/DELETE: SQL logic error
+no such column: name
+12:28:24  ERROR:   Error al crear tabla: SQL logic error
+no such table: CheckConexion
+12:28:24  ERROR:   Error al crear tabla: SQL logic error
+no such table: CheckConexion
+12:28:24  ERROR:   Error al crear tabla: SQL logic error
+no such table: CheckConexion
+12:28:24  ERROR:   Error al ejecutar SELECT: SQL logic error
+no such table: Users
+12:28:24  ERROR:   Error al crear tabla: SQL logic error
+no such table: CheckConexion
+12:28:24  ERROR:   Error al crear tabla: SQL logic error
+no such table: CheckConexion
+12:28:24  ERROR:   Error al ejecutar INSERT/UPDATE/DELETE: SQL logic error
+no such table: CheckConexion
+12:28:24  ERROR:   Error al ejecutar una consulta de estados: SQL logic error
+no such table: CheckConexion
+12:28:24  ERROR:    Estado del hilo: Running - Error en el loop del controlador.
+	  Excepción: Thread was being aborted.
+
+12:30:03  ERROR:   Error en el metodo PumpController.Init. Exception: Object reference not set to an instance of an object.
+12:30:03  ERROR:   Error en el metodo PumpController.Init. Exception: Input string was not in a correct format.
+12:30:03  ERROR:   Error al crear tabla: SQL logic error
+no such table: CheckConexion
+12:30:19  INFO:    Nuevo proceso principal iniciado: 1 Running.
+
+12:30:20  ERROR:   Error al crear tabla: SQL logic error
+no such table: CheckConexion
+12:30:20  ERROR:   Error al crear tabla: SQL logic error
+no such table: CheckConexion
+12:30:20  ERROR:   Error al crear tabla: SQL logic error
+no such table: CheckConexion
+12:30:20  ERROR:   Error al crear tabla: SQL logic error
+no such table: CheckConexion
+12:30:20  ERROR:   Error al crear tabla: SQL logic error
+no such table: CheckConexion
+12:30:20  ERROR:   Error al ejecutar INSERT/UPDATE/DELETE: SQL logic error
+no such column: name
+12:30:20  ERROR:   Error al crear tabla: SQL logic error
+no such table: CheckConexion
+12:30:20  ERROR:   Error al crear tabla: SQL logic error
+no such table: CheckConexion
+12:30:20  ERROR:   Error al crear tabla: SQL logic error
+no such table: CheckConexion
+12:30:20  ERROR:   Error al ejecutar SELECT: SQL logic error
+no such table: Users
+12:30:20  ERROR:   Error al crear tabla: SQL logic error
+no such table: CheckConexion
+12:30:20  ERROR:   Error al ejecutar INSERT/UPDATE/DELETE: SQL logic error
+table CheckConnection has no column named idConnection
+12:30:20  ERROR:   Error al ejecutar una consulta de estados: SQL logic error
+no such column: idConnection
+12:30:20  ERROR:   Error al crear tabla: SQL logic error
+no such table: CheckConexion
+12:30:20  ERROR:   Error al ejecutar INSERT/UPDATE/DELETE: SQL logic error
+no such column: idConnection
+12:30:20  ERROR:   Error al ejecutar una consulta de estados: SQL logic error
+no such table: CheckConexion
+12:30:20  ERROR:    Estado del hilo: Running - Error en el loop del controlador.
+	  Excepción: Thread was being aborted.
+
+12:30:52  ERROR:   Error en el metodo PumpController.Init. Exception: Object reference not set to an instance of an object.
+12:30:53  ERROR:   Error en el metodo PumpController.Init. Exception: Input string was not in a correct format.
+12:30:53  ERROR:   Error al crear tabla: SQL logic error
+no such table: CheckConexion
+12:31:09  INFO:    Nuevo proceso principal iniciado: 1 Running.
+
+12:31:09  ERROR:   Error al crear tabla: SQL logic error
+no such table: CheckConexion
+12:31:09  ERROR:   Error al crear tabla: SQL logic error
+no such table: CheckConexion
+12:31:09  ERROR:   Error al crear tabla: SQL logic error
+no such table: CheckConexion
+12:31:09  ERROR:   Error al crear tabla: SQL logic error
+no such table: CheckConexion
+12:31:09  ERROR:   Error al crear tabla: SQL logic error
+no such table: CheckConexion
+12:31:09  ERROR:   Error al ejecutar INSERT/UPDATE/DELETE: SQL logic error
+no such column: name
+12:31:09  ERROR:   Error al crear tabla: SQL logic error
+no such table: CheckConexion
+12:31:09  ERROR:   Error al crear tabla: SQL logic error
+no such table: CheckConexion
+12:31:09  ERROR:   Error al crear tabla: SQL logic error
+no such table: CheckConexion
+12:31:09  ERROR:   Error al ejecutar SELECT: SQL logic error
+no such table: Users
+12:31:09  ERROR:   Error al crear tabla: SQL logic error
+no such table: CheckConexion
+12:31:09  ERROR:   Error al ejecutar INSERT/UPDATE/DELETE: SQL logic error
+table CheckConnection has no column named idConnection
+12:31:09  ERROR:   Error al ejecutar una consulta de estados: SQL logic error
+no such column: idConnection
+12:31:09  ERROR:   Error al crear tabla: SQL logic error
+no such table: CheckConexion
+12:31:09  ERROR:   Error al ejecutar INSERT/UPDATE/DELETE: SQL logic error
+no such column: idConnection
+12:31:09  ERROR:   Error al ejecutar una consulta de estados: SQL logic error
+no such table: CheckConexion
+12:31:10  ERROR:    Estado del hilo: Running - Error en el loop del controlador.
+	  Excepción: Thread was being aborted.
+
+12:32:57  ERROR:   Error al crear tabla: SQL logic error
+no such table: CheckConexion
+12:32:57  ERROR:   Error al ejecutar INSERT/UPDATE/DELETE: SQL logic error
+no such column: idConnection
+12:32:57  ERROR:   Error al ejecutar una consulta de estados: SQL logic error
+no such column: idConnection
+12:37:18  ERROR:   Error en el metodo PumpController.Init. Exception: Object reference not set to an instance of an object.
+12:37:18  ERROR:   Error en el metodo PumpController.Init. Exception: Input string was not in a correct format.
+12:37:34  INFO:    Nuevo proceso principal iniciado: 1 Running.
+
+12:37:35  ERROR:   Error al ejecutar INSERT/UPDATE/DELETE: SQL logic error
+no such column: name
+12:37:35  ERROR:   Error al ejecutar SELECT: SQL logic error
+no such table: Users
+12:37:35  ERROR:    Estado del hilo: Running - Error en el loop del controlador.
+	  Excepción: Thread was being aborted.
+
+12:51:40  ERROR:   Error en el metodo PumpController.Init. Exception: Object reference not set to an instance of an object.
+12:51:41  ERROR:   Error en el metodo PumpController.Init. Exception: Input string was not in a correct format.
+12:51:57  INFO:    Nuevo proceso principal iniciado: 1 Running.
+
+12:51:57  ERROR:   Error al ejecutar INSERT/UPDATE/DELETE: SQL logic error
+no such column: name
+12:51:58  ERROR:   Error al ejecutar SELECT: SQL logic error
+no such table: Users
+12:51:58  ERROR:    Estado del hilo: Running - Error en el loop del controlador.
+	  Excepción: Thread was being aborted.
+
+10:05:00  ERROR:   Error en el metodo PumpController.Init. Exception: Object reference not set to an instance of an object.
+10:05:01  ERROR:   Error en el metodo PumpController.Init. Exception: Input string was not in a correct format.
+10:05:17  INFO:    Nuevo proceso principal iniciado: 1 Running.
+
+10:05:18  ERROR:   Error al ejecutar INSERT/UPDATE/DELETE: SQL logic error
+no such column: name
+10:05:18  ERROR:   Error al ejecutar SELECT: SQL logic error
+no such table: Users
+10:05:18  ERROR:    Estado del hilo: Running - Error en el loop del controlador.
+	  Excepción: Thread was being aborted.
+

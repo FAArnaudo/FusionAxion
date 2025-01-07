@@ -1,0 +1,595 @@
+09:26:03  ERROR:   Error al actualizar el proceso. Excepción: Object reference not set to an instance of an object.
+09:26:03  ERROR:   Error al actualizar el proceso. Excepción: Object reference not set to an instance of an object.
+09:26:03  INFO:     Proceso Finalizado.
+
+09:26:03  INFO:    Nuevo proceso principal iniciado. ID: 2, Estado: Running.
+
+09:26:03  INFO:    Nuevo proceso principal iniciado. ID: 1, Estado: Running.
+
+09:26:03  INFO:     Estado del hilo: 1 - Finalizando.
+09:26:03  ERROR:   Error al Iniciar un nuevo proceso. Excepción: Object reference not set to an instance of an object.
+09:26:03  ERROR:   Error al iniciar el proceso: Controlador no reconocido.
+09:26:03  INFO:     Estado del hilo 2: Running. TimerProcess 10
+
+09:26:03  INFO:    Nuevo proceso principal iniciado. ID: 3, Estado: Running.
+
+09:26:03  INFO:     Estado del hilo 3: Running. TimerProcess 8
+
+09:26:03  ERROR:   Error al actualizar el proceso. Excepción: Object reference not set to an instance of an object.
+09:26:03  ERROR:   Error al actualizar el proceso. Excepción: Object reference not set to an instance of an object.
+09:26:03  INFO:     Proceso Finalizado.
+
+09:26:03  INFO:    Nuevo proceso principal iniciado. ID: 4, Estado: Running.
+
+09:26:03  INFO:     Estado del hilo 4: Running. TimerProcess 8
+
+09:26:03  INFO:    Nuevo proceso principal iniciado. ID: 5, Estado: Running.
+
+09:26:03  INFO:     Estado del hilo: 5 - Finalizando.
+09:26:04  ERROR:   Error al ejecutar INSERT/UPDATE/DELETE: SQL logic error
+no such column: name
+09:26:04  ERROR:   Error al ejecutar SELECT: SQL logic error
+no such table: Users
+09:26:04  ERROR:    Estado del hilo 2: Running - Error en el loop del controlador.
+	  Excepción: Thread was being aborted.
+
+09:26:04  ERROR:    Estado del hilo 4: Running - Error en el loop del controlador.
+	  Excepción: Thread was being aborted.
+
+09:26:04  ERROR:    Estado del hilo 3: Running - Error en el loop del controlador.
+	  Excepción: Thread was being aborted.
+
+10:56:47  ERROR:   Error al actualizar el proceso. Excepción: Object reference not set to an instance of an object.
+10:56:47  ERROR:   Error al actualizar el proceso. Excepción: Object reference not set to an instance of an object.
+10:56:48  INFO:     Proceso Finalizado.
+
+10:56:48  INFO:    Nuevo proceso principal iniciado. ID: 1, Estado: Running.
+
+10:56:48  INFO:    Nuevo proceso principal iniciado. ID: 2, Estado: Running.
+
+10:56:48  INFO:     Estado del hilo 2: Running. TimerProcess 10
+
+10:56:48  ERROR:   Error al Iniciar un nuevo proceso. Excepción: Object reference not set to an instance of an object.
+10:56:48  INFO:     Estado del hilo: 1 - Finalizando.
+10:56:48  ERROR:   Error al iniciar el proceso: Controlador no reconocido.
+10:56:48  INFO:    Nuevo proceso principal iniciado. ID: 3, Estado: Running.
+
+10:56:48  INFO:     Estado del hilo 3: Running. TimerProcess 8
+
+10:56:48  ERROR:   Error al actualizar el proceso. Excepción: Object reference not set to an instance of an object.
+10:56:48  ERROR:   Error al actualizar el proceso. Excepción: Object reference not set to an instance of an object.
+10:56:48  INFO:     Proceso Finalizado.
+
+10:56:48  INFO:    Nuevo proceso principal iniciado. ID: 4, Estado: Running.
+
+10:56:48  INFO:     Estado del hilo 4: Running. TimerProcess 8
+
+10:56:48  INFO:    Nuevo proceso principal iniciado. ID: 5, Estado: Running.
+
+10:56:48  INFO:     Estado del hilo: 5 - Finalizando.
+10:56:48  ERROR:    Estado del hilo 4: Running - Error en el loop del controlador.
+	  Excepción: Thread was being aborted.
+
+10:56:48  ERROR:    Estado del hilo 3: Running - Error en el loop del controlador.
+	  Excepción: Thread was being aborted.
+
+10:56:48  ERROR:    Estado del hilo 2: Running - Error en el loop del controlador.
+	  Excepción: Thread was being aborted.
+
+11:48:31  ERROR:   Error al actualizar el proceso. Excepción: Object reference not set to an instance of an object.
+11:48:31  ERROR:   Error al actualizar el proceso. Excepción: Object reference not set to an instance of an object.
+11:48:32  INFO:     Proceso Finalizado.
+
+11:48:32  INFO:    Nuevo proceso principal iniciado. ID: 2, Estado: Running.
+
+11:48:32  INFO:    Nuevo proceso principal iniciado. ID: 1, Estado: Running.
+
+11:48:32  INFO:     Estado del hilo 2: Running. TimerProcess 10
+
+11:48:32  INFO:     Estado del hilo: 1 - Finalizando.
+11:48:32  ERROR:   Error al Iniciar un nuevo proceso. Excepción: Object reference not set to an instance of an object.
+11:48:32  ERROR:   Error al iniciar el proceso: Controlador no reconocido.
+11:48:32  INFO:    Nuevo proceso principal iniciado. ID: 3, Estado: Running.
+
+11:48:32  INFO:     Estado del hilo 3: Running. TimerProcess 8
+
+11:48:32  ERROR:   Error al actualizar el proceso. Excepción: Object reference not set to an instance of an object.
+11:48:32  ERROR:   Error al actualizar el proceso. Excepción: Object reference not set to an instance of an object.
+11:48:32  INFO:     Proceso Finalizado.
+
+11:48:32  INFO:    Nuevo proceso principal iniciado. ID: 4, Estado: Running.
+
+11:48:32  INFO:     Estado del hilo 4: Running. TimerProcess 8
+
+11:48:32  INFO:    Nuevo proceso principal iniciado. ID: 5, Estado: Running.
+
+11:48:32  INFO:     Estado del hilo: 5 - Finalizando.
+11:48:32  ERROR:   Error al ejecutar INSERT/UPDATE/DELETE: unknown error
+no connection handle available
+11:48:32  ERROR:   Error al ejecutar INSERT/UPDATE/DELETE: unknown error
+no connection handle available
+11:48:32  ERROR:   Error al ejecutar INSERT/UPDATE/DELETE: SQL logic error
+no such column: name
+11:48:32  ERROR:   Error al ejecutar SELECT: SQL logic error
+no such table: Users
+11:48:33  ERROR:    Estado del hilo 4: Running - Error en el loop del controlador.
+	  Excepción: Thread was being aborted.
+
+11:48:33  ERROR:    Estado del hilo 2: Running - Error en el loop del controlador.
+	  Excepción: Thread was being aborted.
+
+11:48:33  ERROR:    Estado del hilo 3: Running - Error en el loop del controlador.
+	  Excepción: Thread was being aborted.
+
+11:54:26  ERROR:   Error al actualizar el proceso. Excepción: Object reference not set to an instance of an object.
+11:54:26  ERROR:   Error al actualizar el proceso. Excepción: Object reference not set to an instance of an object.
+11:54:26  INFO:     Proceso Finalizado.
+
+11:54:26  INFO:    Nuevo proceso principal iniciado. ID: 2, Estado: Running.
+
+11:54:26  INFO:    Nuevo proceso principal iniciado. ID: 1, Estado: Running.
+
+11:54:26  INFO:     Estado del hilo: 2 - Finalizando.
+11:54:26  INFO:     Estado del hilo 1: Running. TimerProcess 10
+
+11:54:26  ERROR:   Error al Iniciar un nuevo proceso. Excepción: Object reference not set to an instance of an object.
+11:54:26  ERROR:   Error al iniciar el proceso: Controlador no reconocido.
+11:54:26  INFO:    Nuevo proceso principal iniciado. ID: 3, Estado: Running.
+
+11:54:26  INFO:     Estado del hilo 3: Running. TimerProcess 8
+
+11:54:26  ERROR:   Error al actualizar el proceso. Excepción: Object reference not set to an instance of an object.
+11:54:26  ERROR:   Error al actualizar el proceso. Excepción: Object reference not set to an instance of an object.
+11:54:26  INFO:     Proceso Finalizado.
+
+11:54:26  INFO:    Nuevo proceso principal iniciado. ID: 4, Estado: Running.
+
+11:54:26  INFO:     Estado del hilo 4: Running. TimerProcess 8
+
+11:54:26  INFO:    Nuevo proceso principal iniciado. ID: 5, Estado: Running.
+
+11:54:26  INFO:     Estado del hilo: 5 - Finalizando.
+11:54:26  ERROR:   Error al ejecutar INSERT/UPDATE/DELETE: SQL logic error
+no such column: name
+11:54:27  ERROR:   Error al ejecutar SELECT: SQL logic error
+no such table: Users
+11:54:27  ERROR:    Estado del hilo 4: Running - Error en el loop del controlador.
+	  Excepción: Thread was being aborted.
+
+11:54:27  ERROR:    Estado del hilo 3: Running - Error en el loop del controlador.
+	  Excepción: Thread was being aborted.
+
+11:54:27  ERROR:    Estado del hilo 1: Running - Error en el loop del controlador.
+	  Excepción: Thread was being aborted.
+
+11:57:08  ERROR:   Error al actualizar el proceso. Excepción: Object reference not set to an instance of an object.
+11:57:08  ERROR:   Error al actualizar el proceso. Excepción: Object reference not set to an instance of an object.
+11:57:08  INFO:     Proceso Finalizado.
+
+11:57:08  INFO:    Nuevo proceso principal iniciado. ID: 1, Estado: Running.
+
+11:57:08  INFO:    Nuevo proceso principal iniciado. ID: 2, Estado: Running.
+
+11:57:08  INFO:     Estado del hilo: 1 - Finalizando.
+11:57:08  INFO:     Estado del hilo 2: Running. TimerProcess 10
+
+11:57:08  ERROR:   Error al Iniciar un nuevo proceso. Excepción: Object reference not set to an instance of an object.
+11:57:08  ERROR:   Error al iniciar el proceso: Controlador no reconocido.
+11:57:08  INFO:    Nuevo proceso principal iniciado. ID: 3, Estado: Running.
+
+11:57:08  INFO:     Estado del hilo 3: Running. TimerProcess 8
+
+11:57:08  ERROR:   Error al actualizar el proceso. Excepción: Object reference not set to an instance of an object.
+11:57:08  ERROR:   Error al actualizar el proceso. Excepción: Object reference not set to an instance of an object.
+11:57:08  INFO:     Proceso Finalizado.
+
+11:57:08  INFO:    Nuevo proceso principal iniciado. ID: 4, Estado: Running.
+
+11:57:08  INFO:     Estado del hilo 4: Running. TimerProcess 8
+
+11:57:08  INFO:    Nuevo proceso principal iniciado. ID: 5, Estado: Running.
+
+11:57:08  INFO:     Estado del hilo: 5 - Finalizando.
+11:57:09  ERROR:   Error al ejecutar INSERT/UPDATE/DELETE: SQL logic error
+no such column: name
+11:57:09  ERROR:   Error al ejecutar SELECT: SQL logic error
+no such table: Users
+11:57:09  ERROR:    Estado del hilo 4: Running - Error en el loop del controlador.
+	  Excepción: Thread was being aborted.
+
+11:57:09  ERROR:    Estado del hilo 2: Running - Error en el loop del controlador.
+	  Excepción: Thread was being aborted.
+
+11:57:09  ERROR:    Estado del hilo 3: Running - Error en el loop del controlador.
+	  Excepción: Thread was being aborted.
+
+12:06:04  ERROR:   Error al actualizar el proceso. Excepción: Object reference not set to an instance of an object.
+12:06:04  ERROR:   Error al actualizar el proceso. Excepción: Object reference not set to an instance of an object.
+12:06:04  INFO:     Proceso Finalizado.
+
+12:06:04  INFO:    Nuevo proceso principal iniciado. ID: 1, Estado: Running.
+
+12:06:04  INFO:    Nuevo proceso principal iniciado. ID: 2, Estado: Running.
+
+12:06:04  INFO:     Estado del hilo: 1 - Finalizando.
+12:06:04  INFO:     Estado del hilo 2: Running. TimerProcess 10
+
+12:06:04  ERROR:   Error al Iniciar un nuevo proceso. Excepción: Object reference not set to an instance of an object.
+12:06:04  ERROR:   Error al iniciar el proceso: Controlador no reconocido.
+12:06:04  INFO:    Nuevo proceso principal iniciado. ID: 3, Estado: Running.
+
+12:06:04  INFO:     Estado del hilo 3: Running. TimerProcess 8
+
+12:06:04  ERROR:   Error al actualizar el proceso. Excepción: Object reference not set to an instance of an object.
+12:06:04  ERROR:   Error al actualizar el proceso. Excepción: Object reference not set to an instance of an object.
+12:06:04  INFO:     Proceso Finalizado.
+
+12:06:04  INFO:    Nuevo proceso principal iniciado. ID: 4, Estado: Running.
+
+12:06:04  INFO:     Estado del hilo 4: Running. TimerProcess 8
+
+12:06:04  INFO:    Nuevo proceso principal iniciado. ID: 5, Estado: Running.
+
+12:06:04  INFO:     Estado del hilo: 5 - Finalizando.
+12:06:05  ERROR:   Error al ejecutar INSERT/UPDATE/DELETE: SQL logic error
+no such column: name
+12:06:05  ERROR:   Error al ejecutar SELECT: SQL logic error
+no such table: Users
+12:06:05  ERROR:    Estado del hilo 4: Running - Error en el loop del controlador.
+	  Excepción: Thread was being aborted.
+
+12:06:05  ERROR:    Estado del hilo 3: Running - Error en el loop del controlador.
+	  Excepción: Thread was being aborted.
+
+12:06:05  ERROR:    Estado del hilo 2: Running - Error en el loop del controlador.
+	  Excepción: Thread was being aborted.
+
+12:18:44  ERROR:   Error al actualizar el proceso. Excepción: Object reference not set to an instance of an object.
+12:18:44  ERROR:   Error al actualizar el proceso. Excepción: Object reference not set to an instance of an object.
+12:18:44  INFO:     Proceso Finalizado.
+
+12:18:44  INFO:    Nuevo proceso principal iniciado. ID: 2, Estado: Running.
+
+12:18:44  INFO:    Nuevo proceso principal iniciado. ID: 1, Estado: Running.
+
+12:18:44  INFO:     Estado del hilo: 1 - Finalizando.
+12:18:44  ERROR:   Error al Iniciar un nuevo proceso. Excepción: Object reference not set to an instance of an object.
+12:18:44  ERROR:   Error al iniciar el proceso: Controlador no reconocido.
+12:18:44  INFO:     Estado del hilo 2: Running. TimerProcess 10
+
+12:18:44  INFO:    Nuevo proceso principal iniciado. ID: 3, Estado: Running.
+
+12:18:44  INFO:     Estado del hilo 3: Running. TimerProcess 8
+
+12:18:44  ERROR:   Error al actualizar el proceso. Excepción: Object reference not set to an instance of an object.
+12:18:44  ERROR:   Error al actualizar el proceso. Excepción: Object reference not set to an instance of an object.
+12:18:44  INFO:     Proceso Finalizado.
+
+12:18:44  INFO:    Nuevo proceso principal iniciado. ID: 4, Estado: Running.
+
+12:18:44  INFO:     Estado del hilo 4: Running. TimerProcess 8
+
+12:18:44  INFO:    Nuevo proceso principal iniciado. ID: 5, Estado: Running.
+
+12:18:44  INFO:     Estado del hilo: 5 - Finalizando.
+12:18:45  ERROR:   Error al ejecutar INSERT/UPDATE/DELETE: SQL logic error
+no such column: name
+12:18:45  ERROR:   Error al ejecutar SELECT: SQL logic error
+no such table: Users
+12:18:45  ERROR:    Estado del hilo 4: Running - Error en el loop del controlador.
+	  Excepción: Thread was being aborted.
+
+12:18:45  ERROR:    Estado del hilo 3: Running - Error en el loop del controlador.
+	  Excepción: Thread was being aborted.
+
+12:18:45  ERROR:    Estado del hilo 2: Running - Error en el loop del controlador.
+	  Excepción: Thread was being aborted.
+
+12:21:35  ERROR:   Error al actualizar el proceso. Excepción: Object reference not set to an instance of an object.
+12:21:35  ERROR:   Error al actualizar el proceso. Excepción: Object reference not set to an instance of an object.
+12:21:35  INFO:     Proceso Finalizado.
+
+12:21:35  INFO:    Nuevo proceso principal iniciado. ID: 2, Estado: Running.
+
+12:21:35  INFO:    Nuevo proceso principal iniciado. ID: 1, Estado: Running.
+
+12:21:35  INFO:     Estado del hilo: 1 - Finalizando.
+12:21:35  INFO:     Estado del hilo 2: Running. TimerProcess 10
+
+12:21:35  ERROR:   Error al Iniciar un nuevo proceso. Excepción: Object reference not set to an instance of an object.
+12:21:35  ERROR:   Error al iniciar el proceso: Controlador no reconocido.
+12:21:35  INFO:    Nuevo proceso principal iniciado. ID: 3, Estado: Running.
+
+12:21:35  INFO:     Estado del hilo 3: Running. TimerProcess 8
+
+12:21:35  ERROR:   Error al actualizar el proceso. Excepción: Object reference not set to an instance of an object.
+12:21:35  ERROR:   Error al actualizar el proceso. Excepción: Object reference not set to an instance of an object.
+12:21:35  INFO:     Proceso Finalizado.
+
+12:21:35  INFO:    Nuevo proceso principal iniciado. ID: 4, Estado: Running.
+
+12:21:35  INFO:     Estado del hilo 4: Running. TimerProcess 8
+
+12:21:35  INFO:    Nuevo proceso principal iniciado. ID: 5, Estado: Running.
+
+12:21:35  INFO:     Estado del hilo: 5 - Finalizando.
+12:21:36  ERROR:   Error al ejecutar INSERT/UPDATE/DELETE: SQL logic error
+no such column: name
+12:21:36  ERROR:   Error al ejecutar SELECT: SQL logic error
+no such table: Users
+12:21:36  ERROR:    Estado del hilo 4: Running - Error en el loop del controlador.
+	  Excepción: Thread was being aborted.
+
+12:21:36  ERROR:    Estado del hilo 3: Running - Error en el loop del controlador.
+	  Excepción: Thread was being aborted.
+
+12:21:36  ERROR:    Estado del hilo 2: Running - Error en el loop del controlador.
+	  Excepción: Thread was being aborted.
+
+12:57:54  ERROR:   Error al actualizar el proceso. Excepción: Object reference not set to an instance of an object.
+12:57:54  ERROR:   Error al actualizar el proceso. Excepción: Object reference not set to an instance of an object.
+12:57:54  INFO:     Proceso Finalizado.
+
+12:57:54  INFO:    Nuevo proceso principal iniciado. ID: 2, Estado: Running.
+
+12:57:54  INFO:     Estado del hilo: 2 - Finalizando.
+12:57:54  INFO:    Nuevo proceso principal iniciado. ID: 1, Estado: Running.
+
+12:57:54  ERROR:   Error al Iniciar un nuevo proceso. Excepción: Object reference not set to an instance of an object.
+12:57:54  INFO:     Estado del hilo 1: Running. TimerProcess 10
+
+12:57:54  ERROR:   Error al iniciar el proceso: Controlador no reconocido.
+12:57:54  INFO:    Nuevo proceso principal iniciado. ID: 3, Estado: Running.
+
+12:57:54  INFO:     Estado del hilo 3: Running. TimerProcess 8
+
+12:57:54  ERROR:   Error al actualizar el proceso. Excepción: Object reference not set to an instance of an object.
+12:57:54  ERROR:   Error al actualizar el proceso. Excepción: Object reference not set to an instance of an object.
+12:57:54  INFO:     Proceso Finalizado.
+
+12:57:54  INFO:    Nuevo proceso principal iniciado. ID: 4, Estado: Running.
+
+12:57:54  INFO:     Estado del hilo 4: Running. TimerProcess 8
+
+12:57:54  INFO:    Nuevo proceso principal iniciado. ID: 5, Estado: Running.
+
+12:57:54  INFO:     Estado del hilo: 5 - Finalizando.
+12:57:58  ERROR:   Error al ejecutar INSERT/UPDATE/DELETE: SQL logic error
+no such column: name
+12:57:58  ERROR:   Error al ejecutar SELECT: SQL logic error
+no such table: Users
+12:57:58  ERROR:    Estado del hilo 3: Running - Error en el loop del controlador.
+	  Excepción: Thread was being aborted.
+
+12:57:58  ERROR:    Estado del hilo 1: Running - Error en el loop del controlador.
+	  Excepción: Thread was being aborted.
+
+12:57:58  ERROR:    Estado del hilo 4: Running - Error en el loop del controlador.
+	  Excepción: Thread was being aborted.
+
+12:59:07  ERROR:   Error al actualizar el proceso. Excepción: Object reference not set to an instance of an object.
+12:59:07  ERROR:   Error al actualizar el proceso. Excepción: Object reference not set to an instance of an object.
+12:59:08  INFO:     Proceso Finalizado.
+
+12:59:08  INFO:    Nuevo proceso principal iniciado. ID: 2, Estado: Running.
+
+12:59:08  INFO:    Nuevo proceso principal iniciado. ID: 1, Estado: Running.
+
+12:59:08  INFO:     Estado del hilo 2: Running. TimerProcess 10
+
+12:59:08  INFO:     Estado del hilo: 1 - Finalizando.
+12:59:08  ERROR:   Error al Iniciar un nuevo proceso. Excepción: Object reference not set to an instance of an object.
+12:59:08  ERROR:   Error al iniciar el proceso: Controlador no reconocido.
+12:59:08  INFO:    Nuevo proceso principal iniciado. ID: 3, Estado: Running.
+
+12:59:08  INFO:     Estado del hilo 3: Running. TimerProcess 8
+
+12:59:08  ERROR:   Error al actualizar el proceso. Excepción: Object reference not set to an instance of an object.
+12:59:08  ERROR:   Error al actualizar el proceso. Excepción: Object reference not set to an instance of an object.
+12:59:08  INFO:     Proceso Finalizado.
+
+12:59:08  INFO:    Nuevo proceso principal iniciado. ID: 4, Estado: Running.
+
+12:59:08  INFO:     Estado del hilo 4: Running. TimerProcess 8
+
+12:59:08  INFO:    Nuevo proceso principal iniciado. ID: 5, Estado: Running.
+
+12:59:08  INFO:     Estado del hilo: 5 - Finalizando.
+12:59:08  ERROR:   Error al crear tabla: bad parameter or other API misuse
+null connection or database handle
+12:59:08  ERROR:   Error al ejecutar INSERT/UPDATE/DELETE: SQL logic error
+no such column: name
+12:59:09  ERROR:   Error al ejecutar SELECT: SQL logic error
+no such table: Users
+12:59:09  ERROR:    Estado del hilo 4: Running - Error en el loop del controlador.
+	  Excepción: Thread was being aborted.
+
+12:59:09  ERROR:    Estado del hilo 2: Running - Error en el loop del controlador.
+	  Excepción: Thread was being aborted.
+
+12:59:09  ERROR:    Estado del hilo 3: Running - Error en el loop del controlador.
+	  Excepción: Thread was being aborted.
+
+01:05:34  ERROR:   Error al actualizar el proceso. Excepción: Object reference not set to an instance of an object.
+01:05:34  ERROR:   Error al actualizar el proceso. Excepción: Object reference not set to an instance of an object.
+01:05:34  INFO:     Proceso Finalizado.
+
+01:05:34  INFO:    Nuevo proceso principal iniciado. ID: 1, Estado: Running.
+
+01:05:34  INFO:    Nuevo proceso principal iniciado. ID: 2, Estado: Running.
+
+01:05:34  INFO:     Estado del hilo: 1 - Finalizando.
+01:05:34  INFO:     Estado del hilo 2: Running. TimerProcess 10
+
+01:05:34  ERROR:   Error al ejecutar INSERT/UPDATE/DELETE: unable to open database file
+01:05:34  ERROR:   Error al Iniciar un nuevo proceso. Excepción: Object reference not set to an instance of an object.
+01:05:34  ERROR:   Error al iniciar el proceso: Controlador no reconocido.
+01:05:34  INFO:    Nuevo proceso principal iniciado. ID: 3, Estado: Running.
+
+01:05:34  INFO:     Estado del hilo 3: Running. TimerProcess 8
+
+01:05:34  ERROR:   Error al actualizar el proceso. Excepción: Object reference not set to an instance of an object.
+01:05:34  ERROR:   Error al actualizar el proceso. Excepción: Object reference not set to an instance of an object.
+01:05:34  INFO:     Proceso Finalizado.
+
+01:05:34  INFO:    Nuevo proceso principal iniciado. ID: 4, Estado: Running.
+
+01:05:34  INFO:     Estado del hilo 4: Running. TimerProcess 8
+
+01:05:34  INFO:    Nuevo proceso principal iniciado. ID: 5, Estado: Running.
+
+01:05:34  INFO:     Estado del hilo: 5 - Finalizando.
+01:05:34  ERROR:   Error al ejecutar INSERT/UPDATE/DELETE: unable to open database file
+01:05:35  ERROR:   Error al ejecutar INSERT/UPDATE/DELETE: SQL logic error
+no such column: name
+01:05:35  ERROR:   Error al ejecutar SELECT: SQL logic error
+no such table: Users
+01:05:35  ERROR:    Estado del hilo 4: Running - Error en el loop del controlador.
+	  Excepción: Thread was being aborted.
+
+01:05:35  ERROR:    Estado del hilo 3: Running - Error en el loop del controlador.
+	  Excepción: Thread was being aborted.
+
+01:05:35  ERROR:    Estado del hilo 2: Running - Error en el loop del controlador.
+	  Excepción: Thread was being aborted.
+
+01:07:25  ERROR:   Error al actualizar el proceso. Excepción: Object reference not set to an instance of an object.
+01:07:25  ERROR:   Error al actualizar el proceso. Excepción: Object reference not set to an instance of an object.
+01:07:25  INFO:     Proceso Finalizado.
+
+01:07:25  INFO:    Nuevo proceso principal iniciado. ID: 2, Estado: Running.
+
+01:07:25  INFO:    Nuevo proceso principal iniciado. ID: 1, Estado: Running.
+
+01:07:25  INFO:     Estado del hilo: 1 - Finalizando.
+01:07:25  INFO:     Estado del hilo 2: Running. TimerProcess 10
+
+01:07:25  ERROR:   Error al ejecutar INSERT/UPDATE/DELETE: bad parameter or other API misuse
+null connection or database handle
+01:07:25  ERROR:   Error al crear tabla: Database is not open
+01:07:25  ERROR:   Error al Iniciar un nuevo proceso. Excepción: Object reference not set to an instance of an object.
+01:07:25  ERROR:   Error al iniciar el proceso: Controlador no reconocido.
+01:07:25  INFO:    Nuevo proceso principal iniciado. ID: 3, Estado: Running.
+
+01:07:25  INFO:     Estado del hilo 3: Running. TimerProcess 8
+
+01:07:25  ERROR:   Error al actualizar el proceso. Excepción: Object reference not set to an instance of an object.
+01:07:25  ERROR:   Error al actualizar el proceso. Excepción: Object reference not set to an instance of an object.
+01:07:25  INFO:     Proceso Finalizado.
+
+01:07:25  INFO:    Nuevo proceso principal iniciado. ID: 4, Estado: Running.
+
+01:07:25  INFO:     Estado del hilo 4: Running. TimerProcess 8
+
+01:07:25  INFO:    Nuevo proceso principal iniciado. ID: 5, Estado: Running.
+
+01:07:25  INFO:     Estado del hilo: 5 - Finalizando.
+01:07:25  ERROR:   Error al ejecutar INSERT/UPDATE/DELETE: SQL logic error
+no such table: CheckConnection
+01:07:25  ERROR:    Estado del hilo 2: Running - Error en el loop del controlador.
+	  Excepción: Thread was being aborted.
+
+01:07:25  ERROR:    Estado del hilo 4: Running - Error en el loop del controlador.
+	  Excepción: Thread was being aborted.
+
+01:07:25  ERROR:    Estado del hilo 3: Running - Error en el loop del controlador.
+	  Excepción: Thread was being aborted.
+
+01:08:29  ERROR:   Error al actualizar el proceso. Excepción: Object reference not set to an instance of an object.
+01:08:29  ERROR:   Error al actualizar el proceso. Excepción: Object reference not set to an instance of an object.
+01:08:29  INFO:     Proceso Finalizado.
+
+01:08:29  INFO:    Nuevo proceso principal iniciado. ID: 2, Estado: Running.
+
+01:08:29  INFO:    Nuevo proceso principal iniciado. ID: 1, Estado: Running.
+
+01:08:29  INFO:     Estado del hilo: 1 - Finalizando.
+01:08:29  ERROR:   Error al Iniciar un nuevo proceso. Excepción: Object reference not set to an instance of an object.
+01:08:29  ERROR:   Error al iniciar el proceso: Controlador no reconocido.
+01:08:29  INFO:     Estado del hilo 2: Running. TimerProcess 10
+
+01:08:29  INFO:    Nuevo proceso principal iniciado. ID: 3, Estado: Running.
+
+01:08:29  INFO:     Estado del hilo 3: Running. TimerProcess 8
+
+01:08:29  ERROR:   Error al actualizar el proceso. Excepción: Object reference not set to an instance of an object.
+01:08:29  ERROR:   Error al actualizar el proceso. Excepción: Object reference not set to an instance of an object.
+01:08:29  INFO:     Proceso Finalizado.
+
+01:08:29  INFO:    Nuevo proceso principal iniciado. ID: 4, Estado: Running.
+
+01:08:29  INFO:     Estado del hilo 4: Running. TimerProcess 8
+
+01:08:29  INFO:    Nuevo proceso principal iniciado. ID: 5, Estado: Running.
+
+01:08:29  INFO:     Estado del hilo: 5 - Finalizando.
+01:08:29  ERROR:   Error al ejecutar INSERT/UPDATE/DELETE: unknown error
+no connection handle available
+01:08:29  ERROR:   Error al ejecutar INSERT/UPDATE/DELETE: SQL logic error
+no such column: name
+01:08:30  ERROR:   Error al ejecutar SELECT: SQL logic error
+no such table: Users
+01:08:30  ERROR:    Estado del hilo 2: Running - Error en el loop del controlador.
+	  Excepción: Thread was being aborted.
+
+01:08:30  ERROR:    Estado del hilo 3: Running - Error en el loop del controlador.
+	  Excepción: Thread was being aborted.
+
+01:08:30  ERROR:    Estado del hilo 4: Running - Error en el loop del controlador.
+	  Excepción: Thread was being aborted.
+
+01:15:49  ERROR:   Error al actualizar el proceso. Excepción: Object reference not set to an instance of an object.
+01:15:49  ERROR:   Error al actualizar el proceso. Excepción: Object reference not set to an instance of an object.
+01:15:49  ERROR:   Error al actualizar el proceso. Excepción: Object reference not set to an instance of an object.
+01:15:49  ERROR:   Error al actualizar el proceso. Excepción: Object reference not set to an instance of an object.
+01:15:49  ERROR:   Error al actualizar el proceso. Excepción: Object reference not set to an instance of an object.
+01:15:49  ERROR:   Error al actualizar el proceso. Excepción: Object reference not set to an instance of an object.
+01:15:49  ERROR:   Error al ejecutar INSERT/UPDATE/DELETE: SQL logic error
+no such column: name
+01:15:50  ERROR:   Error al ejecutar SELECT: SQL logic error
+no such table: Users
+01:16:25  ERROR:   Error al actualizar el proceso. Excepción: Object reference not set to an instance of an object.
+01:16:25  ERROR:   Error al actualizar el proceso. Excepción: Object reference not set to an instance of an object.
+01:16:25  INFO:     Proceso Finalizado.
+
+01:16:25  ERROR:   Error al Iniciar un nuevo proceso. Excepción: Object reference not set to an instance of an object.
+01:16:25  INFO:    Nuevo proceso principal iniciado. ID: 2, Estado: Running.
+
+01:16:25  INFO:     Estado del hilo 2: Running. TimerProcess 10
+
+01:16:25  INFO:    Nuevo proceso principal iniciado. ID: 1, Estado: Running.
+
+01:16:25  INFO:     Estado del hilo: 1 - Finalizando.
+01:16:25  ERROR:   Error al iniciar el proceso: Controlador no reconocido.
+01:16:25  INFO:    Nuevo proceso principal iniciado. ID: 3, Estado: Running.
+
+01:16:25  INFO:     Estado del hilo 3: Running. TimerProcess 8
+
+01:16:25  ERROR:   Error al actualizar el proceso. Excepción: Object reference not set to an instance of an object.
+01:16:25  ERROR:   Error al actualizar el proceso. Excepción: Object reference not set to an instance of an object.
+01:16:25  INFO:     Proceso Finalizado.
+
+01:16:25  INFO:    Nuevo proceso principal iniciado. ID: 4, Estado: Running.
+
+01:16:25  INFO:     Estado del hilo 4: Running. TimerProcess 8
+
+01:16:25  INFO:    Nuevo proceso principal iniciado. ID: 5, Estado: Running.
+
+01:16:25  INFO:     Estado del hilo: 5 - Finalizando.
+01:16:26  ERROR:   Error al ejecutar INSERT/UPDATE/DELETE: SQL logic error
+no such table: CheckConnection
+01:16:26  ERROR:   Error al ejecutar INSERT/UPDATE/DELETE: SQL logic error
+no such table: CheckConnection
+01:16:26  ERROR:   Error al ejecutar INSERT/UPDATE/DELETE: SQL logic error
+no such column: name
+01:16:26  ERROR:   Error al ejecutar SELECT: SQL logic error
+no such table: Users
+01:16:26  ERROR:    Estado del hilo 2: Running - Error en el loop del controlador.
+	  Excepción: Thread was being aborted.
+
+01:16:26  ERROR:    Estado del hilo 3: Running - Error en el loop del controlador.
+	  Excepción: Thread was being aborted.
+
+01:16:26  ERROR:    Estado del hilo 4: Running - Error en el loop del controlador.
+	  Excepción: Thread was being aborted.
+

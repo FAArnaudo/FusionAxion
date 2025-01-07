@@ -33,13 +33,13 @@ jobs:
 
     - name: Build Solution
       run: |
-        msbuild.exe CDS.sln /p:platform="Any CPU" /p:configuration="Debug"
+        msbuild.exe CDS.sln /p:platform="Any CPU" /p:configuration="Release"
 
     - name: Build Test Solution
       run: |
-        msbuild.exe CDS.sln /p:platform="Any CPU" /p:configuration="Debug"
+        msbuild.exe CDS.sln /p:platform="Any CPU" /p:configuration="Release"
         
     - name: Run Tests
-      run: vstest.console.exe Tests/ConfigurationTests/bin/Debug/ConfigurationTests.dll
+      run: vstest.console.exe Tests/ConfigurationTests/bin/Release/ConfigurationTests.dll
       #run: vstest.console.exe .\Tests\ConfigurationTests\ConfigurationTests.dll
     

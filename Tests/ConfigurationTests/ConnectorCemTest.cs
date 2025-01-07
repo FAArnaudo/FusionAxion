@@ -13,6 +13,29 @@ namespace ConfigurationTests
     [TestClass]
     public class ConnectorCemTest
     {
+        [TestInitialize]
+        public void TestInitialize()
+        {
+            Data data = new Data
+            {
+                IP = "10.773.856",
+                Protocol = "16",
+                Modo = "NORMAL"
+            };
+
+            _ = Configuration.SaveConfiguration(data);
+        }
+
+        [TestCleanup]
+        public void TestCleanup()
+        {
+            // Elimina la base de datos si existe
+            if (File.Exists(Environment.CurrentDirectory + "/Config.ini"))
+            {
+                File.Delete(Environment.CurrentDirectory + "/Config.ini");
+            }
+        }
+
         [TestMethod]
         public void PoleoEnLinea_ReturnTrue()
         {

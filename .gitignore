@@ -60,11 +60,8 @@ _ReSharper*/
 gitignore.txt
 Responses/
 
-# Ignorar todo en bin/Debug/
-Tests/ConfigurationTests/bin/Debug/*
-
 # Excepciones para Responses
 !Tests/ConfigurationTests/bin/
-!Tests/ConfigurationTests/bin/Debug/
-!Tests/ConfigurationTests/bin/Debug/Responses/
-!Tests/ConfigurationTests/bin/Debug/Responses/**
+!Tests/ConfigurationTests/bin/Release/
+!Tests/ConfigurationTests/bin/Release/Responses/
+!Tests/ConfigurationTests/bin/Release/Responses/**

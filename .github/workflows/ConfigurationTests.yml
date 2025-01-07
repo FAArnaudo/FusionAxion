@@ -37,7 +37,7 @@ jobs:
 
     - name: Build Test Solution
       run: |
-        msbuild.exe CDS.sln /p:platform="Any CPU" /p:configuration="Release"
+        msbuild.exe CDS.sln /p:platform="Any CPU" /p:configuration="Debug"
         
     - name: Run Tests
       run: vstest.console.exe Tests/ConfigurationTests/bin/Release/ConfigurationTests.dll

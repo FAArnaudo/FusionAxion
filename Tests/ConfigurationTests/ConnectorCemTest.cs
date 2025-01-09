@@ -168,7 +168,7 @@ namespace ConfigurationTests
             _ = connections.Setup(a => a.EnviarComando(command)).Returns(reply);
 
             //Act
-            Tank actual = connectorCem.ComandoStockDeTanques(command);
+            Tanque actual = connectorCem.ComandoStockDeTanques(command);
 
             // Assert
             Assert.IsNotNull(actual);
@@ -189,7 +189,7 @@ namespace ConfigurationTests
             _ = connections.Setup(a => a.EnviarComando(command)).Returns(reply);
 
             //Act
-            Tank actual = connectorCem.ComandoStockDeTanques(command);
+            Tanque actual = connectorCem.ComandoStockDeTanques(command);
 
             // Assert
             Assert.IsNull(actual);
@@ -206,7 +206,7 @@ namespace ConfigurationTests
             byte[] command = new byte[] { 0x68 };
 
             //Act
-            Tank actual = connectorCem.ComandoStockDeTanques(command);
+            Tanque actual = connectorCem.ComandoStockDeTanques(command);
 
             // Assert
             Assert.IsNull(actual);

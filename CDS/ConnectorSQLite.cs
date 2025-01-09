@@ -192,8 +192,8 @@ namespace CDS
                     _ = cmd.ExecuteNonQuery();
                 }
 
-                createTableQuery = "CREATE TABLE IF NOT EXISTS Tanques (id INTEGER PRIMARY KEY, " +
-                                   "volumen REAL NOT NULL, total REAL NOT NULL)";
+                createTableQuery = "CREATE TABLE IF NOT EXISTS Tanques (id_tanque INTEGER PRIMARY KEY, " +
+                                   "volumen_actual REAL NOT NULL, capacidad_maxima REAL NOT NULL)";
 
                 using (SQLiteCommand cmd = new SQLiteCommand(createTableQuery, connection))
                 {
@@ -255,7 +255,7 @@ namespace CDS
                 }
 
                 createTableQuery = "CREATE TABLE IF NOT EXISTS Productos " +
-                                   "(id_producto INTEGER PRIMARY KEY, numero_producto INTEGER NOT NULL, numero_despacho INTEGER NOT NULL," +
+                                   "(id_producto INTEGER PRIMARY KEY, numero_producto INTEGER, numero_despacho INTEGER," +
                                    "producto TEXT NOT NULL, precio REAL NOT NULL)";
 
                 using (SQLiteCommand cmd = new SQLiteCommand(createTableQuery, connection))

@@ -9,6 +9,7 @@ namespace CDS
     public class Station
     {
         private static Station instance = null;
+        public const int nivelesDePrecio = 5;
 
         private Station()
         {
@@ -16,9 +17,20 @@ namespace CDS
             TanksNumber = 0;
             PumpsNumber = 0;
 
-            Products = new List<Product>();
-            Tanks = new List<Tank>();
-            Pumps = new List<Pump>();
+            NivelesDePrecio = new List<NivelDePrecio>();
+            Productos = new List<Producto>();
+            Tanques = new List<Tanque>();
+            Surtidores = new List<Surtidor>();
+
+            for (int i = 0; i < nivelesDePrecio; i++)
+            {
+                NivelDePrecio nivelDePrecio = new NivelDePrecio
+                {
+                    Nivel = i
+                };
+
+                NivelesDePrecio.Add(nivelDePrecio);
+            }
         }
 
         public static Station Instance
@@ -36,165 +48,87 @@ namespace CDS
         public int ProductsNumber { get; set; }
         public int TanksNumber { get; set; }
         public int PumpsNumber { get; set; }
-        public List<Product> Products { get; set; }
-        public List<Tank> Tanks { get; set; }
-        public List<Pump> Pumps { get; set; }
+
+        public List<NivelDePrecio> NivelesDePrecio { get; set; }
+        public List<Producto> Productos { get; set; }
+        public List<Tanque> Tanques { get; set; }
+        public List<Surtidor> Surtidores { get; set; }
     }
-    public class Pump
-    {
-        public Pump()
-        {
-            Id = 0;
-            HosesNumber = 0;
-            Hoses = null;
-        }
 
-        public int Id { get; set; }
-        public int HosesNumber { get; set; }
-        public List<Hose> Hoses { get; set; }
+    public class NivelDePrecio
+    {
+        public NivelDePrecio()
+        {
+            Nivel = 0;
+            SurtidoresPorNivelDePrecio = new List<Surtidor>();
+        }
+        public int Nivel { get; set; }
+        public List<Surtidor> SurtidoresPorNivelDePrecio { get; set; }
     }
-    public class Hose
+    public class Surtidor
     {
-        private int id;
-        private Product product;
-        public Hose()
+        public Surtidor()
         {
-            id = 0;
-            product = null;
+            ID = 0;
+            NumeroDeMangueras = 0;
+            NivelDeSurtidor = 0;
+            Mangueras = new List<Manguera>();
         }
 
-        public int ID
-        {
-            get => id;
-            set
-            {
-                if (id != value)
-                {
-                    id = value;
-                }
-            }
-        }
-
-        public Product Product
-        {
-            get => product;
-            set
-            {
-                if (value != null)
-                {
-                    product = value;
-                }
-            }
-        }
+        public int ID { get; set; }
+        /// <summary>
+        /// Numero de mangueras que contiene el surtidor (o cara)
+        /// </summary>
+        public int NumeroDeMangueras { get; set; }
+        /// <summary>
+        /// Es el nivel de precio al que esta funcionando este surtidor.
+        /// </summary>
+        public int NivelDeSurtidor { get; set; }
+        public List<Manguera> Mangueras { get; set; }
     }
-    public class Tank
+    public class Manguera
     {
-        private int id;
-        private Product product;
-        private double maxValue;
-        private double productVolume;
-        public Tank()
+        public Manguera()
         {
-            id = 0;
-            product = null;
-            maxValue = 0;
-            productVolume = 0;
-        }
-        public int ID
-        {
-            get => id;
-            set
-            {
-                if (id != value)
-                {
-                    id = value;
-                }
-            }
+            ID = 0;
+            Producto = null;
         }
 
-        public Product Product
-        {
-            get => product;
-            set
-            {
-                if (value != null)
-                {
-                    product = value;
-                }
-            }
-        }
-
-        public double MaxVolume
-        {
-            get => maxValue;
-            set
-            {
-                if (maxValue != value)
-                {
-                    maxValue = value;
-                }
-            }
-        }
-
-        public double ProductVolume
-        {
-            get => productVolume;
-            set
-            {
-                if (productVolume != value)
-                {
-                    productVolume = value;
-                }
-            }
-        }
+        public int ID { get; set; }
+        public Producto Producto { get; set; }
     }
-    public class Product
+    public class Tanque
     {
-        private string description;
-        private int id;
-        private double price;
-        public Product()
+        public Tanque()
         {
-            description = "";
-            id = 0;
-            price = 0;
+            ID = 0;
+            Product = null;
+            CapacidadMaxima = 0;
+            VolumenDeProducto = 0;
+            VolumenDeAgua = 0;
+            VolumenVacio = 0;
+        }
+        public int ID { get; set; }
+        public Producto Product { get; set; }
+        public double CapacidadMaxima { get; set; }
+        public double VolumenDeProducto { get; set; }
+        public double VolumenDeAgua { get; set; }
+        public double VolumenVacio { get; set; }
+    }
+    public class Producto
+    {
+        public Producto()
+        {
+            Descripcion = "";
+            ID = 0;
+            PrecioUnitario = 0;
         }
 
-        public string Description
-        {
-            get => description;
-            set
-            {
-                if (value != null && !description.Equals(value))
-                {
-                    description = value;
-                }
-            }
-        }
+        public string Descripcion { get; set; }
 
-        public int ID
-        {
-            get => id;
-            set
-            {
-                if (id != value)
-                {
-                    id = value;
-                }
-            }
-        }
+        public int ID { get; set; }
 
-        public double Price
-        {
-            get => price;
-            set
-            {
-                if (price != value)
-                {
-                    price = value;
-                }
-            }
-        }
+        public double PrecioUnitario { get; set; }
     }
 
     public class Despacho

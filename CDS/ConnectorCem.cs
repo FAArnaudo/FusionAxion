@@ -1,6 +1,7 @@
 ﻿using Polly;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.IO.Pipes;
 using System.Linq;
@@ -11,8 +12,7 @@ namespace CDS
 {
     public class ConnectorCem
     {
-        private readonly byte separador = 0x7E;
-
+        private readonly CultureInfo culture = CultureInfo.InvariantCulture;    // Especifica la cultura que utiliza el punto como separador decimal
         public IConnections Connections { get; set; }
 
         public ConnectorCem(IConnections connections)
@@ -31,7 +31,7 @@ namespace CDS
                 {
                     reply = Connections.EnviarComando(command);
 
-                    if (!File.Exists(Environment.CurrentDirectory + "Responses\\poleo.txt"))
+                    if (!File.Exists(Environment.CurrentDirectory + "\\Responses\\poleo.txt"))
                     {
                         SaveAnswer(reply, "poleo");
                     }
@@ -56,7 +56,7 @@ namespace CDS
             int tanques = 3;
             int productos = 4;
 
-            byte[] reply = Configuration.GetConfiguration().Modo.Equals(MODO.TEST) ? ReadAnswer("ConfiguracionDeLaEstacion") : Connections.EnviarComando(command);
+            byte[] reply = Configuration.GetConfiguration().Modo.Equals(MODO.TEST.ToString()) ? ReadAnswer("ConfiguracionDeLaEstacion") : Connections.EnviarComando(command);
 
             Station station;
             try
@@ -66,7 +66,135 @@ namespace CDS
                     throw new Exception("No se recibió mensaje de confirmación al solicitar la configuración de la estación.");
                 }
 
+                if (!File.Exists(Environment.CurrentDirectory + "\\Responses\\ConfiguracionDeLaEstacion.txt"))
+                {
+                    SaveAnswer(reply, "ConfiguracionDeLaEstacion");
+                }
+
                 station = Station.Instance;
+
+                station.PumpsNumber = reply[surtidores];
+                station.TanksNumber = reply[tanques];
+                station.ProductsNumber = reply[productos];
+
+                int posicion = productos + 1;
+
+                for (int i = 0; i < station.ProductsNumber; i++)
+                {
+                    Producto product = new Producto
+                    {
+                        ID = Convert.ToInt16(Connections.LeerCampoVariable(reply, ref posicion)),
+                        PrecioUnitario = ConvertDouble(Connections.LeerCampoVariable(reply, ref posicion))
+                    };
+
+                    Connections.DescartarCampoVariable(reply, ref posicion);
+
+                    switch (product.ID)
+                    {
+                        case 1:
+                            product.Descripcion = "NAFTA SUPER";
+                            break;
+                        case 2:
+                            product.Descripcion = "NAFTA NORMAL";
+                            break;
+                        case 3:
+                            product.Descripcion = "ULTRA DIESEL";
+                            break;
+                        case 4:
+                            product.Descripcion = "NAFTA INFINIA";
+                            break;
+                        case 5:
+                            product.Descripcion = "KEROSENE";
+                            break;
+                        case 6:
+                            product.Descripcion = "INFINIA DIESEL";
+                            break;
+                        case 7:
+                            product.Descripcion = "GNC";
+                            break;
+                        case 8:
+                            product.Descripcion = "DIESEL 500";
+                            break;
+                        case 9:
+                            product.Descripcion = "AZUL-32";
+                            break;
+                        default:
+                            product.Descripcion = "N/Utilizado";
+                            break;
+                    }
+
+                    station.Productos.Add(product);
+                }
+
+                for (int i = 0; i < station.PumpsNumber; i++)
+                {
+                    Surtidor pump = new Surtidor
+                    {
+                        NivelDeSurtidor = reply[posicion],
+                        ID = i + 1
+                    };
+
+                    posicion++;
+
+                    pump.NumeroDeMangueras = reply[posicion] + 1; // [0 , 1, 2, 3] + 1
+
+                    posicion++;
+
+                    for (int j = 0; j < pump.NumeroDeMangueras; j++)
+                    {
+                        Manguera hose = new Manguera
+                        {
+                            ID = j + 1
+                        };
+
+                        foreach (Producto product in station.Productos)
+                        {
+                            if (product.ID == reply[posicion])          //  Recupero el numero de producto
+                            {
+                                hose.Producto = product;
+                                break;
+                            }
+                        }
+
+                        posicion++;
+
+                        pump.Mangueras.Add(hose);
+                    }
+
+                    station.Surtidores.Add(pump);
+                }
+
+                foreach (Surtidor surtidor in station.Surtidores)
+                {
+                    foreach (NivelDePrecio nivelDePrecio in station.NivelesDePrecio)
+                    {
+                        if (nivelDePrecio.Nivel == surtidor.NivelDeSurtidor)
+                        {
+                            nivelDePrecio.SurtidoresPorNivelDePrecio.Add(surtidor);
+                        }
+                    }
+                }
+
+                for (int i = 0; i < station.TanksNumber; i++)
+                {
+                    Tanque tanque = new Tanque
+                    {
+                        ID = i + 1,
+                    };
+
+                    foreach (Producto product in station.Productos)
+                    {
+                        if (product.ID == reply[posicion])
+                        {
+                            tanque.Product = product;
+                            break;
+                        }
+                    }
+
+                    posicion++;
+
+                    station.Tanques.Add(tanque);
+                }
             }
             catch (Exception e)
             {
@@ -76,17 +204,41 @@ namespace CDS
             return station;
         }
 
-        public Tank ComandoStockDeTanques(byte[] command)
+        public Tanque ComandoStockDeTanques(byte[] command)
         {
             int confirmacion = 0;
 
-            byte[] reply = Configuration.GetConfiguration().Modo.Equals(MODO.TEST) ? ReadAnswer("ConfiguracionDeLaEstacion") : Connections.EnviarComando(command);
+            byte[] reply = Configuration.GetConfiguration().Modo.Equals(MODO.TEST) ? ReadAnswer("StockDeTanques") : Connections.EnviarComando(command);
 
             try
             {
                 if (reply == null || reply[confirmacion] != 0x0)
                 {
                     return null;
+                }
+
+                if (!File.Exists(Environment.CurrentDirectory + "\\Responses\\StockDeTanques.txt"))
+                {
+                    SaveAnswer(reply, "StockDeTanques");
+                }
+
+                int posicion = confirmacion + 1;
+
+                List<Tanque> tanques = Station.Instance.Tanques;
+
+                for (int i = 0; i < tanques.Count; i++)
+                {
+                    foreach (Tanque tanque in Station.Instance.Tanques)
+                    {
+                        if (tanque.ID == (i + 1))
+                        {
+                            tanque.VolumenDeProducto = ConvertDouble(Connections.LeerCampoVariable(reply, ref posicion));
+                            tanque.VolumenDeAgua = ConvertDouble(Connections.LeerCampoVariable(reply, ref posicion));
+                            tanque.VolumenVacio = ConvertDouble(Connections.LeerCampoVariable(reply, ref posicion));
+                            tanque.CapacidadMaxima = tanque.VolumenDeProducto + tanque.VolumenDeAgua + tanque.VolumenVacio;
+                            break;
+                        }
+                    }
                 }
             }
             catch (Exception e)
@@ -200,20 +352,47 @@ namespace CDS
             // Convertir la lista a un arreglo de bytes y retornarlo
             return byteList.ToArray();
         }
+
+        public double ConvertDouble(string value)
+        {
+            return double.TryParse(value, NumberStyles.Any, culture, out double result) ? result : result;
+        }
     }
 
     public interface IConnections
     {
         byte[] EnviarComando(byte[] comando);
+
+        /// <summary>
+        /// Metodo para leer los campos variables, por ejemplo precios o cantidades.
+        /// El metodo para frenar la iteracion, es un valor conocido, proporcionado por el fabricante
+        /// denominado como "separador".
+        /// </summary>
+        /// <param name="data"></param>
+        /// <param name="pos"></param>
+        string LeerCampoVariable(byte[] data, ref int pos);
+
+        /// <summary>
+        /// Metodo para saltearse los valores que no son utilizados en la respuesta del CEM.
+        /// Al finalizar el proceso del metodo, el valor de la posicion queda seteada para
+        /// el siguiente dato a procesar.
+        /// </summary>
+        /// <param name="data"></param>
+        /// <param name="pos"></param>
+        void DescartarCampoVariable(byte[] data, ref int pos);
     }
 
     public class CemCommunication : IConnections
     {
 
         private readonly string pipeName = "CEM44POSPIPE";
+        private readonly byte separador = 0x7E;
         private string ipController;
         private string protocol;
-        public CemCommunication() { }
+        public CemCommunication()
+        {
+            ReloadData();
+        }
 
         public string IpController { get => ipController; set => ipController = value; }
 
@@ -287,6 +466,30 @@ namespace CDS
         {
             ipController = Configuration.GetConfiguration().IP;
             protocol = Configuration.GetConfiguration().Protocol;
+        }
+
+        public string LeerCampoVariable(byte[] data, ref int pos)
+        {
+            string ret = "";
+            ret += Encoding.ASCII.GetString(new byte[] { data[pos] });
+            int i = pos + 1;
+            while (data[i] != separador)
+            {
+                ret += Encoding.ASCII.GetString(new byte[] { data[i] });
+                i++;
+            }
+            i++;
+            pos = i;
+            return ret;
+        }
+
+        public void DescartarCampoVariable(byte[] data, ref int pos)
+        {
+            while (data[pos] != separador)
+            {
+                pos++;
+            }
+            pos++;
         }
     }
 }

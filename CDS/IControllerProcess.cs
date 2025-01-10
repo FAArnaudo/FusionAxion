@@ -49,6 +49,8 @@ namespace CDS
                         Log.Instance.WriteLog($"Estado del hilo {mainProcess.Id}: {mainProcess.Status}. TimerProcess {Data.Timer}\n", LogType.t_debug);
 
                         Thread.Sleep(Convert.ToInt32(1000 * Convert.ToInt32(Data.Timer)));
+
+                        hacerCierre = ConnectorSQLite.Instance.ExecuteStateQuery($"SELECT isConnected FROM CheckConnection WHERE idConnection = 1");
                     }
                 }
                 catch (Exception e)

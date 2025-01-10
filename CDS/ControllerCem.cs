@@ -80,7 +80,7 @@ namespace CDS
 
                 foreach (Producto producto in station.Productos)
                 {
-                    string campos = "numero_producto,producto,precio";
+                    string campos = "id_producto,producto,precio";
 
                     string rows = string.Format("{0},'{1}',{2}",
                                                  producto.ID,
@@ -89,11 +89,20 @@ namespace CDS
 
                     DataTable tablaProductos = ConnectorSQLite.Instance.ExecuteSelectQuery("SELECT * " +
                                                                                            "FROM Productos " +
-                                                                                          $"WHERE numero_producto = {producto.ID} AND precio = {producto.PrecioUnitario}");
+                                                                                          $"WHERE id_producto = {producto.ID}");
 
                     if (tablaProductos.Rows.Count == 0)
                     {
                         ConnectorSQLite.Instance.ExecuteNonQuery(string.Format("INSERT INTO Productos ({0}) VALUES ({1})", campos, rows));
+                    }
+                    else
+                    {
+                        ConnectorSQLite.Instance.ExecuteNonQuery(string.Format("UPDATE Productos " +
+                                                                               "SET producto = ('{0}'), precio = ({1}) " +
+                                                                               "WHERE id_producto = ({2})",
+                                                                               producto.Descripcion,
+                                                                               producto.PrecioUnitario,
+                                                                               producto.ID));
                     }
                 }
 
@@ -105,6 +114,24 @@ namespace CDS
                                                  tanque.ID,
                                                  tanque.VolumenDeProducto,
                                                  tanque.CapacidadMaxima);
+
+                    DataTable tablaTanques = ConnectorSQLite.Instance.ExecuteSelectQuery("SELECT * " +
+                                                                                           "FROM Tanques " +
+                                                                                          $"WHERE id_tanque = {tanque.ID}");
+
+                    if (tablaTanques.Rows.Count == 0)
+                    {
+                        ConnectorSQLite.Instance.ExecuteNonQuery(string.Format("INSERT INTO Tanques ({0}) VALUES ({1})", campos, rows));
+                    }
+                    else
+                    {
+                        ConnectorSQLite.Instance.ExecuteNonQuery(string.Format("UPDATE Tanques " +
+                                                                               "SET volumen_actual = ('{0}'), capacidad_maxima = ({1}) " +
+                                                                               "WHERE id_tanque = ({2})",
+                                                                                tanque.VolumenDeProducto,
+                                                                                tanque.CapacidadMaxima,
+                                                                                tanque.ID));
+                    }
                 }
             }
             catch (Exception e)
@@ -120,7 +147,7 @@ namespace CDS
 
         public override void ActualizarTanques()
         {
-            throw new NotImplementedException();
+            Tanque tanque = ConnectorCem.ComandoStockDeTanques(ProtocolCommand.TanksStockComand);
         }
 
         public override void GrabarDespachos()

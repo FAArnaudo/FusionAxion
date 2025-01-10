@@ -255,7 +255,7 @@ namespace CDS
                 }
 
                 createTableQuery = "CREATE TABLE IF NOT EXISTS Productos " +
-                                   "(id_producto INTEGER PRIMARY KEY, numero_producto INTEGER, numero_despacho INTEGER," +
+                                   "(id_producto INTEGER PRIMARY KEY, numero_despacho INTEGER," +
                                    "producto TEXT NOT NULL, precio REAL NOT NULL)";
 
                 using (SQLiteCommand cmd = new SQLiteCommand(createTableQuery, connection))

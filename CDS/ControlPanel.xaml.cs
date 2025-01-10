@@ -71,7 +71,9 @@ namespace CDS
             {
                 ConfigureExpander(Configuration.GetConfiguration().StationFlag, Configuration.GetConfiguration().Controller);
 
-                if (PumpController.Data == null && ConnectorSQLite.Instance.CreateDatabase())
+                ConnectorSQLite.Instance.CreateDatabase(new ConnectorConfiguration());
+
+                if (PumpController.Data == null)
                 {
                     if (PumpController.StartProcess(Configuration.GetConfiguration()))
                     {

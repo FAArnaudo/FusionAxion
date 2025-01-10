@@ -12,6 +12,8 @@ namespace CDS
 {
     public class ConnectorCem
     {
+
+        private readonly byte separador = 0x7E;
         private readonly CultureInfo culture = CultureInfo.InvariantCulture;    // Especifica la cultura que utiliza el punto como separador decimal
         public IConnections Connections { get; set; }
 
@@ -27,7 +29,7 @@ namespace CDS
 
             try
             {
-                if (Configuration.GetConfiguration().Modo.Equals(MODO.NORMAL.ToString()))
+                if (Connections.GetConfiguration().Modo.Equals(MODO.NORMAL.ToString()))
                 {
                     reply = Connections.EnviarComando(command);
 
@@ -56,7 +58,7 @@ namespace CDS
             int tanques = 3;
             int productos = 4;
 
-            byte[] reply = Configuration.GetConfiguration().Modo.Equals(MODO.TEST.ToString()) ? ReadAnswer("ConfiguracionDeLaEstacion") : Connections.EnviarComando(command);
+            byte[] reply = Connections.GetConfiguration().Modo.Equals(MODO.TEST.ToString()) ? ReadAnswer("ConfiguracionDeLaEstacion") : Connections.EnviarComando(command);
 
             Station station;
             try
@@ -73,21 +75,21 @@ namespace CDS
 
                 station = Station.Instance;
 
-                station.PumpsNumber = reply[surtidores];
-                station.TanksNumber = reply[tanques];
-                station.ProductsNumber = reply[productos];
+                station.NumeroDeSurtidores = reply[surtidores];
+                station.NumeroDeTanques = reply[tanques];
+                station.NumeroDeProductos = reply[productos];
 
                 int posicion = productos + 1;
 
-                for (int i = 0; i < station.ProductsNumber; i++)
+                for (int i = 0; i < station.NumeroDeProductos; i++)
                 {
                     Producto product = new Producto
                     {
-                        ID = Convert.ToInt16(Connections.LeerCampoVariable(reply, ref posicion)),
-                        PrecioUnitario = ConvertDouble(Connections.LeerCampoVariable(reply, ref posicion))
+                        ID = Convert.ToInt16(LeerCampoVariable(reply, ref posicion)),
+                        PrecioUnitario = ConvertDouble(LeerCampoVariable(reply, ref posicion))
                     };
 
-                    Connections.DescartarCampoVariable(reply, ref posicion);
+                    DescartarCampoVariable(reply, ref posicion);
 
                     switch (product.ID)
                     {
@@ -126,7 +128,7 @@ namespace CDS
                     station.Productos.Add(product);
                 }
 
-                for (int i = 0; i < station.PumpsNumber; i++)
+                for (int i = 0; i < station.NumeroDeSurtidores; i++)
                 {
                     Surtidor pump = new Surtidor
                     {
@@ -175,7 +177,7 @@ namespace CDS
                     }
                 }
 
-                for (int i = 0; i < station.TanksNumber; i++)
+                for (int i = 0; i < station.NumeroDeTanques; i++)
                 {
                     Tanque tanque = new Tanque
                     {
@@ -204,11 +206,12 @@ namespace CDS
             return station;
         }
 
-        public Tanque ComandoStockDeTanques(byte[] command)
+        public List<Tanque> ComandoStockDeTanques(byte[] command)
         {
             int confirmacion = 0;
+            byte[] reply = Connections.GetConfiguration().Modo.Equals(MODO.TEST.ToString()) ? ReadAnswer("StockDeTanques") : Connections.EnviarComando(command);
 
-            byte[] reply = Configuration.GetConfiguration().Modo.Equals(MODO.TEST) ? ReadAnswer("StockDeTanques") : Connections.EnviarComando(command);
+            List<Tanque> tanques;
 
             try
             {
@@ -224,7 +227,7 @@ namespace CDS
 
                 int posicion = confirmacion + 1;
 
-                List<Tanque> tanques = Station.Instance.Tanques;
+                tanques = Station.Instance.Tanques;
 
                 for (int i = 0; i < tanques.Count; i++)
                 {
@@ -232,9 +235,9 @@ namespace CDS
                     {
                         if (tanque.ID == (i + 1))
                         {
-                            tanque.VolumenDeProducto = ConvertDouble(Connections.LeerCampoVariable(reply, ref posicion));
-                            tanque.VolumenDeAgua = ConvertDouble(Connections.LeerCampoVariable(reply, ref posicion));
-                            tanque.VolumenVacio = ConvertDouble(Connections.LeerCampoVariable(reply, ref posicion));
+                            tanque.VolumenDeProducto = ConvertDouble(LeerCampoVariable(reply, ref posicion));
+                            tanque.VolumenDeAgua = ConvertDouble(LeerCampoVariable(reply, ref posicion));
+                            tanque.VolumenVacio = ConvertDouble(LeerCampoVariable(reply, ref posicion));
                             tanque.CapacidadMaxima = tanque.VolumenDeProducto + tanque.VolumenDeAgua + tanque.VolumenVacio;
                             break;
                         }
@@ -248,7 +251,7 @@ namespace CDS
                 return null;
             }
 
-            return null;
+            return tanques;
         }
 
         public Despacho ComandoInformacionDeDespacho(byte[] command)
@@ -353,6 +356,44 @@ namespace CDS
             return byteList.ToArray();
         }
 
+        /// <summary>
+        /// Metodo para leer los campos variables, por ejemplo precios o cantidades.
+        /// El metodo para frenar la iteracion, es un valor conocido, proporcionado por el fabricante
+        /// denominado como "separador".
+        /// </summary>
+        /// <param name="data"></param>
+        /// <param name="pos"></param>
+        public string LeerCampoVariable(byte[] data, ref int pos)
+        {
+            string ret = "";
+            ret += Encoding.ASCII.GetString(new byte[] { data[pos] });
+            int i = pos + 1;
+            while (data[i] != separador)
+            {
+                ret += Encoding.ASCII.GetString(new byte[] { data[i] });
+                i++;
+            }
+            i++;
+            pos = i;
+            return ret;
+        }
+
+        /// <summary>
+        /// Metodo para saltearse los valores que no son utilizados en la respuesta del CEM.
+        /// Al finalizar el proceso del metodo, el valor de la posicion queda seteada para
+        /// el siguiente dato a procesar.
+        /// </summary>
+        /// <param name="data"></param>
+        /// <param name="pos"></param>
+        public void DescartarCampoVariable(byte[] data, ref int pos)
+        {
+            while (data[pos] != separador)
+            {
+                pos++;
+            }
+            pos++;
+        }
+
         public double ConvertDouble(string value)
         {
             return double.TryParse(value, NumberStyles.Any, culture, out double result) ? result : result;
@@ -363,30 +404,14 @@ namespace CDS
     {
         byte[] EnviarComando(byte[] comando);
 
-        /// <summary>
-        /// Metodo para leer los campos variables, por ejemplo precios o cantidades.
-        /// El metodo para frenar la iteracion, es un valor conocido, proporcionado por el fabricante
-        /// denominado como "separador".
-        /// </summary>
-        /// <param name="data"></param>
-        /// <param name="pos"></param>
-        string LeerCampoVariable(byte[] data, ref int pos);
 
-        /// <summary>
-        /// Metodo para saltearse los valores que no son utilizados en la respuesta del CEM.
-        /// Al finalizar el proceso del metodo, el valor de la posicion queda seteada para
-        /// el siguiente dato a procesar.
-        /// </summary>
-        /// <param name="data"></param>
-        /// <param name="pos"></param>
-        void DescartarCampoVariable(byte[] data, ref int pos);
+        Data GetConfiguration();
     }
 
     public class CemCommunication : IConnections
     {
 
         private readonly string pipeName = "CEM44POSPIPE";
-        private readonly byte separador = 0x7E;
         private string ipController;
         private string protocol;
         public CemCommunication()
@@ -468,28 +493,9 @@ namespace CDS
             protocol = Configuration.GetConfiguration().Protocol;
         }
 
-        public string LeerCampoVariable(byte[] data, ref int pos)
+        public Data GetConfiguration()
         {
-            string ret = "";
-            ret += Encoding.ASCII.GetString(new byte[] { data[pos] });
-            int i = pos + 1;
-            while (data[i] != separador)
-            {
-                ret += Encoding.ASCII.GetString(new byte[] { data[i] });
-                i++;
-            }
-            i++;
-            pos = i;
-            return ret;
-        }
-
-        public void DescartarCampoVariable(byte[] data, ref int pos)
-        {
-            while (data[pos] != separador)
-            {
-                pos++;
-            }
-            pos++;
+            return Configuration.GetConfiguration();
         }
     }
 }

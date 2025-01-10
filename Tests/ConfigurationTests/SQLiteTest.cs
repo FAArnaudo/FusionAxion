@@ -1,5 +1,6 @@
 ﻿using CDS;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Moq;
 using System.Data;
 using System.IO;
 
@@ -13,16 +14,26 @@ namespace ConfigurationTests
         private readonly string testPath = @"C:\Sistema\PROY_NUEVO";
         private readonly string testFolderPath = @"C:\Sistema\PROY_NUEVO" + @"\CDS";
         private readonly string testDatabaseName = "cds.db";
+        private Data data;
+        private Mock<IGetConfiguration> configuration;
+        private ConnectorSQLite connector;
+
 
         [TestInitialize]
         public void TestInitialize()
         {
-            Data data = new Data
+            configuration = new Mock<IGetConfiguration>();
+
+            connector = ConnectorSQLite.Instance;
+
+            data = new Data
             {
                 RutaProyNuevo = testPath
             };
 
-            _ = Configuration.SaveConfiguration(data);
+            _ = configuration.Setup(a => a.GetConfiguration()).Returns(data);
+
+            Configuration.SaveConfiguration(data);
 
             string databasePath = Path.Combine(testFolderPath, testDatabaseName);
 
@@ -42,7 +53,7 @@ namespace ConfigurationTests
             bool expected = true;
 
             // Act
-            bool actual = connector.CreateDatabase();
+            bool actual = connector.CreateDatabase(configuration.Object);
 
             // Assert
             Assert.AreEqual(expected, actual);
@@ -57,10 +68,10 @@ namespace ConfigurationTests
             // Crear el directorio
             _ = Directory.CreateDirectory(testPath);
 
-            _ = connector.CreateDatabase();
+            _ = connector.CreateDatabase(configuration.Object);
 
             // Act
-            bool actual = connector.CreateDatabase();
+            bool actual = connector.CreateDatabase(configuration.Object);
 
             // Assert
             Assert.IsTrue(actual);
@@ -72,7 +83,7 @@ namespace ConfigurationTests
             // Arrange
             ConnectorSQLite connector = ConnectorSQLite.Instance;
 
-            _ = connector.CreateDatabase();
+            _ = connector.CreateDatabase(configuration.Object);
 
             int expected = 0;
 
@@ -92,7 +103,7 @@ namespace ConfigurationTests
             // Arrange
             ConnectorSQLite connector = ConnectorSQLite.Instance;
 
-            _ = connector.CreateDatabase();
+            _ = connector.CreateDatabase(configuration.Object);
 
             // Crear las tablas si no existen
             string createTableQuery = "CREATE TABLE IF NOT EXISTS Usuarios " +
@@ -115,7 +126,7 @@ namespace ConfigurationTests
             // Arrange
             ConnectorSQLite connector = ConnectorSQLite.Instance;
 
-            _ = connector.CreateDatabase();
+            _ = connector.CreateDatabase(configuration.Object);
 
             // Crear las tablas si no existen
             string createTableQuery = "CREATE TABLE IF NOT EXISTS Usuarios " +
@@ -139,7 +150,7 @@ namespace ConfigurationTests
             // Arrange
             ConnectorSQLite connector = ConnectorSQLite.Instance;
 
-            _ = connector.CreateDatabase();
+            _ = connector.CreateDatabase(configuration.Object);
 
             // Crear las tablas si no existen
             string createTableQuery = "CREATE TABLE IF NOT EXISTS Usuarios " +
@@ -163,7 +174,7 @@ namespace ConfigurationTests
             // Arrange
             ConnectorSQLite connector = ConnectorSQLite.Instance;
 
-            _ = connector.CreateDatabase();
+            _ = connector.CreateDatabase(configuration.Object);
 
             // Crear las tablas si no existen
             string createTableQuery = "CREATE TABLE IF NOT EXISTS Usuarios " +
@@ -190,7 +201,7 @@ namespace ConfigurationTests
             // Arrange
             ConnectorSQLite connector = ConnectorSQLite.Instance;
 
-            _ = connector.CreateDatabase();
+            _ = connector.CreateDatabase(configuration.Object);
 
             // Crear las tablas si no existen
             string createTableQuery = "CREATE TABLE IF NOT EXISTS Usuarios " +
@@ -214,7 +225,7 @@ namespace ConfigurationTests
             // Arrange
             ConnectorSQLite connector = ConnectorSQLite.Instance;
 
-            _ = connector.CreateDatabase();
+            _ = connector.CreateDatabase(configuration.Object);
 
             // Crear la tabla si no existe
             string createTableQuery = "CREATE TABLE IF NOT EXISTS CheckConnection (" +
@@ -237,9 +248,7 @@ namespace ConfigurationTests
         public void ExecuteStateQuery_True()
         {
             // Arrange
-            ConnectorSQLite connector = ConnectorSQLite.Instance;
-
-            _ = connector.CreateDatabase();
+            _ = connector.CreateDatabase(configuration.Object);
 
             // Crear la tabla si no existe
             string createTableQuery = "UPDATE CheckConnection " +

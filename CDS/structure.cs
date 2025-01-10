@@ -13,9 +13,9 @@ namespace CDS
 
         private Station()
         {
-            ProductsNumber = 0;
-            TanksNumber = 0;
-            PumpsNumber = 0;
+            NumeroDeProductos = 0;
+            NumeroDeTanques = 0;
+            NumeroDeSurtidores = 0;
 
             NivelesDePrecio = new List<NivelDePrecio>();
             Productos = new List<Producto>();
@@ -45,9 +45,9 @@ namespace CDS
                 return instance;
             }
         }
-        public int ProductsNumber { get; set; }
-        public int TanksNumber { get; set; }
-        public int PumpsNumber { get; set; }
+        public int NumeroDeProductos { get; set; }
+        public int NumeroDeTanques { get; set; }
+        public int NumeroDeSurtidores { get; set; }
 
         public List<NivelDePrecio> NivelesDePrecio { get; set; }
         public List<Producto> Productos { get; set; }

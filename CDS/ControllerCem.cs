@@ -147,7 +147,42 @@ namespace CDS
 
         public override void ActualizarTanques()
         {
-            Tanque tanque = ConnectorCem.ComandoStockDeTanques(ProtocolCommand.TanksStockComand);
+            List<Tanque> tanques = ConnectorCem.ComandoStockDeTanques(ProtocolCommand.TanksStockComand);
+
+            try
+            {
+                foreach (Tanque tanque in tanques)
+                {
+                    string campos = "id_tanque,volumen_actual,capacidad_maxima";
+
+                    string rows = string.Format("{0},'{1}',{2}",
+                                                 tanque.ID,
+                                                 tanque.VolumenDeProducto,
+                                                 tanque.CapacidadMaxima);
+
+                    DataTable tablaTanques = ConnectorSQLite.Instance.ExecuteSelectQuery("SELECT * " +
+                                                                                           "FROM Tanques " +
+                                                                                          $"WHERE id_tanque = {tanque.ID}");
+
+                    if (tablaTanques.Rows.Count == 0)
+                    {
+                        ConnectorSQLite.Instance.ExecuteNonQuery(string.Format("INSERT INTO Tanques ({0}) VALUES ({1})", campos, rows));
+                    }
+                    else
+                    {
+                        ConnectorSQLite.Instance.ExecuteNonQuery(string.Format("UPDATE Tanques " +
+                                                                               "SET volumen_actual = ('{0}'), capacidad_maxima = ({1}) " +
+                                                                               "WHERE id_tanque = ({2})",
+                                                                                tanque.VolumenDeProducto,
+                                                                                tanque.CapacidadMaxima,
+                                                                                tanque.ID));
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Log.Instance.WriteLog($"Error en el metodo ActualizarTanques.\n\tExcepcion: {e.Message}", LogType.t_error);
+            }
         }
 
         public override void GrabarDespachos()

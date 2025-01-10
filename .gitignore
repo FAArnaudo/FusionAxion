@@ -57,7 +57,6 @@ _ReSharper*/
 *.DotSettings.user
 
 # Extras
-gitignore.txt
 Responses/
 
 # Excepciones para Responses

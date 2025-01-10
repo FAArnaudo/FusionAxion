@@ -13,13 +13,14 @@ namespace CDS
     {
         // Instancia estática privada
         private static ConnectorSQLite instance = null;
+        private IGetConfiguration configuration;
 
         // Nombre de la base de datos y cadena de conexión
         private readonly string databaseName = "cds.db";
         private readonly string connectionString = "Data Source='{0}';Version=3;";
 
         // Conexión a la base de datos SQLite
-        private readonly SQLiteConnection connection;
+        private SQLiteConnection connection;
 
         // Un objeto que se utilizará para la sincronización
         private static readonly object lockObjectDB = new object();
@@ -27,8 +28,7 @@ namespace CDS
         // Constructor privado
         private ConnectorSQLite()
         {
-            // Iniciar la conexión
-            connection = new SQLiteConnection(string.Format(connectionString, Configuration.GetConfiguration().RutaProyNuevo + "\\CDS\\" + databaseName));
+            
         }
 
         /// <summary>
@@ -51,11 +51,18 @@ namespace CDS
         /// Método para crear la base de datos si no existe
         /// </summary>
         /// <returns>retorna true si la creación fue exitosa o false en caso contrario</returns>
-        public bool CreateDatabase()
+        public bool CreateDatabase(IGetConfiguration getConfiguration)
         {
+            configuration = getConfiguration;
             try
             {
-                string folderPath = Configuration.GetConfiguration().RutaProyNuevo + "\\CDS\\";
+                // Iniciar la conexión
+                if (connection == null)
+                {
+                    connection = new SQLiteConnection(string.Format(connectionString, configuration.GetConfiguration().RutaProyNuevo + "\\CDS\\" + databaseName));
+                }
+
+                string folderPath = configuration.GetConfiguration().RutaProyNuevo + "\\CDS\\";
                 string databasePath = Path.Combine(folderPath, databaseName);
 
                 lock (lockObjectDB)

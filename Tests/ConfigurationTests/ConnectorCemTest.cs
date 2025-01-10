@@ -13,10 +13,12 @@ namespace ConfigurationTests
     [TestClass]
     public class ConnectorCemTest
     {
+        private Data data;
+
         [TestInitialize]
         public void TestInitialize()
         {
-            Data data = new Data
+            data = new Data
             {
                 IP = "10.773.856",
                 Protocol = "16",
@@ -46,6 +48,8 @@ namespace ConfigurationTests
 
             _ = connections.Setup(a => a.EnviarComando(command)).Returns(new byte[] { 0x00 });
 
+            _ = connections.Setup(a => a.GetConfiguration()).Returns(data);
+
             ConnectorCem connectorCem = new ConnectorCem(connections.Object);
 
             //Act
@@ -64,6 +68,8 @@ namespace ConfigurationTests
             byte[] command = new byte[] { 0x00 };
 
             _ = connections.Setup(a => a.EnviarComando(command)).Returns(new byte[] { 0x01 });
+
+            _ = connections.Setup(a => a.GetConfiguration()).Returns(data);
 
             ConnectorCem connectorCem = new ConnectorCem(connections.Object);
 
@@ -84,6 +90,8 @@ namespace ConfigurationTests
 
             _ = connections.Setup(a => a.EnviarComando(command)).Returns(new byte[] { });
 
+            _ = connections.Setup(a => a.GetConfiguration()).Returns(data);
+
             ConnectorCem connectorCem = new ConnectorCem(connections.Object);
 
             // Act
@@ -100,12 +108,13 @@ namespace ConfigurationTests
 
             ConnectorCem connectorCem = new ConnectorCem(connections.Object);
 
-            byte[] reply = new byte[] { 0x00 };
+            byte[] reply = connectorCem.ReadAnswer("ConfiguracionDeLaEstacion");
 
             byte[] command = new byte[] { 0x65 };
 
             _ = connections.Setup(a => a.EnviarComando(command)).Returns(reply);
 
+            _ = connections.Setup(a => a.GetConfiguration()).Returns(data);
 
             //Act
             Station actual = connectorCem.ComandoConfiguracionDeLaEstacion(command);
@@ -126,6 +135,8 @@ namespace ConfigurationTests
 
             _ = connections.Setup(a => a.EnviarComando(command)).Returns(new byte[] { });
 
+            _ = connections.Setup(a => a.GetConfiguration()).Returns(data);
+
             //Act
             Exception ex = Assert.ThrowsException<Exception>(() => connectorCem.ComandoConfiguracionDeLaEstacion(command));
 
@@ -144,6 +155,8 @@ namespace ConfigurationTests
 
             _ = connections.Setup(a => a.EnviarComando(command)).Returns(new byte[] { 0x01 });
 
+            _ = connections.Setup(a => a.GetConfiguration()).Returns(data);
+
             string expected = "Error al obtener la configuración de la estación. Excepción: No se recibió mensaje de confirmación al solicitar la configuración de la estación.";
 
             //Act
@@ -154,21 +167,23 @@ namespace ConfigurationTests
         }
 
         [TestMethod]
-        public void ComandoStockDeTanques()
+        public void ComandoStockDeTanques_ReturnNotNull()
         {
             // Arange
             Mock<IConnections> connections = new Mock<IConnections>();
 
             ConnectorCem connectorCem = new ConnectorCem(connections.Object);
 
-            byte[] reply = new byte[] { 0x00 };
+            byte[] reply = connectorCem.ReadAnswer("StockDeTanques");
 
             byte[] command = new byte[] { 0x68 };
 
             _ = connections.Setup(a => a.EnviarComando(command)).Returns(reply);
 
+            _ = connections.Setup(a => a.GetConfiguration()).Returns(data);
+
             //Act
-            Tanque actual = connectorCem.ComandoStockDeTanques(command);
+            List<Tanque> actual = connectorCem.ComandoStockDeTanques(command);
 
             // Assert
             Assert.IsNotNull(actual);
@@ -188,8 +203,10 @@ namespace ConfigurationTests
 
             _ = connections.Setup(a => a.EnviarComando(command)).Returns(reply);
 
+            _ = connections.Setup(a => a.GetConfiguration()).Returns(data);
+
             //Act
-            Tanque actual = connectorCem.ComandoStockDeTanques(command);
+            List<Tanque> actual = connectorCem.ComandoStockDeTanques(command);
 
             // Assert
             Assert.IsNull(actual);
@@ -206,7 +223,7 @@ namespace ConfigurationTests
             byte[] command = new byte[] { 0x68 };
 
             //Act
-            Tanque actual = connectorCem.ComandoStockDeTanques(command);
+            List<Tanque> actual = connectorCem.ComandoStockDeTanques(command);
 
             // Assert
             Assert.IsNull(actual);

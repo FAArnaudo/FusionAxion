@@ -41,6 +41,7 @@ namespace CDS
                 try
                 {
                     ControllerCem.ConfigurarEstacion();
+                    ControllerCem.ActualizarTanques();
 
                     bool hacerCierre = false;
 
@@ -50,7 +51,7 @@ namespace CDS
 
                         Thread.Sleep(Convert.ToInt32(1000 * Convert.ToInt32(Data.Timer)));
 
-                        hacerCierre = ConnectorSQLite.Instance.ExecuteStateQuery($"SELECT isConnected FROM CheckConnection WHERE idConnection = 1");
+                        hacerCierre = ConnectorSQLite.Instance.ExecuteStateQuery($"SELECT hacerCierre FROM cierreBandera");
                     }
                 }
                 catch (Exception e)

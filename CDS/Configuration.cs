@@ -209,4 +209,19 @@ namespace CDS
         NORMAL,
         TEST
     }
+
+    public interface IGetConfiguration
+    {
+        Data GetConfiguration();
+    }
+
+    public class ConnectorConfiguration : IGetConfiguration
+    {
+        public ConnectorConfiguration() { }
+
+        public Data GetConfiguration()
+        {
+            return Configuration.GetConfiguration();
+        }
+    }
 }

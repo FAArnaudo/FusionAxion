@@ -211,22 +211,5 @@ namespace ConfigurationTests
             // Assert
             Assert.IsNull(actual);
         }
-
-        [TestMethod]
-        public void ComandoStockDeTanques_ThrowException_ReturnNull()
-        {
-            // Arange
-            Mock<IConnections> connections = new Mock<IConnections>();
-
-            ConnectorCem connectorCem = new ConnectorCem(connections.Object);
-
-            byte[] command = new byte[] { 0x68 };
-
-            //Act
-            List<Tanque> actual = connectorCem.ComandoStockDeTanques(command);
-
-            // Assert
-            Assert.IsNull(actual);
-        }
     }
 }

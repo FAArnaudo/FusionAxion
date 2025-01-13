@@ -178,30 +178,95 @@ namespace ConfigurationTests
         public void GrabarDespachos_ReturnNotNull()
         {
             // Arange
+            int surtidor = 2;
+
+            byte[] reply = connectorCem.ReadAnswer("Despacho-2");
+
+            byte[] command = new byte[] { (byte)(0x70 + Convert.ToByte(surtidor)) };
+
+            _ = connections.Setup(a => a.EnviarComando(command)).Returns(reply);
 
             //Act
+            DespachoCem despacho = connectorCem.ComandoInformacionDeDespacho(command);
 
             // Assert
+            Assert.IsNotNull(despacho);
         }
 
         [TestMethod]
-        public void GrabarDespachos_ReturnNotNull_WithoutSales()
+        public void GrabarDespachos_ReturnNotNull_MaxPump()
         {
             // Arange
+            int numeroDeSurtidor = 0;                               // Representa el surtidor N° 16 si el protocolo es 16
+
+            byte[] reply = connectorCem.ReadAnswer("Despacho-0");
+
+            byte[] command = new byte[] { (byte)(0x70 + Convert.ToByte(numeroDeSurtidor)) };
+
+            _ = connections.Setup(a => a.EnviarComando(command)).Returns(reply);
 
             //Act
+            Despacho despacho = connectorCem.ComandoInformacionDeDespacho(command);
 
             // Assert
+            Assert.IsNotNull(despacho);
+        }
+
+        [TestMethod]
+        public void GrabarDespachos_ReturnNull_WithoutSales()
+        {
+            // Arange
+            int numeroDeSurtidor = 0;                               // Representa el surtidor N° 16 si el protocolo es 16
+
+            byte[] reply = new byte[] { 0x00, 0x03 };
+
+            byte[] command = new byte[] { (byte)(0x70 + Convert.ToByte(numeroDeSurtidor)) };
+
+            _ = connections.Setup(a => a.EnviarComando(command)).Returns(reply);
+
+            //Act
+            Despacho despacho = connectorCem.ComandoInformacionDeDespacho(command);
+
+            // Assert
+            Assert.IsNull(despacho);
         }
 
         [TestMethod]
         public void GrabarDespachos_ReturnNull_NotConfirmation()
         {
             // Arange
+            int numeroDeSurtidor = 0;                               // Representa el surtidor N° 16 si el protocolo es 16
+
+            byte[] reply = new byte[] { 0x01 };
+
+            byte[] command = new byte[] { (byte)(0x70 + Convert.ToByte(numeroDeSurtidor)) };
+
+            _ = connections.Setup(a => a.EnviarComando(command)).Returns(reply);
 
             //Act
+            Despacho despacho = connectorCem.ComandoInformacionDeDespacho(command);
 
             // Assert
+            Assert.IsNull(despacho);
+        }
+
+        [TestMethod]
+        public void GrabarDespachos_ReturnNull_InException()
+        {
+            // Arange
+            int numeroDeSurtidor = 0;                               // Representa el surtidor N° 16 si el protocolo es 16
+
+            byte[] reply = new byte[] { 0x01 };
+
+            byte[] command = new byte[] { (byte)(0x70 + Convert.ToByte(numeroDeSurtidor)) };
+
+            _ = connections.Setup(a => a.EnviarComando(command)).Throws(new Exception());
+
+            //Act
+            Despacho despacho = connectorCem.ComandoInformacionDeDespacho(command);
+
+            // Assert
+            Assert.IsNull(despacho);
         }
     }
 }

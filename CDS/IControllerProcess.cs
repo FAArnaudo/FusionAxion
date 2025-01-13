@@ -30,6 +30,7 @@ namespace CDS
 
         public void RunProcess(Task mainProcess)
         {
+
             ControllerCem = new ControllerCem(Data.Protocol);
 
             Log.Instance.WriteLog($"Nuevo proceso principal iniciado. ID: {mainProcess.Id}, Estado: {mainProcess.Status}.\n", LogType.t_info);

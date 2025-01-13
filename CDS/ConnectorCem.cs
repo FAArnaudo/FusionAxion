@@ -209,12 +209,13 @@ namespace CDS
         public List<Tanque> ComandoStockDeTanques(byte[] command)
         {
             int confirmacion = 0;
-            byte[] reply = Connections.GetConfiguration().Modo.Equals(MODO.TEST.ToString()) ? ReadAnswer("StockDeTanques") : Connections.EnviarComando(command);
 
             List<Tanque> tanques;
 
             try
             {
+                byte[] reply = Connections.GetConfiguration().Modo.Equals(MODO.TEST.ToString()) ? ReadAnswer("StockDeTanques") : Connections.EnviarComando(command);
+
                 if (reply == null || reply[confirmacion] != 0x0)
                 {
                     return null;
@@ -254,9 +255,96 @@ namespace CDS
             return tanques;
         }
 
-        public Despacho ComandoInformacionDeDespacho(byte[] command)
+        public DespachoCem ComandoInformacionDeDespacho(byte[] command)
         {
-            return null;
+            int confirmacion = 0;
+            int status = 1;
+            int nro_venta = 2;
+            int codigo_producto = 3;
+            int numeroDeSurtidor = Convert.ToInt16(command[0] & 0x0F);
+
+            DespachoCem despacho = null;
+
+            try
+            {
+                byte[] reply = Connections.GetConfiguration().Modo.Equals(MODO.TEST.ToString()) ? ReadAnswer("Despacho-" + numeroDeSurtidor) : Connections.EnviarComando(command);
+
+                if (reply == null && reply[confirmacion] != 0x0)
+                {
+                    return despacho;
+                }
+
+                if (!File.Exists(Environment.CurrentDirectory + $"\\Responses\\Despacho-{numeroDeSurtidor}.txt"))
+                {
+                    SaveAnswer(reply, $"{numeroDeSurtidor}");
+                }
+
+                // Proceso ultima venta
+                DespachoCem.ESTADO_SURTIDOR statusVenta;
+
+                bool despachando = false;
+                bool detenido = false;
+
+                switch (reply[status])
+                {
+                    case 0x01:
+                        statusVenta = DespachoCem.ESTADO_SURTIDOR.DISPONIBLE;
+                        break;
+                    case 0x02:
+                        statusVenta = DespachoCem.ESTADO_SURTIDOR.EN_SOLICITUD;
+                        break;
+                    case 0x03:
+                        statusVenta = DespachoCem.ESTADO_SURTIDOR.DESPACHANDO;
+                        despachando = true;
+                        break;
+                    case 0x04:
+                        statusVenta = DespachoCem.ESTADO_SURTIDOR.AUTORIZADO;
+                        break;
+                    case 0x05:
+                        statusVenta = DespachoCem.ESTADO_SURTIDOR.VENTA_FINALIZADA_IMPAGA;
+                        break;
+                    case 0x08:
+                        statusVenta = DespachoCem.ESTADO_SURTIDOR.DEFECTUOSO;
+                        break;
+                    case 0x09:
+                        statusVenta = DespachoCem.ESTADO_SURTIDOR.ANULADO;
+                        break;
+                    case 0x0A:
+                        statusVenta = DespachoCem.ESTADO_SURTIDOR.DETENIDO;
+                        detenido = true;
+                        break;
+                    default:
+                        despachando = true;
+                        detenido = true;
+                        statusVenta = DespachoCem.ESTADO_SURTIDOR.DETENIDO;
+                        break;
+                }
+
+                int posicion = codigo_producto + 1;
+
+                if (!despachando && !detenido)
+                {
+                    despacho = new DespachoCem
+                    {
+                        Status = statusVenta,
+                        NroDeVenta = reply[nro_venta],
+                        IdProducto = reply[codigo_producto],
+                        Monto = ConvertDouble(LeerCampoVariable(reply, ref posicion)),
+                        Volumen = ConvertDouble(LeerCampoVariable(reply, ref posicion)),
+                        PPU = ConvertDouble(LeerCampoVariable(reply, ref posicion)),
+                        VentaFacturada = Convert.ToBoolean(reply[posicion])
+                    };
+                    posicion++;
+                    despacho.IdDespacho = Convert.ToInt32(LeerCampoVariable(reply, ref posicion));
+                }
+            }
+            catch (Exception e)
+            {
+                Log.Instance.WriteLog($"\nError al enviar el comando de informacion de surtidores.Excepcion: {e.Message}", LogType.t_error);
+
+                return null;
+            }
+            return despacho;
         }
 
         public CierreDeTurno ComandoCierresDeTurno(byte[] command)

@@ -137,24 +137,37 @@ namespace CDS
         private double monto;
         private double volumen;
         private double ppu;
-        private int id;
+        private int idDesoacho;
         public Despacho() { }
         public int IdProducto { get => idProducto; set => idProducto = value; }
         public double Monto { get => monto; set => monto = value; }
         public double Volumen { get => volumen; set => volumen = value; }
         public double PPU { get => ppu; set => ppu = value; }
-        public int ID { get => id; set => id = value; }
-
-        public class DespachoCem : Despacho
+        public int IdDespacho { get => idDesoacho; set => idDesoacho = value; }
+    }
+    public class DespachoCem : Despacho
+    {
+        private ESTADO_SURTIDOR status;
+        private bool ventaFacturada;
+        private int nroDeVenta;
+        public DespachoCem()
         {
-            private string status;
-            private bool ventaFacturada;
-            public DespachoCem()
-            {
-                
-            }
-            public string Status { get => status; set => status = value; }
-            public bool VentaFacturada { get => ventaFacturada; set => ventaFacturada = value; }
+
+        }
+        public ESTADO_SURTIDOR Status { get => status; set => status = value; }
+        public bool VentaFacturada { get => ventaFacturada; set => ventaFacturada = value; }
+        public int NroDeVenta { get => nroDeVenta; set => nroDeVenta = value; }
+
+        public enum ESTADO_SURTIDOR
+        {
+            DISPONIBLE,
+            EN_SOLICITUD,
+            DESPACHANDO,
+            AUTORIZADO,
+            VENTA_FINALIZADA_IMPAGA,
+            DEFECTUOSO,
+            ANULADO,
+            DETENIDO
         }
     }
 

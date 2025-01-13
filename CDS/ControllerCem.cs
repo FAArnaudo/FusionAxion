@@ -10,7 +10,7 @@ namespace CDS
     public class ControllerCem : Controller
     {
         private IProtocolCommand protocolCommand;
-        private ConnectorCem ConnectorCem;
+        private readonly ConnectorCem ConnectorCem;
         public ControllerCem(string protocol)
         {
             ProtocolCommand = protocol.Equals("16") ? new Protocol16() : (IProtocolCommand)new Protocol32();
@@ -187,6 +187,10 @@ namespace CDS
 
         public override void GrabarDespachos()
         {
+            foreach (Surtidor surtidor in Station.Instance.Surtidores)
+            {
+
+            }
             throw new NotImplementedException();
         }
 

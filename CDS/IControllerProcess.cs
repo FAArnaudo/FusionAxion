@@ -45,15 +45,27 @@ namespace CDS
                     ControllerCem.ActualizarTanques();
 
                     bool hacerCierre = false;
+                    bool actualizarTanques = false;
 
                     while (!hacerCierre)
                     {
                         Log.Instance.WriteLog($"Estado del hilo {mainProcess.Id}: {mainProcess.Status}. TimerProcess {Data.Timer}\n", LogType.t_debug);
 
-                        Thread.Sleep(Convert.ToInt32(1000 * Convert.ToInt32(Data.Timer)));
+                        ControllerCem.GrabarDespachos();
+
+                        actualizarTanques = ConnectorSQLite.Instance.ExecuteStateQuery($"SELECT actualizar_tanques FROM cierreBandera");
+
+                        if (actualizarTanques)
+                        {
+                            ControllerCem.ActualizarTanques();
+                        }
+
+                        Thread.Sleep(1000 * Convert.ToInt32(Data.Timer));
 
                         hacerCierre = ConnectorSQLite.Instance.ExecuteStateQuery($"SELECT hacerCierre FROM cierreBandera");
                     }
+
+                    // Hacer el cierre
                 }
                 catch (Exception e)
                 {

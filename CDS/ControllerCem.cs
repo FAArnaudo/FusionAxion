@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -59,7 +60,7 @@ namespace CDS
 
                         if (tablaSurtidores.Rows.Count == 0)
                         {
-                            ConnectorSQLite.Instance.ExecuteNonQuery(string.Format("INSERT INTO Surtidores ({0}) VALUES ({1})", campos, rows));
+                            _ = ConnectorSQLite.Instance.ExecuteNonQuery(string.Format("INSERT INTO Surtidores ({0}) VALUES ({1})", campos, rows));
                         }
                         else
                         {
@@ -187,11 +188,89 @@ namespace CDS
 
         public override void GrabarDespachos()
         {
+            byte[] command = ProtocolCommand.DespachoCommand;
+
             foreach (Surtidor surtidor in Station.Instance.Surtidores)
             {
+                DespachoCem despacho;
 
+                if (surtidor.ID != Convert.ToInt32(Configuration.GetConfiguration().Protocol))
+                {
+                    command[0] = (byte)(command[0] + Convert.ToByte(surtidor.ID));
+                }
+
+                despacho = ConnectorCem.ComandoInformacionDeDespacho(command);
+
+                if (despacho == null)
+                {
+                    continue;
+                }
+
+                try
+                {
+                    DataTable tablaDespachos = ConnectorSQLite.Instance.ExecuteSelectQuery($"SELECT * " +
+                                                                                           $"FROM Despachos " +
+                                                                                           $"WHERE id = {despacho.IdDespacho} AND surtidor = {surtidor.ID}");
+
+                    if (tablaDespachos.Rows.Count == 0)
+                    {
+                        bool YPFRutaContado = false;
+                        despacho.IdSurtidor = surtidor.ID;
+
+                        UpdateProductos(despacho);
+
+                        foreach (Manguera manguera in surtidor.Mangueras)
+                        {
+                            if (manguera.Producto.Descripcion.Equals(despacho.Producto))
+                            {
+                                despacho.IdManguera = manguera.ID;
+                                break;
+                            }
+                        }
+
+                        if (despacho.VentaFacturada)
+                        {
+                            DataTable tablaProductos = ConnectorSQLite.Instance.ExecuteSelectQuery($"SELECT * " +
+                                                                                                   $"FROM Productos " +
+                                                                                                   $"WHERE id_producto = {despacho.IdProducto} OR numero_despacho = {despacho.IdProducto}");
+
+                            double precioUnitario = Convert.ToDouble(tablaProductos.Rows[0]["precio"]);
+
+                            if (despacho.PPU < precioUnitario)
+                            {
+                                YPFRutaContado = true;
+                            }
+
+                            if (despacho.Producto == null)
+                            {
+                                despacho.Producto = Convert.ToString(tablaProductos.Rows[0]["producto"]);
+                            }
+                        }
+
+                        string campos = "id,surtidor,manguera,producto,PPU,volumen,monto,descripcion,facturado,YPFruta,despacho_pedido";
+                        string row = string.Format("{0},{1},{2},{3},{4},{5},{6},'{7}',{8},{9},{10}",
+                                despacho.IdDespacho,
+                                despacho.IdSurtidor,
+                                despacho.IdManguera,
+                                despacho.IdProducto,
+                                despacho.PPU.ToString(CultureInfo.InvariantCulture),
+                                despacho.Volumen.ToString(CultureInfo.InvariantCulture),
+                                despacho.Monto.ToString(CultureInfo.InvariantCulture),
+                                despacho.Producto,
+                                despacho.VentaFacturada,
+                                YPFRutaContado,
+                                0);
+
+                        ConnectorSQLite.Instance.ExecuteNonQuery(string.Format("INSERT INTO Despachos ({0}) VALUES ({1})", campos, row));
+
+                        Log.Instance.WriteLog(string.Format("INSERT INTO Despachos ({0}) VALUES ({1})", campos, row), LogType.t_debug);
+                    }
+                }
+                catch (Exception e)
+                {
+                    Log.Instance.WriteLog($"Error en el metodo GrabarDespachos.\n\tExcepcion: {e.Message}", LogType.t_error);
+                }
             }
-            throw new NotImplementedException();
         }
 
         public override void GrabarCierre()
@@ -207,6 +286,28 @@ namespace CDS
         public void TrtaerTurnoActual()
         {
             throw new NotImplementedException();
+        }
+
+        private void UpdateProductos(DespachoCem despacho)
+        {
+            foreach (ProductoCem producto in Station.Instance.Productos)
+            {
+                if (producto.PrecioUnitario == despacho.PPU)
+                {
+                    if (producto.IdProductoDespacho == 0)
+                    {
+                        ConnectorSQLite.Instance.ExecuteNonQuery($"UPDATE Productos " +
+                                                                 $"SET numero_despacho = {despacho.IdProducto} " +
+                                                                 $"WHERE id_producto = {producto.ID}");
+
+                        producto.IdProductoDespacho = despacho.IdProducto;
+                    }
+
+                    despacho.IdProducto = producto.ID;
+                    despacho.Producto = producto.Descripcion;
+                    break;
+                }
+            }
         }
     }
 

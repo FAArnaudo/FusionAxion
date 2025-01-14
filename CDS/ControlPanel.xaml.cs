@@ -67,11 +67,11 @@ namespace CDS
 
         private void Init()
         {
+            _ = ConnectorSQLite.Instance.CreateDatabase(new ConnectorConfiguration());
+
             if (Configuration.ExistConfiguracion())
             {
                 ConfigureExpander(Configuration.GetConfiguration().StationFlag, Configuration.GetConfiguration().Controller);
-
-                ConnectorSQLite.Instance.CreateDatabase(new ConnectorConfiguration());
 
                 if (PumpController.Data == null)
                 {

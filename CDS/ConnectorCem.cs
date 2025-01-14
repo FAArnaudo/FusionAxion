@@ -83,7 +83,7 @@ namespace CDS
 
                 for (int i = 0; i < station.NumeroDeProductos; i++)
                 {
-                    Producto product = new Producto
+                    Producto product = new ProductoCem
                     {
                         ID = Convert.ToInt16(LeerCampoVariable(reply, ref posicion)),
                         PrecioUnitario = ConvertDouble(LeerCampoVariable(reply, ref posicion))
@@ -555,8 +555,14 @@ namespace CDS
                 // Verificación de resultado de conexión
                 if (policyResult.Outcome != 0)
                 {
+                    _ = ConnectorSQLite.Instance.ExecuteNonQuery($"UPDATE CheckConnection SET isConnected = 0, fecha = '{DateTime.Now:dd-MM-yyyy HH:mm:ss}' WHERE idConnection = 1");
+
                     Log.Instance.WriteLog($"  Fin de intentos...\n", LogType.t_error);
                     ReloadData();
+                }
+                else
+                {
+                    _ = ConnectorSQLite.Instance.ExecuteNonQuery($"UPDATE CheckConnection SET isConnected = 1, fecha = '{DateTime.Now:dd-MM-yyyy HH:mm:ss}' WHERE idConnection = 1");
                 }
             }
             catch (Exception e)

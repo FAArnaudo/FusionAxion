@@ -77,9 +77,9 @@ namespace CDS
                     if (!File.Exists(databasePath))
                     {
                         SQLiteConnection.CreateFile(databasePath);
-
-                        CreateTables();
                     }
+
+                    CreateTables();
                 }
 
                 return true;
@@ -209,13 +209,13 @@ namespace CDS
 
                 createTableQuery = "CREATE TABLE IF NOT EXISTS Despachos " +
                                    "(id INTEGER NOT NULL, surtidor INTEGER NOT NULL, " +
-                                   "manguera INTEGER, producto TEXT NOT NULL, " +
+                                   "manguera INTEGER, producto INTEGER NOT NULL, " +
                                    "PPU REAL NOT NULL, volumen REAL NOT NULL, " +
-                                   "monto REAL NOT NULL, descripcion TEXT, " +
-                                   "despacho_pedido BLOB, fecha TEXT DEFAULT(datetime('now', 'localtime')), " +
+                                   "monto REAL NOT NULL, descripcion TEXT, facturado INTEGER, YPFRuta INTEGER " +
+                                   "despacho_pedido INTEGER, fecha TEXT DEFAULT(datetime('now', 'localtime')), " +
                                    "AUC TEXT DEFAULT '0', DCA REAL, DCP TEXT, " +
                                    "DPN TEXT, TXTD TEXT, cod_auto TEXT, glosa_auto TEXT, " +
-                                   "valor_auto REAL, PRIMARY KEY(id,surtidor))";
+                                   "valor_auto REAL, despacho_pedido INTEGER, PRIMARY KEY(id,surtidor))";
 
                 using (SQLiteCommand cmd = new SQLiteCommand(createTableQuery, connection))
                 {
@@ -223,7 +223,7 @@ namespace CDS
                 }
 
                 createTableQuery = "CREATE TABLE IF NOT EXISTS cierreBandera " +
-                                   "(hacerCierre INTEGER NOT NULL);" +
+                                   "(hacerCierre INTEGER NOT NULL, actualizar_tanques INTEGER NOT NULL DEFAULT 0);" +
                                    "\nINSERT INTO cierreBandera (hacerCierre) " +
                                    "SELECT 0 WHERE NOT EXISTS (SELECT 1 FROM cierreBandera)";
 

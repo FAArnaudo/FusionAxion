@@ -188,10 +188,10 @@ namespace CDS
 
         public override void GrabarDespachos()
         {
-            byte[] command = ProtocolCommand.DespachoCommand;
-
             foreach (Surtidor surtidor in Station.Instance.Surtidores)
             {
+                byte[] command = ProtocolCommand.DespachoCommand;
+
                 DespachoCem despacho;
 
                 if (surtidor.ID != Convert.ToInt32(Configuration.GetConfiguration().Protocol))
@@ -247,8 +247,8 @@ namespace CDS
                             }
                         }
 
-                        string campos = "id,surtidor,manguera,producto,PPU,volumen,monto,descripcion,facturado,YPFruta,despacho_pedido";
-                        string row = string.Format("{0},{1},{2},{3},{4},{5},{6},'{7}',{8},{9},{10}",
+                        string campos = "id,surtidor,manguera,producto,PPU,volumen,monto,descripcion,facturado,YPFruta,despacho_pedido,fecha";
+                        string row = string.Format("{0},{1},{2},{3},{4},{5},{6},'{7}',{8},{9},{10},'{11}'",
                                 despacho.IdDespacho,
                                 despacho.IdSurtidor,
                                 despacho.IdManguera,
@@ -259,7 +259,8 @@ namespace CDS
                                 despacho.Producto,
                                 despacho.VentaFacturada,
                                 YPFRutaContado,
-                                0);
+                                0,
+                                DateTime.Now.ToString("dd-MM-yyyy HH:mm:ss"));
 
                         ConnectorSQLite.Instance.ExecuteNonQuery(string.Format("INSERT INTO Despachos ({0}) VALUES ({1})", campos, row));
 
@@ -294,14 +295,11 @@ namespace CDS
             {
                 if (producto.PrecioUnitario == despacho.PPU)
                 {
-                    if (producto.IdProductoDespacho == 0)
-                    {
-                        ConnectorSQLite.Instance.ExecuteNonQuery($"UPDATE Productos " +
-                                                                 $"SET numero_despacho = {despacho.IdProducto} " +
-                                                                 $"WHERE id_producto = {producto.ID}");
+                    ConnectorSQLite.Instance.ExecuteNonQuery($"UPDATE Productos " +
+                                                             $"SET numero_despacho = {despacho.IdProducto} " +
+                                                             $"WHERE id_producto = {producto.ID}");
 
-                        producto.IdProductoDespacho = despacho.IdProducto;
-                    }
+                    producto.IdProductoDespacho = despacho.IdProducto;
 
                     despacho.IdProducto = producto.ID;
                     despacho.Producto = producto.Descripcion;

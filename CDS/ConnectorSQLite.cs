@@ -163,11 +163,14 @@ namespace CDS
         {
             try
             {
-                _ = OpenConnection();
-                using (SQLiteCommand cmd = new SQLiteCommand(query, connection))
+                lock (lockObjectDB)
                 {
-                    int result = Convert.ToInt32(cmd.ExecuteScalar());
-                    return result == 1;
+                    _ = OpenConnection();
+                    using (SQLiteCommand cmd = new SQLiteCommand(query, connection))
+                    {
+                        int result = Convert.ToInt32(cmd.ExecuteScalar());
+                        return result == 1;
+                    }
                 }
             }
             catch (Exception ex)
@@ -211,11 +214,11 @@ namespace CDS
                                    "(id INTEGER NOT NULL, surtidor INTEGER NOT NULL, " +
                                    "manguera INTEGER, producto INTEGER NOT NULL, " +
                                    "PPU REAL NOT NULL, volumen REAL NOT NULL, " +
-                                   "monto REAL NOT NULL, descripcion TEXT, facturado INTEGER, YPFRuta INTEGER " +
+                                   "monto REAL NOT NULL, descripcion TEXT, facturado INTEGER, YPFRuta INTEGER, " +
                                    "despacho_pedido INTEGER, fecha TEXT DEFAULT(datetime('now', 'localtime')), " +
                                    "AUC TEXT DEFAULT '0', DCA REAL, DCP TEXT, " +
                                    "DPN TEXT, TXTD TEXT, cod_auto TEXT, glosa_auto TEXT, " +
-                                   "valor_auto REAL, despacho_pedido INTEGER, PRIMARY KEY(id,surtidor))";
+                                   "valor_auto REAL, PRIMARY KEY(id,surtidor))";
 
                 using (SQLiteCommand cmd = new SQLiteCommand(createTableQuery, connection))
                 {

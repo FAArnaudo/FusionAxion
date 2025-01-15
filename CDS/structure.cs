@@ -130,8 +130,19 @@ namespace CDS
     }
     public class ProductoCem : Producto
     {
-        public ProductoCem() { IdProductoDespacho = 0; }
-        public int IdProductoDespacho { get; set; }
+        private int idProductoDespacho;
+        public ProductoCem() { idProductoDespacho = 0; }
+        public int IdProductoDespacho
+        {
+            get => idProductoDespacho;
+            set
+            {
+                if (idProductoDespacho != value)
+                {
+                    idProductoDespacho = value;
+                }
+            }
+        }
     }
 
     public class Despacho
@@ -159,10 +170,7 @@ namespace CDS
         private ESTADO_SURTIDOR status;
         private bool ventaFacturada;
         private int nroDeVenta;
-        public DespachoCem()
-        {
-
-        }
+        public DespachoCem() { }
         public ESTADO_SURTIDOR Status { get => status; set => status = value; }
         public bool VentaFacturada { get => ventaFacturada; set => ventaFacturada = value; }
         public int NroDeVenta { get => nroDeVenta; set => nroDeVenta = value; }

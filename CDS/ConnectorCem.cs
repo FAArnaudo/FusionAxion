@@ -347,9 +347,161 @@ namespace CDS
             return despacho;
         }
 
-        public CierreDeTurno ComandoCierresDeTurno(byte[] command)
+        public CierreDeTurnoCem ComandoCierresDeTurno(byte[] command)
         {
-            return null;
+            int posicion = 1;
+
+            byte[] reply;
+
+            CierreDeTurnoCem turno = null;
+
+            try
+            {
+                switch (command[0])
+                {
+                    case 0x07:
+                        reply = Connections.GetConfiguration().Modo.Equals(MODO.TEST.ToString()) ? ReadAnswer("CierreDeTurno") : Connections.EnviarComando(command);
+                        break;
+                    case 0x0B:
+                        reply = Connections.GetConfiguration().Modo.Equals(MODO.TEST.ToString()) ? ReadAnswer("CierreDeTurnoAnterior") : Connections.EnviarComando(command);
+                        break;
+                    case 0x08:
+                        reply = Connections.GetConfiguration().Modo.Equals(MODO.TEST.ToString()) ? ReadAnswer("TurnoActual") : Connections.EnviarComando(command);
+                        break;
+                    default:
+                        reply = Connections.GetConfiguration().Modo.Equals(MODO.TEST.ToString()) ? ReadAnswer("CierreDeTurno") : Connections.EnviarComando(command);
+                        break;
+                }
+
+                if (reply[0] == 0xFF)
+                {
+                    turno = new CierreDeTurnoCem
+                    {
+                        Estado = "SIN VENTAS"
+                    };
+
+                    return turno;
+                }
+
+                turno = new CierreDeTurnoCem();
+
+                for (int i = 0; i < CierreDeTurnoCem.MEDIOS_DE_PAGO; i++)
+                {
+                    TotalMedioDePago totalMedioDePago = new TotalMedioDePago()
+                    {
+                        NumeroDeMedioDePago = i + 1,
+                        TotalMonto = ConvertDouble(LeerCampoVariable(reply, ref posicion)),
+                        TotalVolumen = ConvertDouble(LeerCampoVariable(reply, ref posicion)),
+                    };
+
+                    turno.TotalesMedioDePago.Add(totalMedioDePago);
+                }
+
+                turno.Impuesto1 = Convert.ToInt32(LeerCampoVariable(reply, ref posicion));
+                turno.Impuesto2 = Convert.ToInt32(LeerCampoVariable(reply, ref posicion));
+
+                // INICIO DE CONTEO DE LOS PERIODOS
+                turno.PeriodoDePrecios = reply[posicion];
+                posicion++;
+
+                for (int i = 0; i < turno.PeriodoDePrecios; i++)
+                {
+                    // INICIO DE CONTEO DE LOS NIVELES
+                    List<List<TotalPorProducto>> totalesPorProductoPorNivel = new List<List<TotalPorProducto>>();
+
+                    turno.NivelesDePrecio = reply[posicion];
+                    posicion++;
+
+                    for (int j = 0; j < turno.NivelesDePrecio; j++)
+                    {
+                        // INICIO DE LOS TOTALES POR PRODUCTO
+                        List<TotalPorProducto> totalesPorProducto = new List<TotalPorProducto>();
+
+                        for (int k = 0; k < Station.Instance.NumeroDeProductos; k++)
+                        {
+                            TotalPorProducto totalPorProducto = new TotalPorProducto
+                            {
+                                Periodo = i + 1,
+                                Nivel = j + 1,
+                                TotalMonto = ConvertDouble(LeerCampoVariable(reply, ref posicion)),
+                                TotalVolumen = ConvertDouble(LeerCampoVariable(reply, ref posicion)),
+                                PrecioUnitario = ConvertDouble(LeerCampoVariable(reply, ref posicion)),
+                            };
+
+                            foreach (Producto producto in Station.Instance.Productos)
+                            {
+                                if (producto.PrecioUnitario == totalPorProducto.PrecioUnitario)
+                                {
+                                    totalPorProducto.NumeroDeProducto = producto.ID;
+                                    break;
+                                }
+                            }
+
+                            totalesPorProducto.Add(totalPorProducto);
+                        }
+
+                        totalesPorProductoPorNivel.Add(totalesPorProducto);
+                    }
+
+                    turno.TotalesPorPeriodoPorNivelPorProducto.Add(totalesPorProductoPorNivel);
+                }
+
+                foreach (Surtidor surtidor in Station.Instance.Surtidores)
+                {
+                    for (int j = 0; j < surtidor.NumeroDeMangueras; j++)
+                    {
+                        TotalPorManguera totalPorManguera = new TotalPorManguera
+                        {
+                            NumeroDeSurtidor = surtidor.ID,
+                            NumeroDeManguera = j + 1,
+                            TotalVntasMonto = ConvertDouble(LeerCampoVariable(reply, ref posicion)),
+                            TotalVntasVolumen = ConvertDouble(LeerCampoVariable(reply, ref posicion)),
+                            TotalVntasSinControlMonto = ConvertDouble(LeerCampoVariable(reply, ref posicion)),
+                            TotalVntasSinControlVolumen = ConvertDouble(LeerCampoVariable(reply, ref posicion)),
+                            TotalPruebasMonto = ConvertDouble(LeerCampoVariable(reply, ref posicion)),
+                            TotalPruebasVolumen = ConvertDouble(LeerCampoVariable(reply, ref posicion))
+                        };
+
+                        turno.TotalesPorManguera.Add(totalPorManguera);
+                    }
+                }
+                 
+                for (int i = 0; i < Station.Instance.NumeroDeTanques; i++)
+                {
+                    TotalPorTanque totalPorTanque = new TotalPorTanque
+                    {
+                        NumeroDeTanque = i,
+                        Producto = LeerCampoVariable(reply, ref posicion),
+                        Agua = LeerCampoVariable(reply, ref posicion),
+                        Vacio = LeerCampoVariable(reply, ref posicion),
+                        Capacidad = LeerCampoVariable(reply, ref posicion)
+                    };
+
+                    turno.TotalesPorTanque.Add(totalPorTanque);
+                }
+
+                for (int i = 0; i < Station.Instance.NumeroDeProductos; i++)
+                {
+                    ProductoEnTanque productoEnTanque = new ProductoEnTanque
+                    {
+                        NumeroDeProducto = i,
+                        VolumenEnTanques = LeerCampoVariable(reply, ref posicion),
+                        AguaEnTanques = LeerCampoVariable(reply, ref posicion),
+                        VacioEnTanques = LeerCampoVariable(reply, ref posicion),
+                        CapacidadEnTanques = LeerCampoVariable(reply, ref posicion)
+                    };
+
+                    turno.ProductosEnTanque.Add(productoEnTanque);
+                }
+
+                turno.Estado = "OK";
+            }
+            catch (Exception e)
+            {
+
+            }
+
+            return turno;
         }
 
         /// <summary>
@@ -492,8 +644,9 @@ namespace CDS
     {
         byte[] EnviarComando(byte[] comando);
 
-
         Data GetConfiguration();
+
+        Station Estacion();
     }
 
     public class CemCommunication : IConnections
@@ -590,6 +743,16 @@ namespace CDS
         public Data GetConfiguration()
         {
             return Configuration.GetConfiguration();
+        }
+
+        public Station Estacion()
+        {
+            return Station.Instance;
+        }
+
+        public int NumeroDeProductos()
+        {
+            return Station.Instance.NumeroDeProductos;
         }
     }
 }

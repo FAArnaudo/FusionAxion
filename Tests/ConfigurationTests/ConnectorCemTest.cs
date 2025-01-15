@@ -268,5 +268,55 @@ namespace ConfigurationTests
             // Assert
             Assert.IsNull(despacho);
         }
+
+        [TestMethod]
+        public void ComandoCierres_CierreDeTurno_NotNull()
+        {
+            // Aragne
+            byte[] reply = connectorCem.ReadAnswer("ConfiguracionDeLaEstacion");
+
+            byte[] command = new byte[] { 0x65 };
+
+            _ = connections.Setup(a => a.EnviarComando(command)).Returns(reply);
+
+            _ = connectorCem.ComandoConfiguracionDeLaEstacion(command);
+
+            reply = connectorCem.ReadAnswer("CierreDeTurno");
+
+            command = new byte[] { 0x07 };
+
+            _ = connections.Setup(a => a.EnviarComando(command)).Returns(reply);
+
+            string expected = "OK";
+
+            // Act
+            CierreDeTurnoCem cierreDeTurno = connectorCem.ComandoCierresDeTurno(command);
+
+            string actual = cierreDeTurno.Estado;
+
+            // Assert
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod]
+        public void ComandoCierres_CierreDeTurno_SinVentas()
+        {
+            // Aragne
+            byte[] reply = new byte[] { 0xFF };
+
+            byte[] command = new byte[] { 0x07 };
+
+            _ = connections.Setup(a => a.EnviarComando(command)).Returns(reply);
+
+            string expected = "SIN VENTAS";
+
+            // Act
+            CierreDeTurnoCem cierreDeTurno = connectorCem.ComandoCierresDeTurno(command);
+
+            string actual = cierreDeTurno.Estado;
+
+            // Assert
+            Assert.AreEqual(expected, actual);
+        }
     }
 }

@@ -188,5 +188,80 @@ namespace CDS
         public string FechaCierre { get; set; }
         public double TotalesMonto { get; set; }
         public double TotalesVolumen { get; set; }
+        public string Estado { get; set; }
+    }
+
+    public class CierreDeTurnoCem : CierreDeTurno
+    {
+        public const int MEDIOS_DE_PAGO = 8;
+        public CierreDeTurnoCem()
+        {
+            TotalesMedioDePago = new List<TotalMedioDePago>();
+            TotalesPorPeriodoPorNivelPorProducto = new List<List<List<TotalPorProducto>>>();
+            TotalesPorManguera = new List<TotalPorManguera>();
+            TotalesPorTanque = new List<TotalPorTanque>();
+            ProductosEnTanque = new List<ProductoEnTanque>();
+        }
+        public List<TotalMedioDePago> TotalesMedioDePago { get; set; }
+        public int Impuesto1 { get; set; }
+        public int Impuesto2 { get; set; }
+        public int PeriodoDePrecios { get; set; }
+        public int NivelesDePrecio { get; set; }
+        public List<List<List<TotalPorProducto>>> TotalesPorPeriodoPorNivelPorProducto { get; set; }
+        public List<TotalPorManguera> TotalesPorManguera { get; set; } 
+        public List<TotalPorTanque> TotalesPorTanque { get; set; }
+        public List<ProductoEnTanque> ProductosEnTanque { get; set; }
+    }
+
+    public class TotalMedioDePago
+    {
+        public TotalMedioDePago() { }
+        public int NumeroDeMedioDePago { get; set; }
+        public double TotalMonto { get; set; }
+        public double TotalVolumen { get; set; }
+    }
+
+    public class TotalPorProducto
+    {
+        public TotalPorProducto() { }
+        public int Periodo { get; set; }
+        public int Nivel { get; set; }
+        public int NumeroDeProducto { get; set; }
+        public double PrecioUnitario { get; set; }
+        public double TotalMonto { get; set; }
+        public double TotalVolumen { get; set; }
+    }
+
+    public class TotalPorManguera
+    {
+        public TotalPorManguera() { }
+        public int NumeroDeSurtidor { get; set; }
+        public int NumeroDeManguera { get; set; }
+        public double TotalVntasMonto { get; set; }
+        public double TotalVntasVolumen { get; set; }
+        public double TotalVntasSinControlMonto { get; set; }
+        public double TotalVntasSinControlVolumen { get; set; }
+        public double TotalPruebasMonto { get; set; }
+        public double TotalPruebasVolumen { get; set; }
+    }
+
+    public class TotalPorTanque
+    {
+        public TotalPorTanque() { }
+        public int NumeroDeTanque { get; set; }
+        public string Producto { get; set; }
+        public string Agua { get; set; }
+        public string Vacio { get; set; }
+        public string Capacidad { get; set; }
+    }
+
+    public class ProductoEnTanque
+    {
+        public ProductoEnTanque() { }
+        public int NumeroDeProducto { get; set; }
+        public string VolumenEnTanques { get; set; }
+        public string AguaEnTanques { get; set; }
+        public string VacioEnTanques { get; set; }
+        public string CapacidadEnTanques { get; set; }
     }
 }

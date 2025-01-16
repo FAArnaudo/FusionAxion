@@ -470,8 +470,8 @@ namespace CDS
                         totalPorManguera.NumeroDeSurtidor = surtidor.ID;
                         messageError = "2";
                         totalPorManguera.NumeroDeManguera = j + 1;
-                        messageError = "3";
-                        totalPorManguera.TotalVntasMonto = ConvertDouble(LeerCampoVariable(reply, ref posicion));
+                        messageError = $"3 {LeerCampoVariable(reply, ref posicion)}";
+                        //totalPorManguera.TotalVntasMonto = ConvertDouble(LeerCampoVariable(reply, ref posicion));
                         messageError = "4";
                         totalPorManguera.TotalVntasVolumen = ConvertDouble(LeerCampoVariable(reply, ref posicion));
                         messageError = "5";

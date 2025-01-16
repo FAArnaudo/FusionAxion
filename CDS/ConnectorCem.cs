@@ -480,6 +480,7 @@ namespace CDS
                  
                 for (int i = 0; i < Station.Instance.NumeroDeTanques; i++)
                 {
+                    messageError = $"Al crear el {i} ProductoEnTanque";
                     TotalPorTanque totalPorTanque = new TotalPorTanque
                     {
                         NumeroDeTanque = i,
@@ -489,11 +490,13 @@ namespace CDS
                         Capacidad = LeerCampoVariable(reply, ref posicion)
                     };
 
+                    messageError = $"Al agregar el {i} ProductoEnTanque";
                     turno.TotalesPorTanque.Add(totalPorTanque);
                 }
 
                 for (int i = 0; i < Station.Instance.NumeroDeProductos; i++)
                 {
+                    messageError = $"Al crear el {i} ProductoEnTanque";
                     ProductoEnTanque productoEnTanque = new ProductoEnTanque
                     {
                         NumeroDeProducto = i,
@@ -503,6 +506,7 @@ namespace CDS
                         CapacidadEnTanques = LeerCampoVariable(reply, ref posicion)
                     };
 
+                    messageError = $"Al agregar el {i} ProductoEnTanque";
                     turno.ProductosEnTanque.Add(productoEnTanque);
                 }
 

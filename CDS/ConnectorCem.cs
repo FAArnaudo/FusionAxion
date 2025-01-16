@@ -458,8 +458,10 @@ namespace CDS
                     turno.TotalesPorPeriodoPorNivelPorProducto.Add(totalesPorProductoPorNivel);
                 }
 
+                messageError = $"Al Consultar surtidores";
                 foreach (Surtidor surtidor in Station.Instance.Surtidores)
                 {
+                    messageError = $"Al Consultar surtidores las mangueras de cada surtidor";
                     for (int j = 0; j < surtidor.NumeroDeMangueras; j++)
                     {
                         TotalPorManguera totalPorManguera = new TotalPorManguera
@@ -480,7 +482,7 @@ namespace CDS
                  
                 for (int i = 0; i < Station.Instance.NumeroDeTanques; i++)
                 {
-                    messageError = $"Al crear el {i} ProductoEnTanque";
+                    messageError = $"Al crear el {i} TotalPorTanque";
                     TotalPorTanque totalPorTanque = new TotalPorTanque
                     {
                         NumeroDeTanque = i,
@@ -490,7 +492,7 @@ namespace CDS
                         Capacidad = LeerCampoVariable(reply, ref posicion)
                     };
 
-                    messageError = $"Al agregar el {i} ProductoEnTanque";
+                    messageError = $"Al agregar el {i} TotalPorTanque";
                     turno.TotalesPorTanque.Add(totalPorTanque);
                 }
 

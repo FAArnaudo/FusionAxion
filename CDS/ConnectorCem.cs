@@ -353,7 +353,7 @@ namespace CDS
 
             byte[] reply;
 
-            string messageError;
+            string messageError = "Inicio";
 
             CierreDeTurnoCem turno;
             try
@@ -527,7 +527,7 @@ namespace CDS
 
                 Connections.ExecuteNonQuery(string.Format("INSERT INTO Cierres ({0}) VALUES ({1})", campos, rows));
 
-                throw new Exception(error);
+                throw new Exception(error + messageError);
             }
 
             return turno;

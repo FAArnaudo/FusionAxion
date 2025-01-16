@@ -407,6 +407,7 @@ namespace CDS
                 turno.Impuesto2 = Convert.ToInt32(LeerCampoVariable(reply, ref posicion));
 
                 // INICIO DE CONTEO DE LOS PERIODOS
+                messageError = "Obteniendo el periodo de precios";
                 turno.PeriodoDePrecios = reply[posicion];
                 posicion++;
 
@@ -415,6 +416,7 @@ namespace CDS
                     // INICIO DE CONTEO DE LOS NIVELES
                     List<List<TotalPorProducto>> totalesPorProductoPorNivel = new List<List<TotalPorProducto>>();
 
+                    messageError = "Obteniendo los niveles de precio";
                     turno.NivelesDePrecio = reply[posicion];
                     posicion++;
 
@@ -423,8 +425,10 @@ namespace CDS
                         // INICIO DE LOS TOTALES POR PRODUCTO
                         List<TotalPorProducto> totalesPorProducto = new List<TotalPorProducto>();
 
+                        messageError = "Al consultar el numero de productos";
                         for (int k = 0; k < Station.Instance.NumeroDeProductos; k++)
                         {
+                            messageError = $"Al crear el {k} totalPorProducto";
                             TotalPorProducto totalPorProducto = new TotalPorProducto
                             {
                                 Periodo = i + 1,
@@ -442,13 +446,15 @@ namespace CDS
                                     break;
                                 }
                             }
-
+                            messageError = $"Al agregar el {k} totalPorProducto";
                             totalesPorProducto.Add(totalPorProducto);
                         }
 
+                        messageError = $"Al agregar el {j} totalesPorProducto";
                         totalesPorProductoPorNivel.Add(totalesPorProducto);
                     }
 
+                    messageError = $"Al agregar el {i} totalesPorProductoPorNivel";
                     turno.TotalesPorPeriodoPorNivelPorProducto.Add(totalesPorProductoPorNivel);
                 }
 

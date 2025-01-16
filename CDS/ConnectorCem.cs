@@ -353,6 +353,8 @@ namespace CDS
 
             byte[] reply;
 
+            string messageError;
+
             CierreDeTurnoCem turno;
             try
             {
@@ -372,6 +374,8 @@ namespace CDS
                         break;
                 }
 
+                messageError = "antes de turno sin ventas";
+
                 if (reply[0] == 0xFF)
                 {
                     turno = new CierreDeTurnoCem
@@ -381,7 +385,7 @@ namespace CDS
 
                     return turno;
                 }
-
+                messageError = "Antes de crear el cierre";
                 turno = new CierreDeTurnoCem();
 
                 for (int i = 0; i < CierreDeTurnoCem.MEDIOS_DE_PAGO; i++)

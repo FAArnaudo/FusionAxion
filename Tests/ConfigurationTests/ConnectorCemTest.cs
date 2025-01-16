@@ -277,13 +277,13 @@ namespace ConfigurationTests
 
             _ = connections.Setup(a => a.EnviarComando(command)).Returns(reply);
 
-            _ = connectorCem.ComandoConfiguracionDeLaEstacion(command);
+            Station estacion = connectorCem.ComandoConfiguracionDeLaEstacion(command);
 
             reply = connectorCem.ReadAnswer("CierreDeTurno");
 
             command = new byte[] { 0x07 };
 
-            _ = connections.Setup(a => a.EnviarComando(command)).Returns(reply);
+            _ = connections.Setup(b => b.EnviarComando(command)).Returns(reply);
 
             string expected = "OK";
 

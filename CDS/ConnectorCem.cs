@@ -461,9 +461,10 @@ namespace CDS
                 messageError = $"Al Consultar surtidores";
                 foreach (Surtidor surtidor in Station.Instance.Surtidores)
                 {
-                    messageError = $"Al Consultar surtidores las mangueras de cada surtidor";
+                    messageError = $"Al Consultar las mangueras de cada surtidor";
                     for (int j = 0; j < surtidor.NumeroDeMangueras; j++)
                     {
+                        messageError = $"Al crear el {j} TotalPorManguera";
                         TotalPorManguera totalPorManguera = new TotalPorManguera
                         {
                             NumeroDeSurtidor = surtidor.ID,
@@ -475,7 +476,7 @@ namespace CDS
                             TotalPruebasMonto = ConvertDouble(LeerCampoVariable(reply, ref posicion)),
                             TotalPruebasVolumen = ConvertDouble(LeerCampoVariable(reply, ref posicion))
                         };
-
+                        messageError = $"Al agregar el {j} TotalPorManguera";
                         turno.TotalesPorManguera.Add(totalPorManguera);
                     }
                 }

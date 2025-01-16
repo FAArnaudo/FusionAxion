@@ -374,8 +374,7 @@ namespace CDS
             CierreDeTurnoCem turno;
             try
             {
-                messageError = "antes de turno sin ventas";
-
+                messageError = "En comprobacion de turno sin ventas";
                 if (reply[0] == 0xFF)
                 {
                     turno = new CierreDeTurnoCem
@@ -386,11 +385,12 @@ namespace CDS
                     return turno;
                 }
 
-                messageError = "Antes de crear el cierre";
+                messageError = "Creando el turno";
                 turno = new CierreDeTurnoCem();
 
                 for (int i = 0; i < CierreDeTurnoCem.MEDIOS_DE_PAGO; i++)
                 {
+                    messageError = $"Creando el {i} total medio de pago";
                     TotalMedioDePago totalMedioDePago = new TotalMedioDePago()
                     {
                         NumeroDeMedioDePago = i + 1,
@@ -398,9 +398,11 @@ namespace CDS
                         TotalVolumen = ConvertDouble(LeerCampoVariable(reply, ref posicion)),
                     };
 
+                    messageError = $"Guardando el {i} total medio de pago";
                     turno.TotalesMedioDePago.Add(totalMedioDePago);
                 }
 
+                messageError = $"Guardando los impuestos";
                 turno.Impuesto1 = Convert.ToInt32(LeerCampoVariable(reply, ref posicion));
                 turno.Impuesto2 = Convert.ToInt32(LeerCampoVariable(reply, ref posicion));
 

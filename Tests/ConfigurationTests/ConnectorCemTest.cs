@@ -256,8 +256,6 @@ namespace ConfigurationTests
             // Arange
             int numeroDeSurtidor = 0;                               // Representa el surtidor N° 16 si el protocolo es 16
 
-            byte[] reply = new byte[] { 0x01 };
-
             byte[] command = new byte[] { (byte)(0x70 + Convert.ToByte(numeroDeSurtidor)) };
 
             _ = connections.Setup(a => a.EnviarComando(command)).Throws(new Exception());
@@ -317,6 +315,30 @@ namespace ConfigurationTests
 
             // Assert
             Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod]
+        public void ComandoCierres_CierreDeTurnoAnterior_ThorwException()
+        {
+            // Aragne
+            byte[] command = new byte[] { 0x0B };
+
+            _ = connections.Setup(a => a.EnviarComando(command)).Throws(new Exception());
+
+            string campos = "state";
+
+            string rows = string.Format("'{0}'",
+                                       $"ERROR");
+
+            _ = connections.Setup(b => b.ExecuteNonQuery(string.Format("INSERT INTO Cierres ({0}) VALUES ({1})", campos, rows))).Returns(1);
+
+            string expected = "Error al pedir intormacion del CierreDeTurnoAnterior";
+
+            // Act
+            Exception actual = Assert.ThrowsException<Exception>(() => connectorCem.ComandoCierresDeTurno(command));
+
+            // Assert
+            Assert.AreEqual(expected, actual.Message.Substring(0, 52));
         }
     }
 }

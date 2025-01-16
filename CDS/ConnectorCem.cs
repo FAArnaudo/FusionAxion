@@ -353,8 +353,7 @@ namespace CDS
 
             byte[] reply;
 
-            CierreDeTurnoCem turno = null;
-
+            CierreDeTurnoCem turno;
             try
             {
                 switch (command[0])
@@ -498,7 +497,33 @@ namespace CDS
             }
             catch (Exception e)
             {
+                string error;
+                switch (command[0])
+                {
+                    case 0x07:
+                        error = $"Error al pedir intormacion del CierreDeTurno. Excepción: {e.Message}";
+                        break;
+                    case 0x0B:
+                        error = $"Error al pedir intormacion del CierreDeTurnoAnterior. Excepción: {e.Message}";
+                        break;
+                    case 0x08:
+                        error = $"Error al pedir intormacion del TurnoActual. Excepción: {e.Message}";
+                        break;
+                    default:
+                        error = $"Error al pedir intormacion del turno CierreDeTurno. Excepción: {e.Message}";
+                        break;
+                }
 
+                Log.Instance.WriteLog(error, LogType.t_error);
+
+                string campos = "state";
+
+                string rows = string.Format("'{0}'",
+                                           $"ERROR");
+
+                Connections.ExecuteNonQuery(string.Format("INSERT INTO Cierres ({0}) VALUES ({1})", campos, rows));
+
+                throw new Exception(error);
             }
 
             return turno;
@@ -646,7 +671,7 @@ namespace CDS
 
         Data GetConfiguration();
 
-        Station Estacion();
+        int ExecuteNonQuery(string query);
     }
 
     public class CemCommunication : IConnections
@@ -745,14 +770,9 @@ namespace CDS
             return Configuration.GetConfiguration();
         }
 
-        public Station Estacion()
+        public int ExecuteNonQuery(string query)
         {
-            return Station.Instance;
-        }
-
-        public int NumeroDeProductos()
-        {
-            return Station.Instance.NumeroDeProductos;
+            return ConnectorSQLite.Instance.ExecuteNonQuery(query);
         }
     }
 }

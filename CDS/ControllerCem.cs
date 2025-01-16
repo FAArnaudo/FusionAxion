@@ -194,7 +194,7 @@ namespace CDS
 
                 DespachoCem despacho;
 
-                if (surtidor.ID != Convert.ToInt32(Configuration.GetConfiguration().Protocol))
+                if (surtidor.ID != ProtocolCommand.GetProtocol())
                 {
                     command[0] = (byte)(command[0] + Convert.ToByte(surtidor.ID));
                 }
@@ -276,7 +276,14 @@ namespace CDS
 
         public override void GrabarCierre()
         {
-            throw new NotImplementedException();
+            try
+            {
+
+            }
+            catch (Exception e)
+            {
+                throw new Exception($"Excepción: {e.Message}");
+            }
         }
 
         public void TrtaerCierreAnterior()
@@ -311,7 +318,7 @@ namespace CDS
 
     public interface IProtocolCommand
     {
-        int Getprotocol();
+        int GetProtocol();
 
         byte[] PoleoEnLineaComand { get; }
         byte[] ConfigureStationComand { get; }
@@ -339,7 +346,7 @@ namespace CDS
 
         public byte[] PoleoEnLineaComand => new byte[] { 0x00 };
 
-        public int Getprotocol()
+        public int GetProtocol()
         {
             return 16;
         }
@@ -361,7 +368,7 @@ namespace CDS
 
         public byte[] PoleoEnLineaComand => new byte[] { 0x00 };
 
-        public int Getprotocol()
+        public int GetProtocol()
         {
             return 32;
         }

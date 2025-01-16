@@ -279,11 +279,11 @@ namespace ConfigurationTests
 
             Station estacion = connectorCem.ComandoConfiguracionDeLaEstacion(command);
 
-            reply = connectorCem.ReadAnswer("CierreDeTurno");
+            byte[] reply_cierre = connectorCem.ReadAnswer("CierreDeTurno");
 
             command = new byte[] { 0x07 };
 
-            _ = connections.Setup(b => b.EnviarComando(command)).Returns(reply);
+            _ = connections.Setup(b => b.EnviarComando(command)).Returns(reply_cierre);
 
             string expected = "OK";
 
@@ -323,7 +323,9 @@ namespace ConfigurationTests
             // Aragne
             byte[] command = new byte[] { 0x0B };
 
-            _ = connections.Setup(a => a.EnviarComando(command)).Throws(new Exception());
+            byte[] reply = null;
+
+            _ = connections.Setup(a => a.EnviarComando(command)).Returns(reply);
 
             string campos = "state";
 

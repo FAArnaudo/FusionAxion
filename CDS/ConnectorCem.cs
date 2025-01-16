@@ -355,25 +355,25 @@ namespace CDS
 
             string messageError = "Inicio";
 
+            switch (command[0])
+            {
+                case 0x07:
+                    reply = Connections.GetConfiguration().Modo.Equals(MODO.TEST.ToString()) ? ReadAnswer("CierreDeTurno") : Connections.EnviarComando(command);
+                    break;
+                case 0x0B:
+                    reply = Connections.GetConfiguration().Modo.Equals(MODO.TEST.ToString()) ? ReadAnswer("CierreDeTurnoAnterior") : Connections.EnviarComando(command);
+                    break;
+                case 0x08:
+                    reply = Connections.GetConfiguration().Modo.Equals(MODO.TEST.ToString()) ? ReadAnswer("TurnoActual") : Connections.EnviarComando(command);
+                    break;
+                default:
+                    reply = Connections.GetConfiguration().Modo.Equals(MODO.TEST.ToString()) ? ReadAnswer("CierreDeTurno") : Connections.EnviarComando(command);
+                    break;
+            }
+
             CierreDeTurnoCem turno;
             try
             {
-                switch (command[0])
-                {
-                    case 0x07:
-                        reply = Connections.GetConfiguration().Modo.Equals(MODO.TEST.ToString()) ? ReadAnswer("CierreDeTurno") : Connections.EnviarComando(command);
-                        break;
-                    case 0x0B:
-                        reply = Connections.GetConfiguration().Modo.Equals(MODO.TEST.ToString()) ? ReadAnswer("CierreDeTurnoAnterior") : Connections.EnviarComando(command);
-                        break;
-                    case 0x08:
-                        reply = Connections.GetConfiguration().Modo.Equals(MODO.TEST.ToString()) ? ReadAnswer("TurnoActual") : Connections.EnviarComando(command);
-                        break;
-                    default:
-                        reply = Connections.GetConfiguration().Modo.Equals(MODO.TEST.ToString()) ? ReadAnswer("CierreDeTurno") : Connections.EnviarComando(command);
-                        break;
-                }
-
                 messageError = "antes de turno sin ventas";
 
                 if (reply[0] == 0xFF)
@@ -385,6 +385,7 @@ namespace CDS
 
                     return turno;
                 }
+
                 messageError = "Antes de crear el cierre";
                 turno = new CierreDeTurnoCem();
 

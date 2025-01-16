@@ -464,18 +464,24 @@ namespace CDS
                     messageError = $"Al Consultar las mangueras de cada surtidor";
                     for (int j = 0; j < surtidor.NumeroDeMangueras; j++)
                     {
-                        messageError = $"Al crear el {j} TotalPorManguera. Surtidores: {Station.Instance.NumeroDeSurtidores}";
-                        TotalPorManguera totalPorManguera = new TotalPorManguera
-                        {
-                            NumeroDeSurtidor = surtidor.ID,
-                            NumeroDeManguera = j + 1,
-                            TotalVntasMonto = ConvertDouble(LeerCampoVariable(reply, ref posicion)),
-                            TotalVntasVolumen = ConvertDouble(LeerCampoVariable(reply, ref posicion)),
-                            TotalVntasSinControlMonto = ConvertDouble(LeerCampoVariable(reply, ref posicion)),
-                            TotalVntasSinControlVolumen = ConvertDouble(LeerCampoVariable(reply, ref posicion)),
-                            TotalPruebasMonto = ConvertDouble(LeerCampoVariable(reply, ref posicion)),
-                            TotalPruebasVolumen = ConvertDouble(LeerCampoVariable(reply, ref posicion))
-                        };
+                        messageError = $"Al crear el {j} TotalPorManguera. Surtidores: {Station.Instance.NumeroDeSurtidores}. Numero de mangueras: {surtidor.NumeroDeMangueras}";
+                        TotalPorManguera totalPorManguera = new TotalPorManguera();
+                        messageError = "1";
+                        totalPorManguera.NumeroDeSurtidor = surtidor.ID;
+                        messageError = "2";
+                        totalPorManguera.NumeroDeManguera = j + 1;
+                        messageError = "3";
+                        totalPorManguera.TotalVntasMonto = ConvertDouble(LeerCampoVariable(reply, ref posicion));
+                        messageError = "4";
+                        totalPorManguera.TotalVntasVolumen = ConvertDouble(LeerCampoVariable(reply, ref posicion));
+                        messageError = "5";
+                        totalPorManguera.TotalVntasSinControlMonto = ConvertDouble(LeerCampoVariable(reply, ref posicion));
+                        messageError = "6";
+                        totalPorManguera.TotalVntasSinControlVolumen = ConvertDouble(LeerCampoVariable(reply, ref posicion));
+                        messageError = "7";
+                        totalPorManguera.TotalPruebasMonto = ConvertDouble(LeerCampoVariable(reply, ref posicion));
+                        messageError = "8";
+                        totalPorManguera.TotalPruebasVolumen = ConvertDouble(LeerCampoVariable(reply, ref posicion));
                         messageError = $"Al agregar el {j} TotalPorManguera";
                         turno.TotalesPorManguera.Add(totalPorManguera);
                     }

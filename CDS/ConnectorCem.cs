@@ -464,7 +464,7 @@ namespace CDS
                     messageError = $"Al Consultar las mangueras de cada surtidor";
                     for (int j = 0; j < surtidor.NumeroDeMangueras; j++)
                     {
-                        messageError = $"Al crear el {j} TotalPorManguera";
+                        messageError = $"Al crear el {j} TotalPorManguera. Surtidores: {Station.Instance.NumeroDeSurtidores}";
                         TotalPorManguera totalPorManguera = new TotalPorManguera
                         {
                             NumeroDeSurtidor = surtidor.ID,

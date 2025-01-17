@@ -66,6 +66,10 @@ namespace CDS
                     }
 
                     // Hacer el cierre
+                    if (hacerCierre)
+                    {
+                        ControllerCem.GrabarCierre();
+                    }
                 }
                 catch (Exception e)
                 {

@@ -192,7 +192,7 @@ namespace CDS
     {
         public CierreDeTurno() { }
 
-        public int Id { get; set; }
+        public int ID { get; set; }
         public string FechaCierre { get; set; }
         public double TotalesMonto { get; set; }
         public double TotalesVolumen { get; set; }
@@ -257,19 +257,19 @@ namespace CDS
     {
         public TotalPorTanque() { }
         public int NumeroDeTanque { get; set; }
-        public string Producto { get; set; }
-        public string Agua { get; set; }
-        public string Vacio { get; set; }
-        public string Capacidad { get; set; }
+        public double Producto { get; set; }
+        public double Agua { get; set; }
+        public double Vacio { get; set; }
+        public double Capacidad { get; set; }
     }
 
     public class ProductoEnTanque
     {
         public ProductoEnTanque() { }
         public int NumeroDeProducto { get; set; }
-        public string VolumenEnTanques { get; set; }
-        public string AguaEnTanques { get; set; }
-        public string VacioEnTanques { get; set; }
-        public string CapacidadEnTanques { get; set; }
+        public double VolumenEnTanques { get; set; }
+        public double AguaEnTanques { get; set; }
+        public double VacioEnTanques { get; set; }
+        public double CapacidadEnTanques { get; set; }
     }
 }

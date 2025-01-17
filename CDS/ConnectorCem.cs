@@ -372,9 +372,9 @@ namespace CDS
             }
 
             CierreDeTurnoCem turno;
+
             try
             {
-                messageError = "En comprobacion de turno sin ventas";
                 if (reply[0] == 0xFF)
                 {
                     turno = new CierreDeTurnoCem
@@ -382,32 +382,123 @@ namespace CDS
                         Estado = "SIN VENTAS"
                     };
 
+                    for (int i = 0; i < CierreDeTurnoCem.MEDIOS_DE_PAGO; i++)
+                    {
+                        TotalMedioDePago totalMedioDePago = new TotalMedioDePago()
+                        {
+                            NumeroDeMedioDePago = i + 1,
+                            TotalMonto = 0,
+                            TotalVolumen = 0,
+                        };
+
+                        turno.TotalesMedioDePago.Add(totalMedioDePago);
+                    }
+
+                    turno.Impuesto1 = 0;
+                    turno.Impuesto2 = 0;
+
+                    // INICIO DE CONTEO DE LOS PERIODOS
+                    turno.PeriodoDePrecios = reply[posicion];
+                    posicion++;
+
+                    for (int i = 0; i < turno.PeriodoDePrecios; i++)
+                    {
+                        // INICIO DE CONTEO DE LOS NIVELES
+                        List<List<TotalPorProducto>> totalesPorProductoPorNivel = new List<List<TotalPorProducto>>();
+
+                        turno.NivelesDePrecio = reply[posicion];
+                        posicion++;
+
+                        for (int j = 0; j < turno.NivelesDePrecio; j++)
+                        {
+                            // INICIO DE LOS TOTALES POR PRODUCTO
+                            List<TotalPorProducto> totalesPorProducto = new List<TotalPorProducto>();
+
+                            for (int k = 0; k < Station.Instance.NumeroDeProductos; k++)
+                            {
+                                TotalPorProducto totalPorProducto = new TotalPorProducto
+                                {
+                                    Periodo = i + 1,
+                                    Nivel = j + 1,
+                                    NumeroDeProducto = k + 1,
+                                    TotalMonto = 0,
+                                    TotalVolumen = 0,
+                                    PrecioUnitario = 0,
+                                };
+                                totalesPorProducto.Add(totalPorProducto);
+                            }
+                            totalesPorProductoPorNivel.Add(totalesPorProducto);
+                        }
+                        turno.TotalesPorPeriodoPorNivelPorProducto.Add(totalesPorProductoPorNivel);
+                    }
+
+                    foreach (Surtidor surtidor in Station.Instance.Surtidores)
+                    {
+                        for (int j = 0; j < surtidor.NumeroDeMangueras; j++)
+                        {
+                            TotalPorManguera totalPorManguera = new TotalPorManguera
+                            {
+                                NumeroDeSurtidor = surtidor.ID,
+                                NumeroDeManguera = j + 1,
+                                TotalVntasMonto = 0,
+                                TotalVntasVolumen = 0,
+                                TotalVntasSinControlMonto = 0,
+                                TotalVntasSinControlVolumen = 0,
+                                TotalPruebasMonto = 0,
+                                TotalPruebasVolumen = 0
+                            };
+                            turno.TotalesPorManguera.Add(totalPorManguera);
+                        }
+                    }
+
+                    for (int i = 0; i < Station.Instance.NumeroDeTanques; i++)
+                    {
+                        TotalPorTanque totalPorTanque = new TotalPorTanque
+                        {
+                            NumeroDeTanque = i,
+                            Producto = 0,
+                            Agua = 0,
+                            Vacio = 0,
+                            Capacidad = 0
+                        };
+
+                        turno.TotalesPorTanque.Add(totalPorTanque);
+                    }
+
+                    for (int i = 0; i < Station.Instance.NumeroDeProductos; i++)
+                    {
+                        ProductoEnTanque productoEnTanque = new ProductoEnTanque
+                        {
+                            NumeroDeProducto = i,
+                            VolumenEnTanques = 0,
+                            AguaEnTanques = 0,
+                            VacioEnTanques = 0,
+                            CapacidadEnTanques = 0
+                        };
+
+                        turno.ProductosEnTanque.Add(productoEnTanque);
+                    }
+
                     return turno;
                 }
 
-                messageError = "Creando el turno";
                 turno = new CierreDeTurnoCem();
 
                 for (int i = 0; i < CierreDeTurnoCem.MEDIOS_DE_PAGO; i++)
                 {
-                    messageError = $"Creando el {i} total medio de pago";
                     TotalMedioDePago totalMedioDePago = new TotalMedioDePago()
                     {
                         NumeroDeMedioDePago = i + 1,
                         TotalMonto = ConvertDouble(LeerCampoVariable(reply, ref posicion)),
                         TotalVolumen = ConvertDouble(LeerCampoVariable(reply, ref posicion)),
                     };
-
-                    messageError = $"Guardando el {i} total medio de pago";
                     turno.TotalesMedioDePago.Add(totalMedioDePago);
                 }
 
-                messageError = $"Guardando los impuestos";
                 turno.Impuesto1 = Convert.ToInt32(LeerCampoVariable(reply, ref posicion));
                 turno.Impuesto2 = Convert.ToInt32(LeerCampoVariable(reply, ref posicion));
 
                 // INICIO DE CONTEO DE LOS PERIODOS
-                messageError = "Obteniendo el periodo de precios";
                 turno.PeriodoDePrecios = reply[posicion];
                 posicion++;
 
@@ -416,7 +507,6 @@ namespace CDS
                     // INICIO DE CONTEO DE LOS NIVELES
                     List<List<TotalPorProducto>> totalesPorProductoPorNivel = new List<List<TotalPorProducto>>();
 
-                    messageError = "Obteniendo los niveles de precio";
                     turno.NivelesDePrecio = reply[posicion];
                     posicion++;
 
@@ -425,10 +515,8 @@ namespace CDS
                         // INICIO DE LOS TOTALES POR PRODUCTO
                         List<TotalPorProducto> totalesPorProducto = new List<TotalPorProducto>();
 
-                        messageError = "Al consultar el numero de productos";
                         for (int k = 0; k < Station.Instance.NumeroDeProductos; k++)
                         {
-                            messageError = $"Al crear el {k} totalPorProducto";
                             TotalPorProducto totalPorProducto = new TotalPorProducto
                             {
                                 Periodo = i + 1,
@@ -438,84 +526,59 @@ namespace CDS
                                 TotalVolumen = ConvertDouble(LeerCampoVariable(reply, ref posicion)),
                                 PrecioUnitario = ConvertDouble(LeerCampoVariable(reply, ref posicion)),
                             };
-                            messageError = $"Al agregar el {k} totalPorProducto";
                             totalesPorProducto.Add(totalPorProducto);
                         }
 
-                        messageError = $"Al agregar el {j} totalesPorProducto";
                         totalesPorProductoPorNivel.Add(totalesPorProducto);
                     }
 
-                    messageError = $"Al agregar el {i} totalesPorProductoPorNivel";
                     turno.TotalesPorPeriodoPorNivelPorProducto.Add(totalesPorProductoPorNivel);
                 }
 
-                messageError = $"Al Consultar surtidores";
                 foreach (Surtidor surtidor in Station.Instance.Surtidores)
                 {
-                    messageError = $"Al Consultar las mangueras de cada surtidor";
                     for (int j = 0; j < surtidor.NumeroDeMangueras; j++)
                     {
-                        TotalPorManguera totalPorManguera = new TotalPorManguera();
+                        TotalPorManguera totalPorManguera = new TotalPorManguera
+                        {
+                            NumeroDeSurtidor = surtidor.ID,
+                            NumeroDeManguera = j + 1,
+                            TotalVntasMonto = ConvertDouble(LeerCampoVariable(reply, ref posicion)),
+                            TotalVntasVolumen = ConvertDouble(LeerCampoVariable(reply, ref posicion)),
+                            TotalVntasSinControlMonto = ConvertDouble(LeerCampoVariable(reply, ref posicion)),
+                            TotalVntasSinControlVolumen = ConvertDouble(LeerCampoVariable(reply, ref posicion)),
+                            TotalPruebasMonto = ConvertDouble(LeerCampoVariable(reply, ref posicion)),
+                            TotalPruebasVolumen = ConvertDouble(LeerCampoVariable(reply, ref posicion))
+                        };
 
-                        messageError = $"1 Surtidores: {surtidor.ID}. Numero de mangueras: {j + 1}. reply: {reply.Length}";
-                        totalPorManguera.NumeroDeSurtidor = surtidor.ID;
-
-                        messageError = $"2 Surtidores: {surtidor.ID}. Numero de mangueras: {j + 1}. reply: {reply.Length}";
-                        totalPorManguera.NumeroDeManguera = j + 1;
-
-                        messageError = $"3 Surtidores: {surtidor.ID}. Numero de mangueras: {j + 1}. reply: {reply.Length}";
-                        totalPorManguera.TotalVntasMonto = ConvertDouble(LeerCampoVariable(reply, ref posicion));
-
-                        messageError = $"4 Surtidores: {surtidor.ID}. Numero de mangueras: {j + 1}. reply: {reply.Length}";
-                        totalPorManguera.TotalVntasVolumen = ConvertDouble(LeerCampoVariable(reply, ref posicion));
-
-                        messageError = $"5 Surtidores: {surtidor.ID}. Numero de mangueras: {j + 1}. reply: {reply.Length}";
-                        totalPorManguera.TotalVntasSinControlMonto = ConvertDouble(LeerCampoVariable(reply, ref posicion));
-
-                        messageError = $"6 Surtidores: {surtidor.ID}. Numero de mangueras: {j + 1}. reply: {reply.Length}";
-                        totalPorManguera.TotalVntasSinControlVolumen = ConvertDouble(LeerCampoVariable(reply, ref posicion));
-
-                        messageError = $"7 Surtidores: {surtidor.ID}. Numero de mangueras: {j + 1}. reply: {reply.Length}";
-                        totalPorManguera.TotalPruebasMonto = ConvertDouble(LeerCampoVariable(reply, ref posicion));
-
-                        messageError = $"8 Surtidores: {surtidor.ID}. Numero de mangueras: {j + 1}. reply: {reply.Length}";
-                        totalPorManguera.TotalPruebasVolumen = ConvertDouble(LeerCampoVariable(reply, ref posicion));
-
-                        messageError = $"Al agregar el {j} TotalPorManguera";
                         turno.TotalesPorManguera.Add(totalPorManguera);
                     }
                 }
                  
                 for (int i = 0; i < Station.Instance.NumeroDeTanques; i++)
                 {
-                    messageError = $"Al crear el {i} TotalPorTanque";
                     TotalPorTanque totalPorTanque = new TotalPorTanque
                     {
                         NumeroDeTanque = i,
-                        Producto = LeerCampoVariable(reply, ref posicion),
-                        Agua = LeerCampoVariable(reply, ref posicion),
-                        Vacio = LeerCampoVariable(reply, ref posicion),
-                        Capacidad = LeerCampoVariable(reply, ref posicion)
+                        Producto = ConvertDouble(LeerCampoVariable(reply, ref posicion)),
+                        Agua = ConvertDouble(LeerCampoVariable(reply, ref posicion)),
+                        Vacio = ConvertDouble(LeerCampoVariable(reply, ref posicion)),
+                        Capacidad = ConvertDouble(LeerCampoVariable(reply, ref posicion))
                     };
-
-                    messageError = $"Al agregar el {i} TotalPorTanque";
                     turno.TotalesPorTanque.Add(totalPorTanque);
                 }
 
                 for (int i = 0; i < Station.Instance.NumeroDeProductos; i++)
                 {
-                    messageError = $"Al crear el {i} ProductoEnTanque";
                     ProductoEnTanque productoEnTanque = new ProductoEnTanque
                     {
                         NumeroDeProducto = i,
-                        VolumenEnTanques = LeerCampoVariable(reply, ref posicion),
-                        AguaEnTanques = LeerCampoVariable(reply, ref posicion),
-                        VacioEnTanques = LeerCampoVariable(reply, ref posicion),
-                        CapacidadEnTanques = LeerCampoVariable(reply, ref posicion)
+                        VolumenEnTanques = ConvertDouble(LeerCampoVariable(reply, ref posicion)),
+                        AguaEnTanques = ConvertDouble(LeerCampoVariable(reply, ref posicion)),
+                        VacioEnTanques = ConvertDouble(LeerCampoVariable(reply, ref posicion)),
+                        CapacidadEnTanques = ConvertDouble(LeerCampoVariable(reply, ref posicion))
                     };
 
-                    messageError = $"Al agregar el {i} ProductoEnTanque";
                     turno.ProductosEnTanque.Add(productoEnTanque);
                 }
 

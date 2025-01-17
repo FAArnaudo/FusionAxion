@@ -23,7 +23,7 @@ namespace CDS
 
         public override bool VerificarConexión()
         {
-            if (ConnectorCem.PoleoEnLinea(ProtocolCommand.PoleoEnLineaComand))
+            if (ConnectorCem.PoleoEnLinea(ProtocolCommand.PoleoEnLineaCommand))
             {
                 _ = ConnectorSQLite.Instance.ExecuteNonQuery($"UPDATE CheckConnection SET isConnected = 1, fecha = '{DateTime.Now:dd-MM-yyyy HH:mm:ss}' WHERE idConnection = 1");
                 return true;
@@ -37,7 +37,7 @@ namespace CDS
 
         public override void ConfigurarEstacion()
         {
-            Station station = ConnectorCem.ComandoConfiguracionDeLaEstacion(ProtocolCommand.ConfigureStationComand);
+            Station station = ConnectorCem.ComandoConfiguracionDeLaEstacion(ProtocolCommand.ConfigureStationCommand);
 
             try
             {
@@ -148,7 +148,7 @@ namespace CDS
 
         public override void ActualizarTanques()
         {
-            List<Tanque> tanques = ConnectorCem.ComandoStockDeTanques(ProtocolCommand.TanksStockComand);
+            List<Tanque> tanques = ConnectorCem.ComandoStockDeTanques(ProtocolCommand.TanksStockCommand);
 
             try
             {
@@ -276,9 +276,60 @@ namespace CDS
 
         public override void GrabarCierre()
         {
+            CierreDeTurnoCem cierreDeTurno = ConnectorCem.ComandoCierresDeTurno(ProtocolCommand.CierreDeTurnoCommand);
+
             try
             {
+                string fields = "id_cierre,fecha,monto_contado,volumen_contado,monto_YPFruta,volumen_YPFruta,state";
+                string values = string.Format("{0},'{1}',{2},{3},{4},{5},'{6}'",
+                    cierreDeTurno.ID,
+                    DateTime.Now.ToString("dd-MM-yyyy HH:mm:ss"),
+                    cierreDeTurno.TotalesMedioDePago[0].TotalMonto,
+                    cierreDeTurno.TotalesMedioDePago[0].TotalVolumen,
+                    cierreDeTurno.TotalesMedioDePago[3].TotalMonto,
+                    cierreDeTurno.TotalesMedioDePago[3].TotalVolumen,
+                    cierreDeTurno.Estado);
 
+                ConnectorSQLite.Instance.ExecuteNonQuery(string.Format("INSERT INTO Cierres ({0}) VALUES ({1})", fields, values));
+
+                // Traer ID del cierre para poder referenciar los detalles
+                DataTable tablaCierres = ConnectorSQLite.Instance.ExecuteSelectQuery("SELECT max(id) FROM Cierres");
+
+                int id = Convert.ToInt32(tablaCierres.Rows[0][0]);
+
+                // Grabar CierresPorProducto
+                fields = "id,producto,monto,volumen";
+                for (int periodo = 0; periodo < cierreDeTurno.TotalesPorPeriodoPorNivelPorProducto.Count; periodo++)
+                {
+                    for (int nivel = 0; nivel < cierreDeTurno.TotalesPorPeriodoPorNivelPorProducto[periodo].Count; nivel++)
+                    {
+                        for (int producto = 0; producto < cierreDeTurno.TotalesPorPeriodoPorNivelPorProducto[periodo][nivel].Count; producto++)
+                        {
+                            values = string.Format("{0},{1},{2},{3}",
+                                cierreDeTurno.ID,
+                                cierreDeTurno.TotalesPorPeriodoPorNivelPorProducto[periodo][nivel][producto].NumeroDeProducto,
+                                cierreDeTurno.TotalesPorPeriodoPorNivelPorProducto[periodo][nivel][producto].TotalMonto,
+                                cierreDeTurno.TotalesPorPeriodoPorNivelPorProducto[periodo][nivel][producto].TotalVolumen);
+
+                            ConnectorSQLite.Instance.ExecuteNonQuery(string.Format("INSERT INTO Cierres ({0}) VALUES ({1})", fields, values));
+                        }
+                    }
+                }
+
+                // Grabar CierresPorManguera
+                fields = "id,surtidor,manguera,monto,volumen";
+
+                for (int manguera = 0; manguera < cierreDeTurno.TotalesPorManguera.Count; manguera++)
+                {
+                    values = string.Format("{0},{1},{2},{3},{4}",
+                        cierreDeTurno.ID,
+                        cierreDeTurno.TotalesPorManguera[manguera].NumeroDeSurtidor,
+                        cierreDeTurno.TotalesPorManguera[manguera].NumeroDeManguera,
+                        cierreDeTurno.TotalesPorManguera[manguera].TotalVntasMonto,
+                        cierreDeTurno.TotalesPorManguera[manguera].TotalVntasVolumen);
+
+                    ConnectorSQLite.Instance.ExecuteNonQuery(string.Format("INSERT INTO Cierres ({0}) VALUES ({1})", fields, values));
+                }
             }
             catch (Exception e)
             {
@@ -320,31 +371,30 @@ namespace CDS
     {
         int GetProtocol();
 
-        byte[] PoleoEnLineaComand { get; }
-        byte[] ConfigureStationComand { get; }
-        byte[] TanksStockComand { get; }
+        byte[] PoleoEnLineaCommand { get; }
+        byte[] ConfigureStationCommand { get; }
+        byte[] TanksStockCommand { get; }
         byte[] DespachoCommand { get; }
-        byte[] CierreDeTurnoComand { get; }
-        byte[] CierreAnteriorComand { get; }
-        byte[] TurnoActualComand { get; }
-
+        byte[] CierreDeTurnoCommand { get; }
+        byte[] CierreAnteriorCommand { get; }
+        byte[] TurnoActualCommand { get; }
     }
 
     public class Protocol16 : IProtocolCommand
     {
-        public byte[] ConfigureStationComand => new byte[] { 0x65 };
+        public byte[] ConfigureStationCommand => new byte[] { 0x65 };
 
-        public byte[] TanksStockComand => new byte[] { 0x68 };
+        public byte[] TanksStockCommand => new byte[] { 0x68 };
 
         public byte[] DespachoCommand => new byte[] { 0x70 };
 
-        public byte[] CierreDeTurnoComand => new byte[] { 0x07 };
+        public byte[] CierreDeTurnoCommand => new byte[] { 0x07 };
 
-        public byte[] CierreAnteriorComand => new byte[] { 0x0B };
+        public byte[] CierreAnteriorCommand => new byte[] { 0x0B };
 
-        public byte[] TurnoActualComand => new byte[] { 0x08 };
+        public byte[] TurnoActualCommand => new byte[] { 0x08 };
 
-        public byte[] PoleoEnLineaComand => new byte[] { 0x00 };
+        public byte[] PoleoEnLineaCommand => new byte[] { 0x00 };
 
         public int GetProtocol()
         {
@@ -354,19 +404,19 @@ namespace CDS
 
     public class Protocol32 : IProtocolCommand
     {
-        public byte[] ConfigureStationComand => new byte[] { 0xB5 };
+        public byte[] ConfigureStationCommand => new byte[] { 0xB5 };
 
-        public byte[] TanksStockComand => new byte[] { 0xB8 };
+        public byte[] TanksStockCommand => new byte[] { 0xB8 };
 
         public byte[] DespachoCommand => new byte[] { 0xC0 };
 
-        public byte[] CierreDeTurnoComand => new byte[] { 0x07 };
+        public byte[] CierreDeTurnoCommand => new byte[] { 0x07 };
 
-        public byte[] CierreAnteriorComand => new byte[] { 0x0B };
+        public byte[] CierreAnteriorCommand => new byte[] { 0x0B };
 
-        public byte[] TurnoActualComand => new byte[] { 0x08 };
+        public byte[] TurnoActualCommand => new byte[] { 0x08 };
 
-        public byte[] PoleoEnLineaComand => new byte[] { 0x00 };
+        public byte[] PoleoEnLineaCommand => new byte[] { 0x00 };
 
         public int GetProtocol()
         {

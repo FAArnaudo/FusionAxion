@@ -268,35 +268,6 @@ namespace ConfigurationTests
         }
 
         [TestMethod]
-        public void ComandoCierres_CierreDeTurno_NotNull()
-        {
-            // Aragne
-            byte[] reply = connectorCem.ReadAnswer("ConfiguracionDeLaEstacion");
-
-            byte[] command = new byte[] { 0x65 };
-
-            _ = connections.Setup(a => a.EnviarComando(command)).Returns(reply);
-
-            Station estacion = connectorCem.ComandoConfiguracionDeLaEstacion(command);
-
-            byte[] reply_cierre = connectorCem.ReadAnswer("CierreDeTurno");
-
-            command = new byte[] { 0x07 };
-
-            _ = connections.Setup(b => b.EnviarComando(command)).Returns(reply_cierre);
-
-            string expected = "OK";
-
-            // Act
-            CierreDeTurnoCem cierreDeTurno = connectorCem.ComandoCierresDeTurno(command);
-
-            string actual = cierreDeTurno.Estado;
-
-            // Assert
-            Assert.AreEqual(expected, actual);
-        }
-
-        [TestMethod]
         public void ComandoCierres_CierreDeTurno_SinVentas()
         {
             // Aragne

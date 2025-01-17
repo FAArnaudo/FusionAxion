@@ -456,24 +456,32 @@ namespace CDS
                     messageError = $"Al Consultar las mangueras de cada surtidor";
                     for (int j = 0; j < surtidor.NumeroDeMangueras; j++)
                     {
-                        messageError = $"Al crear el {j} TotalPorManguera. Surtidores: {surtidor.ID}. Numero de mangueras: {surtidor.NumeroDeMangueras}";
                         TotalPorManguera totalPorManguera = new TotalPorManguera();
-                        messageError = $"1 Surtidores: {surtidor.ID}. Numero de mangueras: {surtidor.NumeroDeMangueras}. reply: {reply.Length}";
+
+                        messageError = $"1 Surtidores: {surtidor.ID}. Numero de mangueras: {j + 1}. reply: {reply.Length}";
                         totalPorManguera.NumeroDeSurtidor = surtidor.ID;
-                        messageError = $"2 Surtidores: {surtidor.ID}. Numero de mangueras: {surtidor.NumeroDeMangueras}. reply: {reply.Length}";
+
+                        messageError = $"2 Surtidores: {surtidor.ID}. Numero de mangueras: {j + 1}. reply: {reply.Length}";
                         totalPorManguera.NumeroDeManguera = j + 1;
-                        messageError = $"3 Surtidores: {surtidor.ID}. Numero de mangueras: {surtidor.NumeroDeMangueras}. reply: {reply.Length}";
+
+                        messageError = $"3 Surtidores: {surtidor.ID}. Numero de mangueras: {j + 1}. reply: {reply.Length}";
                         totalPorManguera.TotalVntasMonto = ConvertDouble(LeerCampoVariable(reply, ref posicion));
-                        messageError = $"4 Surtidores: {surtidor.ID}. Numero de mangueras: {surtidor.NumeroDeMangueras}. reply: {reply.Length}";
+
+                        messageError = $"4 Surtidores: {surtidor.ID}. Numero de mangueras: {j + 1}. reply: {reply.Length}";
                         totalPorManguera.TotalVntasVolumen = ConvertDouble(LeerCampoVariable(reply, ref posicion));
-                        messageError = $"5 Surtidores: {surtidor.ID}. Numero de mangueras: {surtidor.NumeroDeMangueras}. reply: {reply.Length}";
+
+                        messageError = $"5 Surtidores: {surtidor.ID}. Numero de mangueras: {j + 1}. reply: {reply.Length}";
                         totalPorManguera.TotalVntasSinControlMonto = ConvertDouble(LeerCampoVariable(reply, ref posicion));
-                        messageError = $"6 Surtidores: {surtidor.ID}. Numero de mangueras: {surtidor.NumeroDeMangueras}. reply: {reply.Length}";
+
+                        messageError = $"6 Surtidores: {surtidor.ID}. Numero de mangueras: {j + 1}. reply: {reply.Length}";
                         totalPorManguera.TotalVntasSinControlVolumen = ConvertDouble(LeerCampoVariable(reply, ref posicion));
-                        messageError = $"7 Surtidores: {surtidor.ID}. Numero de mangueras: {surtidor.NumeroDeMangueras}. reply: {reply.Length}";
+
+                        messageError = $"7 Surtidores: {surtidor.ID}. Numero de mangueras: {j + 1}. reply: {reply.Length}";
                         totalPorManguera.TotalPruebasMonto = ConvertDouble(LeerCampoVariable(reply, ref posicion));
-                        messageError = $"8 Surtidores: {surtidor.ID}. Numero de mangueras: {surtidor.NumeroDeMangueras}. reply: {reply.Length}";
+
+                        messageError = $"8 Surtidores: {surtidor.ID}. Numero de mangueras: {j + 1}. reply: {reply.Length}";
                         totalPorManguera.TotalPruebasVolumen = ConvertDouble(LeerCampoVariable(reply, ref posicion));
+
                         messageError = $"Al agregar el {j} TotalPorManguera";
                         turno.TotalesPorManguera.Add(totalPorManguera);
                     }

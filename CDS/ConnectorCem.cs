@@ -433,19 +433,11 @@ namespace CDS
                             {
                                 Periodo = i + 1,
                                 Nivel = j + 1,
+                                NumeroDeProducto = k + 1,
                                 TotalMonto = ConvertDouble(LeerCampoVariable(reply, ref posicion)),
                                 TotalVolumen = ConvertDouble(LeerCampoVariable(reply, ref posicion)),
                                 PrecioUnitario = ConvertDouble(LeerCampoVariable(reply, ref posicion)),
                             };
-
-                            foreach (Producto producto in Station.Instance.Productos)
-                            {
-                                if (producto.PrecioUnitario == totalPorProducto.PrecioUnitario)
-                                {
-                                    totalPorProducto.NumeroDeProducto = producto.ID;
-                                    break;
-                                }
-                            }
                             messageError = $"Al agregar el {k} totalPorProducto";
                             totalesPorProducto.Add(totalPorProducto);
                         }
@@ -471,7 +463,7 @@ namespace CDS
                         messageError = "2";
                         totalPorManguera.NumeroDeManguera = j + 1;
                         messageError = $"3 posicion: {posicion}";
-                        //totalPorManguera.TotalVntasMonto = ConvertDouble(LeerCampoVariable(reply, ref posicion));
+                        totalPorManguera.TotalVntasMonto = ConvertDouble(LeerCampoVariable(reply, ref posicion));
                         messageError = $"4 posicion: {posicion}";
                         totalPorManguera.TotalVntasVolumen = ConvertDouble(LeerCampoVariable(reply, ref posicion));
                         messageError = "5";

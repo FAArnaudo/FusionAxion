@@ -271,9 +271,17 @@ namespace ConfigurationTests
         public void ComandoCierres_CierreDeTurno_SinVentas()
         {
             // Aragne
-            byte[] reply = new byte[] { 0xFF };
+            byte[] reply = connectorCem.ReadAnswer("ConfiguracionDeLaEstacion");
 
-            byte[] command = new byte[] { 0x07 };
+            byte[] command = new byte[] { 0x65 };
+
+            _ = connections.Setup(a => a.EnviarComando(command)).Returns(reply);
+
+            connectorCem.ComandoConfiguracionDeLaEstacion(command);
+
+            reply = new byte[] { 0xFF };
+
+            command = new byte[] { 0x07 };
 
             _ = connections.Setup(a => a.EnviarComando(command)).Returns(reply);
 

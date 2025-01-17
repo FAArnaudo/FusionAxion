@@ -398,7 +398,7 @@ namespace CDS
                     turno.Impuesto2 = 0;
 
                     // INICIO DE CONTEO DE LOS PERIODOS
-                    turno.PeriodoDePrecios = reply[posicion];
+                    turno.PeriodoDePrecios = 1;
                     posicion++;
 
                     for (int i = 0; i < turno.PeriodoDePrecios; i++)
@@ -406,7 +406,7 @@ namespace CDS
                         // INICIO DE CONTEO DE LOS NIVELES
                         List<List<TotalPorProducto>> totalesPorProductoPorNivel = new List<List<TotalPorProducto>>();
 
-                        turno.NivelesDePrecio = reply[posicion];
+                        turno.NivelesDePrecio = 1;
                         posicion++;
 
                         for (int j = 0; j < turno.NivelesDePrecio; j++)

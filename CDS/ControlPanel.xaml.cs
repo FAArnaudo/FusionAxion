@@ -225,11 +225,6 @@ namespace CDS
         {
             Views.CIOViews cIOViews = new Views.CIOViews();
             cIOViews.Show();
-
-            if (sender is Button clickedButton)
-            {
-                _ = MessageBox.Show($"¡{clickedButton.Content} presionado!");
-            }
         }
         #endregion
         #region PROCESO EN SEGUNDO PLANO

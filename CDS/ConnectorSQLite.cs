@@ -253,7 +253,7 @@ namespace CDS
                 }
 
                 createTableQuery = "CREATE TABLE IF NOT EXISTS Cierres " +
-                                   "(id INTEGER, id_cierre INTEGER, fecha TEXT DEFAULT(datetime('now', 'localtime')), " +
+                                   "(id INTEGER, id_cierre INTEGER, fecha TEXT DEFAULT((strftime('%d-%m-%Y %H:%M:%S', 'now', 'localtime'))), " +
                                    "monto_contado TEXT, volumen_contado TEXT, " +
                                    "monto_YPFruta TEXT, volumen_YPFruta TEXT, state TEXT, PRIMARY KEY(id AUTOINCREMENT))";
 
@@ -291,7 +291,7 @@ namespace CDS
                 }
 
                 createTableQuery = "CREATE TABLE IF NOT EXISTS CheckConnection " +
-                                  "(idConnection INTEGER PRIMARY KEY, isConnected INTEGER, fecha date DEFAULT(datetime('now', 'localtime')));" +
+                                  "(idConnection INTEGER PRIMARY KEY, isConnected INTEGER, fecha date DEFAULT((strftime('%d-%m-%Y %H:%M:%S', 'now', 'localtime'))));" +
                                   "\nINSERT INTO CheckConnection (idConnection, isConnected)" +
                                   "\nSELECT 1, 0 " +
                                   "\nWHERE NOT EXISTS (SELECT 1 FROM CheckConnection WHERE idConnection = 1)";
@@ -304,7 +304,7 @@ namespace CDS
                 createTableQuery = "CREATE TABLE IF NOT EXISTS Datos_CIO " +
                                    "(id_cio INTEGER PRIMARY KEY, ip_vox TEXT NOT NULL, ip_bridge TEXT NOT NULL, " +
                                    "ip_server TEXT NOT NULL, ip_libre TEXT NOT NULL, " +
-                                   "ruteo_estatico TEXT, fecha date DEFAULT(datetime('now', 'localtime')));" +
+                                   "ruteo_estatico TEXT, fecha date DEFAULT((strftime('%d-%m-%Y %H:%M:%S', 'now', 'localtime'))));" +
                                    "\nINSERT INTO Datos_CIO (id_cio, ip_vox, ip_bridge, ip_server, ip_libre, ruteo_estatico)" +
                                    "\nSELECT 1, '', '', '', '', '' " +
                                    "\nWHERE NOT EXISTS (SELECT 1 FROM Datos_CIO WHERE id_cio = 1);";

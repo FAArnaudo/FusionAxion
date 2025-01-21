@@ -80,7 +80,7 @@ namespace CDS
                 station.NumeroDeProductos = reply[productos];
 
                 int posicion = productos + 1;
-
+                List<Producto> productosTemp = new List<Producto>();
                 for (int i = 0; i < station.NumeroDeProductos; i++)
                 {
                     Producto product = new ProductoCem
@@ -124,13 +124,14 @@ namespace CDS
                             product.Descripcion = "N/Utilizado";
                             break;
                     }
-
-                    station.Productos.Add(product);
+                    productosTemp.Add(product);
                 }
+                station.Productos = productosTemp;
 
+                List<Surtidor> surtidoresTemp = new List<Surtidor>();
                 for (int i = 0; i < station.NumeroDeSurtidores; i++)
                 {
-                    Surtidor pump = new Surtidor
+                    Surtidor surtidor = new Surtidor
                     {
                         NivelDeSurtidor = reply[posicion],
                         ID = i + 1
@@ -138,13 +139,13 @@ namespace CDS
 
                     posicion++;
 
-                    pump.NumeroDeMangueras = reply[posicion] + 1; // [0 , 1, 2, 3] + 1
+                    surtidor.NumeroDeMangueras = reply[posicion] + 1; // [0 , 1, 2, 3] + 1
 
                     posicion++;
 
-                    for (int j = 0; j < pump.NumeroDeMangueras; j++)
+                    for (int j = 0; j < surtidor.NumeroDeMangueras; j++)
                     {
-                        Manguera hose = new Manguera
+                        Manguera manguera = new Manguera
                         {
                             ID = j + 1
                         };
@@ -153,22 +154,32 @@ namespace CDS
                         {
                             if (product.ID == reply[posicion])          //  Recupero el numero de producto
                             {
-                                hose.Producto = product;
+                                manguera.Producto = product;
                                 break;
                             }
                         }
 
                         posicion++;
 
-                        pump.Mangueras.Add(hose);
+                        surtidor.Mangueras.Add(manguera);
                     }
+                    surtidoresTemp.Add(surtidor);
+                }
+                station.Surtidores = surtidoresTemp;
 
-                    station.Surtidores.Add(pump);
+                List<NivelDePrecio> nivelesDePrecioTemp = new List<NivelDePrecio>();
+                for (int i = 0; i < Station.nivelesDePrecio; i++)
+                {
+                    NivelDePrecio nivelDePrecio = new NivelDePrecio
+                    {
+                        Nivel = i
+                    };
+                    nivelesDePrecioTemp.Add(nivelDePrecio);
                 }
 
-                foreach (Surtidor surtidor in station.Surtidores)
+                foreach (Surtidor surtidor in surtidoresTemp)
                 {
-                    foreach (NivelDePrecio nivelDePrecio in station.NivelesDePrecio)
+                    foreach (NivelDePrecio nivelDePrecio in nivelesDePrecioTemp)
                     {
                         if (nivelDePrecio.Nivel == surtidor.NivelDeSurtidor)
                         {
@@ -176,7 +187,9 @@ namespace CDS
                         }
                     }
                 }
+                station.NivelesDePrecio = nivelesDePrecioTemp;
 
+                List<Tanque> tanquesTemp = new List<Tanque>();
                 for (int i = 0; i < station.NumeroDeTanques; i++)
                 {
                     Tanque tanque = new Tanque
@@ -195,8 +208,9 @@ namespace CDS
 
                     posicion++;
 
-                    station.Tanques.Add(tanque);
+                    tanquesTemp.Add(tanque);
                 }
+                station.Tanques = tanquesTemp;
             }
             catch (Exception e)
             {

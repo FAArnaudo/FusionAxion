@@ -21,16 +21,6 @@ namespace CDS
             Productos = new List<Producto>();
             Tanques = new List<Tanque>();
             Surtidores = new List<Surtidor>();
-
-            for (int i = 0; i < nivelesDePrecio; i++)
-            {
-                NivelDePrecio nivelDePrecio = new NivelDePrecio
-                {
-                    Nivel = i
-                };
-
-                NivelesDePrecio.Add(nivelDePrecio);
-            }
         }
 
         public static Station Instance

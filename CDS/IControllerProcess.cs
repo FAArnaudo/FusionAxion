@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -21,6 +22,9 @@ namespace CDS
         public ControllerCem ControllerCem { get; set; }
         public Data Data { get; set; }
         private bool IsRunning { get; set; }
+        private bool HacerCierre { get; set; }
+        private bool ActualizarTanques { get; set; }
+        private bool TraerCierreAnterior { get; set; }
 
         public CemProcess()
         {
@@ -35,38 +39,30 @@ namespace CDS
 
             Log.Instance.WriteLog($"Nuevo proceso principal iniciado. ID: {mainProcess.Id}, Estado: {mainProcess.Status}.\n", LogType.t_info);
 
-            while (!CancellationToken.Token.IsCancellationRequested && ControllerCem.VerificarConexión())
+            while (!CancellationToken.Token.IsCancellationRequested)
             {
                 IsRunning = true;
 
                 try
                 {
+                    while (!ControllerCem.VerificarConexión());
                     ControllerCem.ConfigurarEstacion();
                     ControllerCem.ActualizarTanques();
+                    HacerCierre = false;
 
-                    bool hacerCierre = false;
-                    bool actualizarTanques = false;
-
-                    while (!hacerCierre)
+                    while (!HacerCierre && !CancellationToken.Token.IsCancellationRequested)
                     {
                         Log.Instance.WriteLog($"Estado del hilo {mainProcess.Id}: {mainProcess.Status}. TimerProcess {Data.Timer}\n", LogType.t_debug);
 
                         ControllerCem.GrabarDespachos();
 
-                        actualizarTanques = ConnectorSQLite.Instance.ExecuteStateQuery($"SELECT actualizar_tanques FROM cierreBandera");
-
-                        if (actualizarTanques)
-                        {
-                            ControllerCem.ActualizarTanques();
-                        }
+                        CheckFlags();
 
                         Thread.Sleep(1000 * Convert.ToInt32(Data.Timer));
-
-                        hacerCierre = ConnectorSQLite.Instance.ExecuteStateQuery($"SELECT hacerCierre FROM cierreBandera");
                     }
 
                     // Hacer el cierre
-                    if (hacerCierre)
+                    if (HacerCierre)
                     {
                         ControllerCem.GrabarCierre();
                     }
@@ -80,6 +76,26 @@ namespace CDS
             Log.Instance.WriteLog($"Finalizando hilo: {mainProcess.Id}.", LogType.t_info);
 
             IsRunning = false;
+        }
+
+        public void CheckFlags()
+        {
+            DataTable flags = ConnectorSQLite.Instance.ExecuteSelectQuery($"SELECT * FROM cierreBandera");
+
+            HacerCierre = Convert.ToBoolean(flags.Rows[0][0]);
+
+            bool actualizarTanques = Convert.ToBoolean(flags.Rows[0][1]);
+            bool traerCierreAnterior = Convert.ToBoolean(flags.Rows[0][2]);
+
+            if (actualizarTanques)
+            {
+                ControllerCem.ActualizarTanques();
+            }
+
+            if (traerCierreAnterior)
+            {
+                ControllerCem.TrtaerCierreAnterior();
+            }
         }
 
         public void StopProcess()

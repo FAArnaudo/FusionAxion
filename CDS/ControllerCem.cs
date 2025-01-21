@@ -4,6 +4,7 @@ using System.Data;
 using System.Globalization;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace CDS
@@ -73,11 +74,11 @@ namespace CDS
                                                                                    surtidor.ID,
                                                                                    manguera.ID));
                         }
-
                         Log.Instance.WriteLog(string.Format("SURTIDOR: ({0}) MANGUERA: ({1}) PRODUCTO: ({2})",
                                                             surtidor.ID, manguera.ID, manguera.Producto.Descripcion), LogType.t_info);
                     }
                 }
+                Log.Instance.WriteLog("\n", LogType.t_info);
 
                 foreach (Producto producto in station.Productos)
                 {
@@ -105,7 +106,11 @@ namespace CDS
                                                                                producto.PrecioUnitario,
                                                                                producto.ID));
                     }
+
+                    Log.Instance.WriteLog(string.Format("PRODUCTO: ({0}) DESCRIPCION: ({1}) PRECIO: ({2})",
+                                                            producto.ID, producto.Descripcion, producto.PrecioUnitario), LogType.t_info);
                 }
+                Log.Instance.WriteLog("\n", LogType.t_info);
 
                 foreach (Tanque tanque in station.Tanques)
                 {
@@ -133,7 +138,10 @@ namespace CDS
                                                                                 tanque.CapacidadMaxima,
                                                                                 tanque.ID));
                     }
+                    Log.Instance.WriteLog(string.Format("TANQUE: ({0}) CAPACIDAD: ({1}))",
+                                                            tanque.ID, tanque.CapacidadMaxima), LogType.t_info);
                 }
+                Log.Instance.WriteLog("\n", LogType.t_info);
             }
             catch (Exception e)
             {
@@ -156,7 +164,7 @@ namespace CDS
                 {
                     string campos = "id_tanque,volumen_actual,capacidad_maxima";
 
-                    string rows = string.Format("{0},'{1}',{2}",
+                    string rows = string.Format("{0},{1},{2}",
                                                  tanque.ID,
                                                  tanque.VolumenDeProducto,
                                                  tanque.CapacidadMaxima);
@@ -184,6 +192,7 @@ namespace CDS
             {
                 Log.Instance.WriteLog($"Error en el metodo ActualizarTanques.\n\tExcepcion: {e.Message}", LogType.t_error);
             }
+            ConnectorSQLite.Instance.ExecuteNonQuery("UPDATE cierreBandera SET actualizar_tanques = 0");
         }
 
         public override void GrabarDespachos()
@@ -265,6 +274,8 @@ namespace CDS
                         ConnectorSQLite.Instance.ExecuteNonQuery(string.Format("INSERT INTO Despachos ({0}) VALUES ({1})", campos, row));
 
                         Log.Instance.WriteLog(string.Format("INSERT INTO Despachos ({0}) VALUES ({1})", campos, row), LogType.t_debug);
+
+                        Thread.Sleep(1000);
                     }
                 }
                 catch (Exception e)
@@ -280,9 +291,10 @@ namespace CDS
 
             try
             {
-                string fields = "id_cierre,fecha,monto_contado,volumen_contado,monto_YPFruta,volumen_YPFruta,state";
-                string values = string.Format("{0},'{1}',{2},{3},{4},{5},'{6}'",
-                    cierreDeTurno.ID,
+                ConnectorSQLite.Instance.ExecuteNonQuery("UPDATE cierreBandera SET hacerCierre = 0");
+
+                string fields = "fecha,monto_contado,volumen_contado,monto_YPFruta,volumen_YPFruta,state";
+                string values = string.Format("'{0}',{1},{2},{3},{4},'{5}'",
                     DateTime.Now.ToString("dd-MM-yyyy HH:mm:ss"),
                     cierreDeTurno.TotalesMedioDePago[0].TotalMonto,
                     cierreDeTurno.TotalesMedioDePago[0].TotalVolumen,
@@ -295,7 +307,9 @@ namespace CDS
                 // Traer ID del cierre para poder referenciar los detalles
                 DataTable tablaCierres = ConnectorSQLite.Instance.ExecuteSelectQuery("SELECT max(id) FROM Cierres");
 
-                int id = Convert.ToInt32(tablaCierres.Rows[0][0]);
+                cierreDeTurno.ID = Convert.ToInt32(tablaCierres.Rows[0][0]);
+
+                ConnectorSQLite.Instance.ExecuteNonQuery($"UPDATE Cierres SET id_cierre = ({cierreDeTurno.ID}) WHERE id = {cierreDeTurno.ID}");
 
                 // Grabar CierresPorProducto
                 fields = "id,producto,monto,volumen";
@@ -311,7 +325,7 @@ namespace CDS
                                 cierreDeTurno.TotalesPorPeriodoPorNivelPorProducto[periodo][nivel][producto].TotalMonto,
                                 cierreDeTurno.TotalesPorPeriodoPorNivelPorProducto[periodo][nivel][producto].TotalVolumen);
 
-                            ConnectorSQLite.Instance.ExecuteNonQuery(string.Format("INSERT INTO Cierres ({0}) VALUES ({1})", fields, values));
+                            ConnectorSQLite.Instance.ExecuteNonQuery(string.Format("INSERT INTO CierresPorProducto ({0}) VALUES ({1})", fields, values));
                         }
                     }
                 }
@@ -328,18 +342,112 @@ namespace CDS
                         cierreDeTurno.TotalesPorManguera[manguera].TotalVntasMonto,
                         cierreDeTurno.TotalesPorManguera[manguera].TotalVntasVolumen);
 
-                    ConnectorSQLite.Instance.ExecuteNonQuery(string.Format("INSERT INTO Cierres ({0}) VALUES ({1})", fields, values));
+                    ConnectorSQLite.Instance.ExecuteNonQuery(string.Format("INSERT INTO CierresPorManguera ({0}) VALUES ({1})", fields, values));
                 }
             }
             catch (Exception e)
             {
                 throw new Exception($"Excepción: {e.Message}");
             }
+
+            CheckTableSize();
         }
 
         public void TrtaerCierreAnterior()
         {
-            throw new NotImplementedException();
+            Log.Instance.WriteLog("Iniciando: Traer la Informacion del ultimo cierre de turno cortado.\n", LogType.t_info);
+
+            CierreDeTurnoCem turnoAnterior = ConnectorCem.ComandoCierresDeTurno(ProtocolCommand.CierreAnteriorCommand);
+            turnoAnterior.Estado = "Turno Rectificado - OK";
+
+            try
+            {
+                ConnectorSQLite.Instance.ExecuteNonQuery("UPDATE cierreBandera SET cierre_anterior = 0");
+
+                // Traer ID del cierre para poder referenciar los detalles
+                DataTable tablaCierres = ConnectorSQLite.Instance.ExecuteSelectQuery("SELECT max(id) FROM Cierres");
+
+                turnoAnterior.ID = Convert.ToInt32(tablaCierres.Rows[0][0]);
+
+                int modified = ConnectorSQLite.Instance.ExecuteNonQuery("UPDATE Cierres " +
+                    $"SET fecha = '{DateTime.Now:dd-MM-yyyy HH:mm:ss}', " +
+                        $"monto_contado = {turnoAnterior.TotalesMedioDePago[0].TotalMonto}, " +
+                        $"volumen_contado = {turnoAnterior.TotalesMedioDePago[0].TotalVolumen}, " +
+                        $"monto_YPFruta = {turnoAnterior.TotalesMedioDePago[3].TotalMonto}, " +
+                        $"volumen_YPFruta = {turnoAnterior.TotalesMedioDePago[3].TotalVolumen}, " +
+                        $"state = '{turnoAnterior.Estado}' " +
+                    $"WHERE id = {turnoAnterior.ID}");
+
+                if (modified != 1)
+                {
+                    string fields = "fecha,monto_contado,volumen_contado,monto_YPFruta,volumen_YPFruta,state";
+                    
+                    string values = string.Format("'{0}',{1},{2},{3},{4},'{5}'",
+                        DateTime.Now.ToString("dd-MM-yyyy HH:mm:ss"),
+                        turnoAnterior.TotalesMedioDePago[0].TotalMonto,
+                        turnoAnterior.TotalesMedioDePago[0].TotalVolumen,
+                        turnoAnterior.TotalesMedioDePago[3].TotalMonto,
+                        turnoAnterior.TotalesMedioDePago[3].TotalVolumen,
+                        turnoAnterior.Estado);
+
+                    ConnectorSQLite.Instance.ExecuteNonQuery(string.Format("INSERT INTO Cierres ({0}) VALUES ({1})", fields, values));
+                }
+
+                // Grabar CierresPorProducto
+                for (int periodo = 0; periodo < turnoAnterior.TotalesPorPeriodoPorNivelPorProducto.Count; periodo++)
+                {
+                    for (int nivel = 0; nivel < turnoAnterior.TotalesPorPeriodoPorNivelPorProducto[periodo].Count; nivel++)
+                    {
+                        for (int producto = 0; producto < turnoAnterior.TotalesPorPeriodoPorNivelPorProducto[periodo][nivel].Count; producto++)
+                        {
+                            modified = ConnectorSQLite.Instance.ExecuteNonQuery("UPDATE CierresPorProducto " +
+                                                                    $"SET monto = {turnoAnterior.TotalesPorPeriodoPorNivelPorProducto[periodo][nivel][producto].TotalMonto}, " +
+                                                                        $"volumen = {turnoAnterior.TotalesPorPeriodoPorNivelPorProducto[periodo][nivel][producto].TotalVolumen} " +
+                                                                    $"WHERE id = {turnoAnterior.ID} AND producto = {turnoAnterior.TotalesPorPeriodoPorNivelPorProducto[periodo][nivel][producto].NumeroDeProducto}");
+
+                            if (modified != 1)
+                            {
+                                string fields = "id,producto,monto,volumen";
+
+                                string values = string.Format("{0},{1},{2},{3}",
+                                turnoAnterior.ID,
+                                turnoAnterior.TotalesPorPeriodoPorNivelPorProducto[periodo][nivel][producto].NumeroDeProducto,
+                                turnoAnterior.TotalesPorPeriodoPorNivelPorProducto[periodo][nivel][producto].TotalMonto,
+                                turnoAnterior.TotalesPorPeriodoPorNivelPorProducto[periodo][nivel][producto].TotalVolumen);
+
+                                ConnectorSQLite.Instance.ExecuteNonQuery(string.Format("INSERT INTO CierresPorProducto ({0}) VALUES ({1})", fields, values));
+                            }
+                        }
+                    }
+                }
+
+                // Actualizar CierresPorManguera
+                for (int manguera = 0; manguera < turnoAnterior.TotalesPorManguera.Count; manguera++)
+                {
+                    modified = ConnectorSQLite.Instance.ExecuteNonQuery("UPDATE Cierres " +
+                    $"SET monto = {turnoAnterior.TotalesPorManguera[manguera].TotalVntasMonto}, " +
+                        $"volumen = {turnoAnterior.TotalesPorManguera[manguera].TotalVntasVolumen} " +
+                    $"WHERE id = {turnoAnterior.ID} AND surtidor = {turnoAnterior.TotalesPorManguera[manguera].NumeroDeSurtidor} AND manguera = {turnoAnterior.TotalesPorManguera[manguera].NumeroDeManguera}");
+
+                    if (modified != 1)
+                    {
+                        string fields = "id,surtidor,manguera,monto,volumen";
+                        
+                        string values = string.Format("{0},{1},{2},{3},{4}",
+                        turnoAnterior.ID,
+                        turnoAnterior.TotalesPorManguera[manguera].NumeroDeSurtidor,
+                        turnoAnterior.TotalesPorManguera[manguera].NumeroDeManguera,
+                        turnoAnterior.TotalesPorManguera[manguera].TotalVntasMonto,
+                        turnoAnterior.TotalesPorManguera[manguera].TotalVntasVolumen);
+
+                        ConnectorSQLite.Instance.ExecuteNonQuery(string.Format("INSERT INTO CierresPorManguera ({0}) VALUES ({1})", fields, values));
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                throw new Exception($"Error en el metodo TrtaerCierreAnterior. Excepción: {e.Message}");
+            }
         }
 
         public void TrtaerTurnoActual()
@@ -363,6 +471,33 @@ namespace CDS
                     despacho.Producto = producto.Descripcion;
                     break;
                 }
+            }
+        }
+
+        private void CheckTableSize()
+        {
+            ConnectorSQLite.Instance.ExecuteNonQuery("DELETE FROM despachos");
+
+            int sizeTable = ConnectorSQLite.Instance.ExecuteSelectQuery("SELECT * FROM Cierres").Rows.Count;
+            int maxLimit = 60;
+            int limit = maxLimit / 2;
+
+            if (sizeTable >= maxLimit)
+            {
+                string deleteQuery = $"DELETE FROM Cierres WHERE id IN (SELECT id FROM Cierres ORDER BY id ASC LIMIT {limit})";
+                ConnectorSQLite.Instance.ExecuteNonQuery(deleteQuery);
+
+                deleteQuery = $"DELETE FROM CierresPorManguera " +
+                              $"WHERE id " +
+                              $"IN (SELECT id " +
+                                  $"FROM CierresPorManguera " +
+                                  $"ORDER BY id ASC " +
+                                  $"LIMIT {limit * Station.Instance.NumeroDeSurtidores * Station.Instance.NumeroDeProductos})";
+                ConnectorSQLite.Instance.ExecuteNonQuery(deleteQuery);
+
+                deleteQuery = $"DELETE FROM CierresPorProducto " +
+                              $"WHERE id IN (SELECT id FROM CierresPorProducto ORDER BY id ASC LIMIT {limit * Station.Instance.NumeroDeProductos})";
+                ConnectorSQLite.Instance.ExecuteNonQuery(deleteQuery);
             }
         }
     }

@@ -424,7 +424,7 @@ namespace CDS
                 // Actualizar CierresPorManguera
                 for (int manguera = 0; manguera < turnoAnterior.TotalesPorManguera.Count; manguera++)
                 {
-                    modified = ConnectorSQLite.Instance.ExecuteNonQuery("UPDATE Cierres " +
+                    modified = ConnectorSQLite.Instance.ExecuteNonQuery("UPDATE CierresPorManguera " +
                     $"SET monto = {turnoAnterior.TotalesPorManguera[manguera].TotalVntasMonto}, " +
                         $"volumen = {turnoAnterior.TotalesPorManguera[manguera].TotalVntasVolumen} " +
                     $"WHERE id = {turnoAnterior.ID} AND surtidor = {turnoAnterior.TotalesPorManguera[manguera].NumeroDeSurtidor} AND manguera = {turnoAnterior.TotalesPorManguera[manguera].NumeroDeManguera}");

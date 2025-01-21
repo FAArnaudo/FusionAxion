@@ -83,6 +83,7 @@ namespace ConfigurationTests
             {
                 Controller = "CEM-44",
                 Timer = "8",
+                Protocol = "16",
                 RutaProyNuevo = @"C:\Sistema\PROY_NUEVO"
             };
 

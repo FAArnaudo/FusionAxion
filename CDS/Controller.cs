@@ -11,7 +11,7 @@ namespace CDS
         public Controller() { }
 
         /// <summary>
-        /// Este método es el encargado de verificar la conexión con el controlador y no tificarlo
+        /// Este método es el encargado de verificar la conexión con el controlador y notificarlo
         /// en la base de datos.
         /// </summary>
         /// <returns> true: conexión activa. false: sin conexión </returns>

@@ -66,6 +66,7 @@ namespace CDS
             }
             return true;
         }
+
         public static bool ExistConfiguracion()
         {
             return File.Exists(configFile);
@@ -166,7 +167,7 @@ namespace CDS
             get => modo.ToString();
             set
             {
-                switch (value.ToString())
+                switch (value)
                 {
                     case "NORMAL":
                         modo = MODO.NORMAL;
@@ -207,5 +208,20 @@ namespace CDS
     {
         NORMAL,
         TEST
+    }
+
+    public interface IGetConfiguration
+    {
+        Data GetConfiguration();
+    }
+
+    public class ConnectorConfiguration : IGetConfiguration
+    {
+        public ConnectorConfiguration() { }
+
+        public Data GetConfiguration()
+        {
+            return Configuration.GetConfiguration();
+        }
     }
 }

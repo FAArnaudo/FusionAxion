@@ -67,53 +67,62 @@ namespace CDS
 
         private void Init()
         {
-            ConfigureExpander(Configuration.GetConfiguration().StationFlag, Configuration.GetConfiguration().Controller);
+            _ = ConnectorSQLite.Instance.CreateDatabase(new ConnectorConfiguration());
 
-            if (PumpController.Data == null && ConnectorSQLite.Instance.CreateDatabase())
+            if (Configuration.ExistConfiguracion())
             {
-                if (PumpController.StartProcess(Configuration.GetConfiguration()))
-                {
-                    _ = MessageBox.Show("Conexión iniciada, verifique el estado del controlador.");
+                ConfigureExpander(Configuration.GetConfiguration().StationFlag, Configuration.GetConfiguration().Controller);
 
-                    timer = new DispatcherTimer
+                if (PumpController.Data == null)
+                {
+                    if (PumpController.StartProcess(Configuration.GetConfiguration()))
                     {
-                        Interval = TimeSpan.FromSeconds(5)  // El intervalo es de 5 segundos
-                    };
+                        _ = MessageBox.Show("Conexión iniciada, verifique el estado del controlador.");
 
-                    timer.Tick += Timer_Tick;               // Event handler cuando el timer "hace tic"
-                    timer.Start();                          // Iniciar el temporizador
+                        timer = new DispatcherTimer
+                        {
+                            Interval = TimeSpan.FromSeconds(5)  // El intervalo es de 5 segundos
+                        };
+
+                        timer.Tick += Timer_Tick;               // Event handler cuando el timer "hace tic"
+                        timer.Start();                          // Iniciar el temporizador
+                    }
+                    else
+                    {
+                        _ = MessageBox.Show("Error al cargar los parametros.\n" +
+                                        "Por favor, revise e intente nuevamente.");
+
+                        Log.Instance.WriteLog("No fue posible iniciar el proceso", LogType.t_error);
+                    }
+                }
+                else if (!PumpController.Data.Controller.Equals(Configuration.GetConfiguration().Controller))
+                {
+                    if (PumpController.UpdateProcess(Configuration.GetConfiguration()))
+                    {
+                        Log.Instance.WriteLog("Nueva conexión iniciada, verifique el estado del controlador.", LogType.t_info);
+                    }
+                    else
+                    {
+                        _ = MessageBox.Show("Error al cargar los parametros.\n" +
+                                        "Por favor, revise e intente nuevamente.");
+
+                        Log.Instance.WriteLog("No fue posible iniciar el proceso", LogType.t_error);
+                    }
                 }
                 else
                 {
-                    _ = MessageBox.Show("Error al cargar los parametros.\n" +
-                                    "Por favor, revise e intente nuevamente.");
+                    if (PumpController.SetNewData(Configuration.GetConfiguration()))
+                    {
+                        _ = MessageBox.Show("Datos actualizados.");
 
-                    Log.Instance.WriteLog("No fue posible iniciar el proceso", LogType.t_error);
-                }
-            }
-            else if (!PumpController.Data.Controller.Equals(Configuration.GetConfiguration().Controller))
-            {
-                if (PumpController.UpdateProcess(Configuration.GetConfiguration()))
-                {
-                    Log.Instance.WriteLog("Nueva conexión iniciada, verifique el estado del controlador.", LogType.t_info);
-                }
-                else
-                {
-                    _ = MessageBox.Show("Error al cargar los parametros.\n" +
-                                    "Por favor, revise e intente nuevamente.");
+                        Log.Instance.WriteLog("Datos actualizados.", LogType.t_info);
+                    }
 
-                    Log.Instance.WriteLog("No fue posible iniciar el proceso", LogType.t_error);
                 }
             }
             else
             {
-                if (PumpController.SetNewData(Configuration.GetConfiguration()))
-                {
-                    _ = MessageBox.Show("Datos actualizados.");
-
-                    Log.Instance.WriteLog("Datos actualizados.", LogType.t_info);
-                }
-
+                Close();
             }
         }
 

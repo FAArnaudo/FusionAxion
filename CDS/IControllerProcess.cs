@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -21,6 +22,9 @@ namespace CDS
         public ControllerCem ControllerCem { get; set; }
         public Data Data { get; set; }
         private bool IsRunning { get; set; }
+        private bool HacerCierre { get; set; }
+        private bool ActualizarTanques { get; set; }
+        private bool TraerCierreAnterior { get; set; }
 
         public CemProcess()
         {
@@ -30,7 +34,8 @@ namespace CDS
 
         public void RunProcess(Task mainProcess)
         {
-            ControllerCem = new ControllerCem(Data.IP, Data.Protocol);
+
+            ControllerCem = new ControllerCem(Data.Protocol);
 
             Log.Instance.WriteLog($"Nuevo proceso principal iniciado. ID: {mainProcess.Id}, Estado: {mainProcess.Status}.\n", LogType.t_info);
 
@@ -40,23 +45,57 @@ namespace CDS
 
                 try
                 {
-                    Log.Instance.WriteLog($" Estado del hilo {mainProcess.Id}: {mainProcess.Status}. TimerProcess {Data.Timer}\n", LogType.t_info);
+                    while (!ControllerCem.VerificarConexión());
+                    ControllerCem.ConfigurarEstacion();
+                    ControllerCem.ActualizarTanques();
+                    HacerCierre = false;
 
-                    Thread.Sleep(Convert.ToInt32(1000 * Convert.ToInt32(Data.Timer)));
+                    while (!HacerCierre && !CancellationToken.Token.IsCancellationRequested)
+                    {
+                        Log.Instance.WriteLog($"Estado del hilo {mainProcess.Id}: {mainProcess.Status}. TimerProcess {Data.Timer}\n", LogType.t_debug);
 
-                    _ = ConnectorSQLite.Instance.ExecuteNonQuery($"UPDATE CheckConnection SET isConnected = 1, fecha = '{DateTime.Now:dd-MM-yyyy HH:mm:ss}' WHERE idConnection = 1");
+                        ControllerCem.GrabarDespachos();
+
+                        CheckFlags();
+
+                        Thread.Sleep(1000 * Convert.ToInt32(Data.Timer));
+                    }
+
+                    // Hacer el cierre
+                    if (HacerCierre)
+                    {
+                        ControllerCem.GrabarCierre();
+                    }
                 }
                 catch (Exception e)
                 {
-                    Log.Instance.WriteLog($" Estado del hilo {mainProcess.Id}: {mainProcess.Status} - Error en el loop del controlador.\n\t  Excepción: {e.Message}\n", LogType.t_error);
+                    Log.Instance.WriteLog($"Estado del hilo {mainProcess.Id}: {mainProcess.Status} - Error en el loop del controlador.\n\t  Excepción: {e.Message}\n", LogType.t_error);
                 }
             }
 
-            Log.Instance.WriteLog($" Estado del hilo: {mainProcess.Id} - Finalizando.", LogType.t_info);
-
-            _ = ConnectorSQLite.Instance.ExecuteNonQuery($"UPDATE CheckConnection SET isConnected = 0, fecha = '{DateTime.Now:dd-MM-yyyy HH:mm:ss}' WHERE idConnection = 1");
+            Log.Instance.WriteLog($"Finalizando hilo: {mainProcess.Id}.", LogType.t_info);
 
             IsRunning = false;
+        }
+
+        public void CheckFlags()
+        {
+            DataTable flags = ConnectorSQLite.Instance.ExecuteSelectQuery($"SELECT * FROM cierreBandera");
+
+            HacerCierre = Convert.ToBoolean(flags.Rows[0][0]);
+
+            bool actualizarTanques = Convert.ToBoolean(flags.Rows[0][1]);
+            bool traerCierreAnterior = Convert.ToBoolean(flags.Rows[0][2]);
+
+            if (actualizarTanques)
+            {
+                ControllerCem.ActualizarTanques();
+            }
+
+            if (traerCierreAnterior)
+            {
+                ControllerCem.TrtaerCierreAnterior();
+            }
         }
 
         public void StopProcess()
@@ -87,7 +126,7 @@ namespace CDS
             ControllerFusion = new ControllerFusion(Data.IP, Data.StationFlag);
 
             bool isConnected = false;
-            bool hacerCorte = false;
+            bool realizarCorte = false;
             bool traerCorteAnterior = false;
 
             IsRunning = true;

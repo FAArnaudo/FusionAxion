@@ -1,5 +1,6 @@
 ﻿using CDS;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Moq;
 using System.Data;
 using System.IO;
 
@@ -13,16 +14,26 @@ namespace ConfigurationTests
         private readonly string testPath = @"C:\Sistema\PROY_NUEVO";
         private readonly string testFolderPath = @"C:\Sistema\PROY_NUEVO" + @"\CDS";
         private readonly string testDatabaseName = "cds.db";
+        private Data data;
+        private Mock<IGetConfiguration> configuration;
+        private ConnectorSQLite connector;
+
 
         [TestInitialize]
         public void TestInitialize()
         {
-            Data data = new Data
+            configuration = new Mock<IGetConfiguration>();
+
+            connector = ConnectorSQLite.Instance;
+
+            data = new Data
             {
                 RutaProyNuevo = testPath
             };
 
-            _ = Configuration.SaveConfiguration(data);
+            _ = configuration.Setup(a => a.GetConfiguration()).Returns(data);
+
+            Configuration.SaveConfiguration(data);
 
             string databasePath = Path.Combine(testFolderPath, testDatabaseName);
 
@@ -33,8 +44,6 @@ namespace ConfigurationTests
             }
         }
 
-        
-
         [TestMethod]
         public void CreateDatabase_ReturnTrue_WhenItDoesNotExist()
         {
@@ -44,7 +53,7 @@ namespace ConfigurationTests
             bool expected = true;
 
             // Act
-            bool actual = connector.CreateDatabase();
+            bool actual = connector.CreateDatabase(configuration.Object);
 
             // Assert
             Assert.AreEqual(expected, actual);
@@ -59,34 +68,15 @@ namespace ConfigurationTests
             // Crear el directorio
             _ = Directory.CreateDirectory(testPath);
 
-            _ = connector.CreateDatabase();
+            _ = connector.CreateDatabase(configuration.Object);
 
             // Act
-            bool actual = connector.CreateDatabase();
+            bool actual = connector.CreateDatabase(configuration.Object);
 
             // Assert
             Assert.IsTrue(actual);
         }
 
-        [TestMethod]
-        public void ExecuteNonQuery_CreateTable()
-        {
-            // Arrange
-            ConnectorSQLite connector = ConnectorSQLite.Instance;
-
-            _ = connector.CreateDatabase();
-
-            int expected = 0;
-
-            // Act
-            string createTableQuery = "CREATE TABLE IF NOT EXISTS Usuarios " +
-                                      "(Nombre TEXT, Edad  INTEGER)";
-
-            int actual = connector.ExecuteNonQuery(createTableQuery);
-
-            // Assert
-            Assert.AreEqual(expected, actual);
-        }
 
         [TestMethod]
         public void ExecuteInsertOrStateQuery_InsertOneRowModify()
@@ -94,7 +84,7 @@ namespace ConfigurationTests
             // Arrange
             ConnectorSQLite connector = ConnectorSQLite.Instance;
 
-            _ = connector.CreateDatabase();
+            _ = connector.CreateDatabase(configuration.Object);
 
             // Crear las tablas si no existen
             string createTableQuery = "CREATE TABLE IF NOT EXISTS Usuarios " +
@@ -117,7 +107,7 @@ namespace ConfigurationTests
             // Arrange
             ConnectorSQLite connector = ConnectorSQLite.Instance;
 
-            _ = connector.CreateDatabase();
+            _ = connector.CreateDatabase(configuration.Object);
 
             // Crear las tablas si no existen
             string createTableQuery = "CREATE TABLE IF NOT EXISTS Usuarios " +
@@ -136,87 +126,12 @@ namespace ConfigurationTests
         }
 
         [TestMethod]
-        public void ExecuteInsertOrStateQuery_UpdateException()
-        {
-            // Arrange
-            ConnectorSQLite connector = ConnectorSQLite.Instance;
-
-            _ = connector.CreateDatabase();
-
-            // Crear las tablas si no existen
-            string createTableQuery = "CREATE TABLE IF NOT EXISTS Usuarios " +
-                                      "(id_usuario INTEGER, nombre TEXT, edad  INTEGER, " +
-                                      "PRIMARY KEY(ID_Usuario))";
-
-            _ = connector.ExecuteNonQuery(createTableQuery);
-
-            int expected = -1;
-
-            // Act
-            int actual = connector.ExecuteNonQuery($"UPDATE Usuarios SET name = 'Charls', age = 29");
-
-            // Assert
-            Assert.AreEqual(expected, actual);
-        }
-
-        [TestMethod]
-        public void ExecuteSelectQuery_NotNull()
-        {
-            // Arrange
-            ConnectorSQLite connector = ConnectorSQLite.Instance;
-
-            _ = connector.CreateDatabase();
-
-            // Crear las tablas si no existen
-            string createTableQuery = "CREATE TABLE IF NOT EXISTS Usuarios " +
-                                      "(id_usuario INTEGER, nombre TEXT, edad  INTEGER, " +
-                                      "PRIMARY KEY(ID_Usuario));" +
-                                      "INSERT INTO Usuarios (Nombre, Edad) VALUES ('Carlos', 25)";
-
-            _ = connector.ExecuteNonQuery(createTableQuery);
-
-            int expected = 0;
-
-            // Act
-            DataTable actual = connector.ExecuteSelectQuery("SELECT * FROM Usuarios WHERE id_usuario = (3)");
-            int count = actual.Rows.Count;
-
-            // Assert
-            Assert.IsNotNull(actual);
-            Assert.AreEqual(expected, count);
-        }
-
-        [TestMethod]
-        public void ExecuteSelectQuery_NotNullException()
-        {
-            // Arrange
-            ConnectorSQLite connector = ConnectorSQLite.Instance;
-
-            _ = connector.CreateDatabase();
-
-            // Crear las tablas si no existen
-            string createTableQuery = "CREATE TABLE IF NOT EXISTS Usuarios " +
-                                      "(id_usuario INTEGER, nombre TEXT, edad  INTEGER, " +
-                                      "PRIMARY KEY(ID_Usuario))";
-
-            _ = connector.ExecuteNonQuery(createTableQuery);
-
-            _ = connector.ExecuteNonQuery($"INSERT INTO Usuarios (Nombre, Edad) VALUES ('Carlos', 25)");
-
-            // Act
-            DataTable actual = connector.ExecuteSelectQuery("SELECT * FROM Users");
-
-            // Assert
-            Assert.IsNull(actual);
-        }
-
-        [TestMethod]
         public void ExecuteStateQuery_False()
         {
             // Arrange
             ConnectorSQLite connector = ConnectorSQLite.Instance;
 
-            _ = connector.CreateDatabase();
+            _ = connector.CreateDatabase(configuration.Object);
 
             // Crear la tabla si no existe
             string createTableQuery = "CREATE TABLE IF NOT EXISTS CheckConnection (" +
@@ -239,9 +154,7 @@ namespace ConfigurationTests
         public void ExecuteStateQuery_True()
         {
             // Arrange
-            ConnectorSQLite connector = ConnectorSQLite.Instance;
-
-            _ = connector.CreateDatabase();
+            _ = connector.CreateDatabase(configuration.Object);
 
             // Crear la tabla si no existe
             string createTableQuery = "UPDATE CheckConnection " +

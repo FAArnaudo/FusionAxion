@@ -13,23 +13,20 @@ namespace CDS
     {
         // Instancia estática privada
         private static ConnectorSQLite instance = null;
+        private IGetConfiguration configuration;
 
         // Nombre de la base de datos y cadena de conexión
         private readonly string databaseName = "cds.db";
         private readonly string connectionString = "Data Source='{0}';Version=3;";
 
         // Conexión a la base de datos SQLite
-        private readonly SQLiteConnection connection;
+        private SQLiteConnection connection;
 
         // Un objeto que se utilizará para la sincronización
         private static readonly object lockObjectDB = new object();
 
         // Constructor privado
-        private ConnectorSQLite()
-        {
-            // Iniciar la conexión
-            connection = new SQLiteConnection(string.Format(connectionString, Configuration.GetConfiguration().RutaProyNuevo + "\\CDS\\" + databaseName));
-        }
+        private ConnectorSQLite() { }
 
         /// <summary>
         /// Propiedad pública estática para obtener la instancia del Singleton
@@ -51,14 +48,16 @@ namespace CDS
         /// Método para crear la base de datos si no existe
         /// </summary>
         /// <returns>retorna true si la creación fue exitosa o false en caso contrario</returns>
-        public bool CreateDatabase()
+        public bool CreateDatabase(IGetConfiguration getConfiguration)
         {
-            try
-            {
-                string folderPath = Configuration.GetConfiguration().RutaProyNuevo + "\\CDS\\";
-                string databasePath = Path.Combine(folderPath, databaseName);
+            configuration = getConfiguration;
 
-                lock (lockObjectDB)
+            string folderPath = configuration.GetConfiguration().RutaProyNuevo + "\\CDS\\";
+            string databasePath = Path.Combine(folderPath, databaseName);
+
+            lock (lockObjectDB)
+            {
+                try
                 {
                     // Crear la carpeta si no existe
                     if (!Directory.Exists(folderPath))
@@ -70,16 +69,20 @@ namespace CDS
                     if (!File.Exists(databasePath))
                     {
                         SQLiteConnection.CreateFile(databasePath);
-
-                        CreateTables();
                     }
-                }
 
-                return true;
-            }
-            catch (Exception ex)
-            {
-                throw new Exception($"Error al crear la base de datos: {ex.Message}");
+                    CreateTables();
+
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception($"Error al crear la base de datos: {ex.Message}");
+                }
+                finally
+                {
+                    CloseConnection();
+                }
             }
         }
 
@@ -90,30 +93,39 @@ namespace CDS
         /// <returns>Retorna el DataTable de la consulta de selección o null en caso de error</returns>
         public DataTable ExecuteSelectQuery(string query)
         {
-            try
+            lock (lockObjectDB)
             {
-                // Abrir la conexión
-                _ = OpenConnection();
-
-                using (SQLiteCommand cmd = new SQLiteCommand(query, connection))
+                try
                 {
-                    using (SQLiteDataAdapter dataAdapter = new SQLiteDataAdapter(cmd))
+                    // Abrir la conexión
+                    _ = OpenConnection();
+
+                    using (SQLiteCommand cmd = new SQLiteCommand(query, connection))
                     {
-                        DataTable dataTable = new DataTable();
-                        _ = dataAdapter.Fill(dataTable); // Llenar el DataTable con los resultados
-                        return dataTable;
+                        using (SQLiteDataAdapter dataAdapter = new SQLiteDataAdapter(cmd))
+                        {
+                            DataTable dataTable = new DataTable();
+                            _ = dataAdapter.Fill(dataTable); // Llenar el DataTable con los resultados
+                            return dataTable;
+                        }
                     }
                 }
-            }
-            catch (Exception ex)
-            {
-                Log.Instance.WriteLog($"Error al ejecutar SELECT: {ex.Message}", LogType.t_error);
-                return null;
-            }
-            finally
-            {
-                // Cerrar la conexión al final de la operación
-                CloseConnection();
+                catch (SQLiteException e)
+                {
+                    connection = null;
+                    Log.Instance.WriteLog($"Error al ejecutar ExecuteSelectQuery {query}.\nExcepción: {e.Message}", LogType.t_error);
+                    return null;
+                }
+                catch (Exception e)
+                {
+                    Log.Instance.WriteLog($"Error al ejecutar SELECT: {e.Message}", LogType.t_error);
+                    return null;
+                }
+                finally
+                {
+                    // Cerrar la conexión al final de la operación
+                    CloseConnection();
+                }
             }
         }
 
@@ -124,26 +136,35 @@ namespace CDS
         /// <returns>retorna el numero de campos modificados o 0 si no haya modificacion. En caso de error retorna -1</returns>
         public int ExecuteNonQuery(string query)
         {
-            try
+            lock (lockObjectDB)
             {
-                // Abrir la conexión
-                _ = OpenConnection();
-
-                using (SQLiteCommand cmd = new SQLiteCommand(query, connection))
+                try
                 {
-                    int rowsAffected = cmd.ExecuteNonQuery(); // Ejecuta el comando y devuelve el número de filas afectadas
-                    return rowsAffected;
+                    // Abrir la conexión
+                    _ = OpenConnection();
+
+                    using (SQLiteCommand cmd = new SQLiteCommand(query, connection))
+                    {
+                        int rowsAffected = cmd.ExecuteNonQuery(); // Ejecuta el comando y devuelve el número de filas afectadas
+                        return rowsAffected;
+                    }
                 }
-            }
-            catch (Exception ex)
-            {
-                Log.Instance.WriteLog($"Error al ejecutar INSERT/UPDATE/DELETE: {ex.Message}", LogType.t_error);
-                return -1; // En caso de error, retornamos -1 (ninguna fila afectada)
-            }
-            finally
-            {
-                // Cerrar la conexión al final de la operación
-                CloseConnection();
+                catch (SQLiteException e)
+                {
+                    connection = null;
+                    Log.Instance.WriteLog($"Error al ejecutar ExecuteNonQuery {query}.\nExcepción: {e.Message}", LogType.t_error);
+                    return -1;
+                }
+                catch (Exception ex)
+                {
+                    Log.Instance.WriteLog($"Error al ejecutar INSERT/UPDATE/DELETE: {ex.Message}", LogType.t_error);
+                    return -1; // En caso de error, retornamos -1 (ninguna fila afectada)
+                }
+                finally
+                {
+                    // Cerrar la conexión al final de la operación
+                    CloseConnection();
+                }
             }
         }
 
@@ -154,25 +175,30 @@ namespace CDS
         /// <returns>true si hubo inserción o modificación, y false en caso contrario</returns>
         public bool ExecuteStateQuery(string query)
         {
-            try
+            lock (lockObjectDB)
             {
-                _ = OpenConnection();
-                using (SQLiteCommand cmd = new SQLiteCommand(query, connection))
+                try
                 {
-                    int result = Convert.ToInt32(cmd.ExecuteScalar());
-                    return result == 1;
+                    _ = OpenConnection();
+                    using (SQLiteCommand cmd = new SQLiteCommand(query, connection))
+                    {
+                        int result = Convert.ToInt32(cmd.ExecuteScalar());
+                        return result == 1;
+                    }
+
+                }
+                catch (Exception ex)
+                {
+                    Log.Instance.WriteLog($"Error al ejecutar una consulta de estados: {ex.Message}", LogType.t_error);
+                    return false;
+                }
+                finally
+                {
+                    // Cerrar la conexión al final de la operación
+                    CloseConnection();
                 }
             }
-            catch (Exception ex)
-            {
-                Log.Instance.WriteLog($"Error al ejecutar una consulta de estados: {ex.Message}", LogType.t_error);
-                return false;
-            }
-            finally
-            {
-                // Cerrar la conexión al final de la operación
-                CloseConnection();
-            }
+            
         }
 
         /// <summary>
@@ -192,8 +218,8 @@ namespace CDS
                     _ = cmd.ExecuteNonQuery();
                 }
 
-                createTableQuery = "CREATE TABLE IF NOT EXISTS Tanques (id INTEGER PRIMARY KEY, " +
-                                   "volumen REAL NOT NULL, total REAL NOT NULL)";
+                createTableQuery = "CREATE TABLE IF NOT EXISTS Tanques (id_tanque INTEGER PRIMARY KEY, " +
+                                   "volumen_actual REAL NOT NULL, capacidad_maxima REAL NOT NULL)";
 
                 using (SQLiteCommand cmd = new SQLiteCommand(createTableQuery, connection))
                 {
@@ -202,10 +228,10 @@ namespace CDS
 
                 createTableQuery = "CREATE TABLE IF NOT EXISTS Despachos " +
                                    "(id INTEGER NOT NULL, surtidor INTEGER NOT NULL, " +
-                                   "manguera INTEGER, producto TEXT NOT NULL, " +
+                                   "manguera INTEGER, producto INTEGER NOT NULL, " +
                                    "PPU REAL NOT NULL, volumen REAL NOT NULL, " +
-                                   "monto REAL NOT NULL, descripcion TEXT, " +
-                                   "despacho_pedido BLOB, fecha TEXT DEFAULT(datetime('now', 'localtime')), " +
+                                   "monto REAL NOT NULL, descripcion TEXT, facturado INTEGER, YPFRuta INTEGER, " +
+                                   "despacho_pedido INTEGER, fecha TEXT DEFAULT(datetime('now', 'localtime')), " +
                                    "AUC TEXT DEFAULT '0', DCA REAL, DCP TEXT, " +
                                    "DPN TEXT, TXTD TEXT, cod_auto TEXT, glosa_auto TEXT, " +
                                    "valor_auto REAL, PRIMARY KEY(id,surtidor))";
@@ -216,7 +242,8 @@ namespace CDS
                 }
 
                 createTableQuery = "CREATE TABLE IF NOT EXISTS cierreBandera " +
-                                   "(hacerCierre INTEGER NOT NULL);" +
+                                   "(hacerCierre INTEGER NOT NULL, actualizar_tanques INTEGER NOT NULL DEFAULT 0, " +
+                                   "cierre_anterior INTEGER NOT NULL DEFAULT 0);" +
                                    "\nINSERT INTO cierreBandera (hacerCierre) " +
                                    "SELECT 0 WHERE NOT EXISTS (SELECT 1 FROM cierreBandera)";
 
@@ -255,7 +282,7 @@ namespace CDS
                 }
 
                 createTableQuery = "CREATE TABLE IF NOT EXISTS Productos " +
-                                   "(id_producto INTEGER PRIMARY KEY, numero_producto INTEGER NOT NULL, numero_despacho INTEGER NOT NULL," +
+                                   "(id_producto INTEGER PRIMARY KEY, numero_despacho INTEGER," +
                                    "producto TEXT NOT NULL, precio REAL NOT NULL)";
 
                 using (SQLiteCommand cmd = new SQLiteCommand(createTableQuery, connection))
@@ -304,10 +331,24 @@ namespace CDS
         /// <returns></returns>
         private SQLiteConnection OpenConnection()
         {
-            if (connection.State != ConnectionState.Open)
+            if (connection == null)
             {
-                connection.Open();
+                connection = new SQLiteConnection(string.Format(connectionString, configuration.GetConfiguration().RutaProyNuevo + "\\CDS\\" + databaseName));
             }
+
+            if (connection.State == ConnectionState.Closed || connection.State == ConnectionState.Broken)
+            {
+                try
+                {
+                    connection.Open();
+                }
+                catch (Exception ex)
+                {
+                    Log.Instance.WriteLog($"Error al abrir la conexión: {ex.Message}", LogType.t_error);
+                    throw new Exception("No se pudo abrir la conexión a la base de datos.", ex);
+                }
+            }
+
             return connection;
         }
 

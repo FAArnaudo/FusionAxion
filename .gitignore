@@ -57,4 +57,9 @@ _ReSharper*/
 *.DotSettings.user
 
 # Extras
-gitignore.txt
+
+# Excepciones para Responses
+!Tests/ConfigurationTests/bin/
+!Tests/ConfigurationTests/bin/Release/
+!Tests/ConfigurationTests/bin/Release/Responses/
+!Tests/ConfigurationTests/bin/Release/Responses/**

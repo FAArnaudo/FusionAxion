@@ -308,10 +308,10 @@ namespace ConfigurationTests
 
             string campos = "state";
 
-            string rows = string.Format("'{0}'",
-                                       $"ERROR");
+            string rows = "ERROR";
 
             _ = connections.Setup(b => b.ExecuteNonQuery(string.Format("INSERT INTO Cierres ({0}) VALUES ({1})", campos, rows))).Returns(1);
+            _ = connections.Setup(c => c.ExecuteNonQuery("UPDATE cierreBandera SET hacerCierre = 0")).Returns(1);
 
             string expected = "Error al pedir intormacion del CierreDeTurnoAnterior";
 

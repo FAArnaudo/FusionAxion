@@ -158,6 +158,7 @@ namespace CDS
         {
             List<Tanque> tanques = ConnectorCem.ComandoStockDeTanques(ProtocolCommand.TanksStockCommand);
 
+            ConnectorSQLite.Instance.ExecuteNonQuery("UPDATE cierreBandera SET actualizar_tanques = 0");
             try
             {
                 foreach (Tanque tanque in tanques)
@@ -170,8 +171,8 @@ namespace CDS
                                                  tanque.CapacidadMaxima);
 
                     DataTable tablaTanques = ConnectorSQLite.Instance.ExecuteSelectQuery("SELECT * " +
-                                                                                           "FROM Tanques " +
-                                                                                          $"WHERE id_tanque = {tanque.ID}");
+                                                                                         "FROM Tanques " +
+                                                                                        $"WHERE id_tanque = {tanque.ID}");
 
                     if (tablaTanques.Rows.Count == 0)
                     {
@@ -192,7 +193,6 @@ namespace CDS
             {
                 Log.Instance.WriteLog($"Error en el metodo ActualizarTanques.\n\tExcepcion: {e.Message}", LogType.t_error);
             }
-            ConnectorSQLite.Instance.ExecuteNonQuery("UPDATE cierreBandera SET actualizar_tanques = 0");
         }
 
         public override void GrabarDespachos()
@@ -287,6 +287,8 @@ namespace CDS
 
         public override void GrabarCierre()
         {
+            Log.Instance.WriteLog("Iniciando: Realizando corte de turno.\n", LogType.t_info);
+
             CierreDeTurnoCem cierreDeTurno = ConnectorCem.ComandoCierresDeTurno(ProtocolCommand.CierreDeTurnoCommand);
 
             try

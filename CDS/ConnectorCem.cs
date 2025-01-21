@@ -366,9 +366,6 @@ namespace CDS
             int posicion = 1;
 
             byte[] reply;
-
-            string messageError = "Inicio";
-
             switch (command[0])
             {
                 case 0x07:
@@ -601,32 +598,38 @@ namespace CDS
             catch (Exception e)
             {
                 string error;
+                string name;
                 switch (command[0])
                 {
                     case 0x07:
                         error = $"Error al pedir intormacion del CierreDeTurno. Excepción: {e.Message}";
+                        name = "CierreDeTurno";
                         break;
                     case 0x0B:
                         error = $"Error al pedir intormacion del CierreDeTurnoAnterior. Excepción: {e.Message}";
+                        name = "CierreDeTurnoAnterior";
                         break;
                     case 0x08:
                         error = $"Error al pedir intormacion del TurnoActual. Excepción: {e.Message}";
+                        name = "TurnoActual";
                         break;
                     default:
                         error = $"Error al pedir intormacion del turno CierreDeTurno. Excepción: {e.Message}";
+                        name = "CierreDeTurno";
                         break;
                 }
+
+                SaveAnswer(reply, name + new Random().Next(100));
 
                 Log.Instance.WriteLog(error, LogType.t_error);
 
                 string campos = "state";
-
-                string rows = string.Format("'{0}'",
-                                           $"ERROR");
+                string rows = "ERROR";
 
                 Connections.ExecuteNonQuery(string.Format("INSERT INTO Cierres ({0}) VALUES ({1})", campos, rows));
+                Connections.ExecuteNonQuery("UPDATE cierreBandera SET hacerCierre = 0");
 
-                throw new Exception(error + messageError);
+                throw new Exception(error);
             }
 
             return turno;
@@ -650,29 +653,33 @@ namespace CDS
 
             string rutaCompleta = Path.Combine(directorio, nombreArchivo);
 
-            if (!File.Exists(rutaCompleta))
+            try
             {
-                using (StreamWriter sw = File.AppendText(rutaCompleta))
+                if (!File.Exists(rutaCompleta))
                 {
-                    int cont = 0;
-                    for (int iteraciones = 0; iteraciones < respuesta.Length; iteraciones++)
+                    using (StreamWriter sw = File.AppendText(rutaCompleta))
                     {
-                        sw.WriteLine(respuesta[iteraciones].ToString("X2")); // Escribe en formato hexadecimal
-
-                        if (iteraciones > 0)
+                        int cont = 0;
+                        for (int iteraciones = 0; iteraciones < respuesta.Length; iteraciones++)
                         {
-                            if (respuesta[iteraciones] == 0 && respuesta[iteraciones - 1] == 0 && cont < 6)
+                            sw.WriteLine(respuesta[iteraciones].ToString("X2")); // Escribe en formato hexadecimal
+
+                            if (iteraciones > 0)
                             {
-                                cont++;
-                            }
-                            else if (respuesta[iteraciones] == 0 && cont >= 6)
-                            {
-                                break;
+                                if (respuesta[iteraciones] == 0 && respuesta[iteraciones - 1] == 0 && cont < 6)
+                                {
+                                    cont++;
+                                }
+                                else if (respuesta[iteraciones] == 0 && cont >= 6)
+                                {
+                                    break;
+                                }
                             }
                         }
                     }
                 }
             }
+            catch (Exception) { }
         }
 
         /*

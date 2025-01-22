@@ -198,7 +198,7 @@ namespace CDS
                     CloseConnection();
                 }
             }
-            
+
         }
 
         /// <summary>
@@ -219,7 +219,8 @@ namespace CDS
                 }
 
                 createTableQuery = "CREATE TABLE IF NOT EXISTS Tanques (id_tanque INTEGER PRIMARY KEY, " +
-                                   "volumen_actual REAL NOT NULL, capacidad_maxima REAL NOT NULL)";
+                                   "volumen_actual REAL NOT NULL, capacidad_maxima REAL NOT NULL, " +
+                                   "actualizado TEXT DEFAULT((strftime('%d-%m-%Y %H:%M:%S', 'now', 'localtime'))));";
 
                 using (SQLiteCommand cmd = new SQLiteCommand(createTableQuery, connection))
                 {

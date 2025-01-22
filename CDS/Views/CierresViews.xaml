@@ -6,6 +6,7 @@
         xmlns:local="clr-namespace:CDS.Views"
         mc:Ignorable="d"
         Icon="/Images/LogoSurtidor.ico"
+        ResizeMode="NoResize"
         Title="Vista de Cierres de Turno" Height="460" Width="950">
     <Border Background="#D6E2E8">
         <Grid x:Name="G_CierreDeTurno">
@@ -35,6 +36,12 @@
                         <DataGridTextColumn Header="Estado" Width="140"
                                         Binding="{Binding state}"></DataGridTextColumn>
                     </DataGrid.Columns>
+                    <DataGrid.RowStyle>
+                        <Style TargetType="DataGridRow">
+                            <Setter Property="Foreground" Value="Black"></Setter>
+                            <Setter Property="Background" Value="#9db0f5"></Setter>
+                        </Style>
+                    </DataGrid.RowStyle>
                 </DataGrid>
                 <!--#endregion-->
                 <!--#region BUTTON CLOSE-->

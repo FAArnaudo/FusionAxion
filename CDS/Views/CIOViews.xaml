@@ -6,6 +6,7 @@
         xmlns:local="clr-namespace:CDS.Views"
         Icon="/Images/LogoSurtidor.ico"
         mc:Ignorable="d"
+        ResizeMode="NoResize"
         Title="Datos de CIO" Height="321" Width="408">
     <Border Background="#D6E2E8">
         <Grid>

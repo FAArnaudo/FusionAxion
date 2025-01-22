@@ -28,7 +28,7 @@ namespace CDS.Views
 
         private void VerCierres_Loaded(object sender, RoutedEventArgs e)
         {
-            DataTable result = ConnectorSQLite.Instance.ExecuteSelectQuery("SELECT id, fecha, monto_contado, volumen_contado, monto_YPFruta, volumen_YPFruta, state from Cierres");
+            DataTable result = ConnectorSQLite.Instance.ExecuteSelectQuery("SELECT id, fecha, monto_contado, volumen_contado, monto_YPFruta, volumen_YPFruta, state FROM Cierres");
             DG_CierreDeTurno.ItemsSource = result.AsDataView();
         }
 

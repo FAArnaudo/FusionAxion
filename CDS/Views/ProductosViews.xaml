@@ -6,8 +6,45 @@
         xmlns:local="clr-namespace:CDS.Views"
         Icon="/Images/LogoSurtidor.ico"
         mc:Ignorable="d"
-        Title="Vista de Productos" Height="450" Width="800">
-    <Grid>
-        
-    </Grid>
+        Title="Vista de Productos" Height="460" Width="450">
+    <Border Background="#D6E2E8">
+        <Grid x:Name="G_Productos">
+            <StackPanel x:Name="SP_Productos"
+                        Width="442" Height="429"
+                        VerticalAlignment="Top">
+                <!--#region DATA GRID-->
+                <DataGrid x:Name="DG_Productos"
+                          Width="402" Height="340"
+                          HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,10,0,0"
+                          CanUserResizeColumns="False" CanUserDeleteRows="False"
+                          HorizontalGridLinesBrush="#D6E2E8"
+                          IsReadOnly="True" AutoGenerateColumns="False">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="ID Producto" Width="120" IsReadOnly="True"
+                                        Binding="{Binding id_producto}"></DataGridTextColumn>
+                        <DataGridTextColumn Header="Producto" Width="120"
+                                        Binding="{Binding producto}"></DataGridTextColumn>
+                        <DataGridTextColumn Header="PPU" Width="120"
+                                        Binding="{Binding precio}"></DataGridTextColumn>
+                    </DataGrid.Columns>
+                    <DataGrid.RowStyle>
+                        <Style TargetType="DataGridRow">
+                            <Setter Property="Foreground" Value="Black"></Setter>
+                            <Setter Property="Background" Value="#9db0f5"></Setter>
+                        </Style>
+                    </DataGrid.RowStyle>
+                </DataGrid>
+                <!--#endregion-->
+                <!--#region BUTTON CLOSE-->
+                <Button Name="BtnClose"
+                        Width="160" Height="35"
+                        HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,20,20,10"
+                        Background="#007ED6" BorderBrush="#007ED6"
+                        Style="{DynamicResource ButtonStyle}" Click="BtnClose_Click">
+                    <TextBlock Text="Cerrar" Foreground="White" FontSize="20"></TextBlock>
+                </Button>
+                <!--#endregion-->
+            </StackPanel>
+        </Grid>
+    </Border>
 </Window>

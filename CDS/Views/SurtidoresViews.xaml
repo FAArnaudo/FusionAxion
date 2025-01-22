@@ -6,8 +6,49 @@
         xmlns:local="clr-namespace:CDS.Views"
         mc:Ignorable="d"
         Icon="/Images/LogoSurtidor.ico"
-        Title="Vista de Surtidores" Height="450" Width="800">
-    <Grid>
-        
-    </Grid>
+        Title="Vista de Surtidores" Height="460" Width="650">
+    <Border Background="#D6E2E8">
+        <Grid x:Name="G_CierreDeTurno">
+            <StackPanel x:Name="SP_Surtidores"
+                        Width="642" Height="429"
+                        VerticalAlignment="Top">
+                <!--#region DATA GRID-->
+                <DataGrid x:Name="DG_Surtidores"
+                          Width="602" Height="340"
+                          HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,10,0,0"
+                          CanUserResizeColumns="False" CanUserDeleteRows="False"
+                          HorizontalGridLinesBrush="#D6E2E8"
+                          IsReadOnly="True" AutoGenerateColumns="False">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Surtidor" Width="120"
+                                        Binding="{Binding IdSurtidor}"></DataGridTextColumn>
+                        <DataGridTextColumn Header="Manguera" Width="120"
+                                        Binding="{Binding Manguera}"></DataGridTextColumn>
+                        <DataGridTextColumn Header="Producto" Width="120"
+                                        Binding="{Binding Producto}"></DataGridTextColumn>
+                        <DataGridTextColumn Header="Precio" Width="120"
+                                        Binding="{Binding Precio}"></DataGridTextColumn>
+                        <DataGridTextColumn Header="Descripcion" Width="120"
+                                        Binding="{Binding DescProd}"></DataGridTextColumn>
+                    </DataGrid.Columns>
+                    <DataGrid.RowStyle>
+                        <Style TargetType="DataGridRow">
+                            <Setter Property="Foreground" Value="Black"></Setter>
+                            <Setter Property="Background" Value="#9db0f5"></Setter>
+                        </Style>
+                    </DataGrid.RowStyle>
+                </DataGrid>
+                <!--#endregion-->
+                <!--#region BUTTON CLOSE-->
+                <Button Name="BtnClose"
+                        Width="160" Height="35"
+                        HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,20,20,10"
+                        Background="#007ED6" BorderBrush="#007ED6"
+                        Style="{DynamicResource ButtonStyle}" Click="BtnClose_Click">
+                    <TextBlock Text="Cerrar" Foreground="White" FontSize="20"></TextBlock>
+                </Button>
+                <!--#endregion-->
+            </StackPanel>
+        </Grid>
+    </Border>
 </Window>

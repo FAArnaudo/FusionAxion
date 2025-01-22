@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Drawing;
 using System.IO;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Forms;
@@ -151,7 +152,7 @@ namespace CDS
         private void BtnCerrar_Click(object sender, RoutedEventArgs e)
         {
             // Mostrar un cuadro de diálogo de confirmación
-            MessageBoxResult result = MessageBox.Show("¿Está seguro de que desea realizar esta acción?\n      El programa dejará de funcionar.",
+            MessageBoxResult result = MessageBox.Show("¿Está seguro que desea realizar esta acción?\n      El programa dejará de funcionar.",
                                                       "Confirmación",
                                                       MessageBoxButton.YesNo,
                                                       MessageBoxImage.Question);
@@ -215,9 +216,15 @@ namespace CDS
 
         private void BtnCierreAnterior_Click(object sender, RoutedEventArgs e)
         {
-            if (sender is Button clickedButton)
+            if (sender is Button)
             {
-                _ = MessageBox.Show($"¡{clickedButton.Content} presionado!");
+                _ = ConnectorSQLite.Instance.ExecuteNonQuery("UPDATE cierreBandera SET cierre_anterior = 1");
+
+                stackPanel.IsEnabled = false;
+
+                Thread.Sleep(2000);
+
+                stackPanel.IsEnabled = true;
             }
         }
 
@@ -225,10 +232,23 @@ namespace CDS
         {
             Views.CIOViews cIOViews = new Views.CIOViews();
             cIOViews.Show();
+        }
 
-            if (sender is Button clickedButton)
+        private void BtnActualizarTanques_Click(object sender, RoutedEventArgs e)
+        {
+            try
             {
-                _ = MessageBox.Show($"¡{clickedButton.Content} presionado!");
+                _ = ConnectorSQLite.Instance.ExecuteNonQuery("UPDATE cierreBandera SET actualizar_tanques = 1");
+
+                stackPanel.IsEnabled = false;
+
+                Thread.Sleep(2000);
+
+                stackPanel.IsEnabled = true;
+            }
+            catch (Exception)
+            {
+
             }
         }
         #endregion
@@ -319,6 +339,7 @@ namespace CDS
 
                 label.Background = solidColorBrush;
 
+                #region BUTTON DATOS CIO
                 // Crear un TextBlock
                 TextBlock textBlock = new TextBlock
                 {
@@ -330,7 +351,7 @@ namespace CDS
                     Margin = new Thickness(2)
                 };
 
-                // Crear el primer botón
+                // Crear el botón CIO
                 Button btnCIO = new Button
                 {
                     Width = 110,
@@ -345,14 +366,16 @@ namespace CDS
                 btnCIO.Click += BtnCIO_Click;
 
                 // Crear un objeto Image
-                Image image = new Image
+                Image imageCIO = new Image
                 {
                     Source = new BitmapImage(new Uri("pack://application:,,,/Images/Data.ico", UriKind.RelativeOrAbsolute)) // Establece la ruta de la imagen
                 };
 
-                btnCIO.Content = image;
+                btnCIO.Content = imageCIO;
+                #endregion
 
-                // Crear el segundo botón
+                #region BUTTON CIERRE ANTERIOR
+                // Crear el botón CierreAnterior
                 Button btnCierreAnterior = new Button
                 {
                     Content = "Cierre Anterior",
@@ -368,11 +391,61 @@ namespace CDS
                 };
 
                 btnCierreAnterior.Click += BtnCierreAnterior_Click;
+                #endregion
+
+                #region BUTTON ACTUALIZAR TANQUES
+                // Crear el botón ActualizarTanques
+                Button btnActualizarTanques = new Button
+                {
+                    FontSize = 15,
+                    Width = 110,
+                    Height = 35,
+                    Background = solidColorBrush,
+                    HorizontalAlignment = System.Windows.HorizontalAlignment.Center,
+                    VerticalAlignment = VerticalAlignment.Center,
+                    Style = (Style)Resources["Styles"],
+                    Margin = new Thickness(2)
+                };
+
+                StackPanel stackPanelTanque = new StackPanel
+                {
+                    Orientation = System.Windows.Controls.Orientation.Horizontal, // Disponer horizontalmente
+                    HorizontalAlignment = System.Windows.HorizontalAlignment.Center,
+                    VerticalAlignment = VerticalAlignment.Center
+                };
+
+                // Crear un objeto Image para agregar la imagen
+                Image imageTanque = new Image
+                {
+                    Source = new BitmapImage(new Uri("pack://application:,,,/Images/Reload.ico", UriKind.RelativeOrAbsolute)), // Establece la ruta de la imagen
+                    Width = 20, // Puedes ajustar el tamaño de la imagen
+                    Height = 20, // Puedes ajustar el tamaño de la imagen
+                    Margin = new Thickness(0, 5, 5, 0)
+                };
+
+                TextBlock textBlockTanque = new TextBlock
+                {
+                    Text = "Tanques",
+                    Foreground = Brushes.White,
+                    FontSize = 15,
+                    VerticalAlignment = VerticalAlignment.Center
+                };
+
+                // Agregar la imagen y el texto al StackPanel
+                _ = stackPanelTanque.Children.Add(imageTanque);
+                _ = stackPanelTanque.Children.Add(textBlockTanque);
+
+                // Asignar el StackPanel como contenido del botón
+                btnActualizarTanques.Content = stackPanelTanque;
+
+                btnActualizarTanques.Click += BtnActualizarTanques_Click;
+                #endregion
 
                 _ = stackPanel.Children.Add(label);
                 _ = stackPanel.Children.Add(textBlock);
                 _ = stackPanel.Children.Add(btnCIO);
                 _ = stackPanel.Children.Add(btnCierreAnterior);
+                _ = stackPanel.Children.Add(btnActualizarTanques);
             }
             else if (flagStation.Equals("AXION"))
             {

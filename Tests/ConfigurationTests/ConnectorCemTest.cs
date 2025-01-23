@@ -4,9 +4,6 @@ using Moq;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ConfigurationTests
 {
@@ -277,7 +274,7 @@ namespace ConfigurationTests
 
             _ = connections.Setup(a => a.EnviarComando(command)).Returns(reply);
 
-            connectorCem.ComandoConfiguracionDeLaEstacion(command);
+            _ = connectorCem.ComandoConfiguracionDeLaEstacion(command);
 
             reply = new byte[] { 0xFF };
 

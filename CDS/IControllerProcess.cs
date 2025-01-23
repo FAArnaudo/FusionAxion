@@ -126,7 +126,11 @@ namespace CDS
 
         public void RunProcess(Task mainProcess)
         {
-            ControllerFusion = new ControllerFusion(Data.IP, Data.StationFlag);
+            ICommunication communication = null;
+
+            CheckFlagStation(communication);
+
+            ControllerFusion = new ControllerFusion(communication);
 
             Log.Instance.WriteLog($"Nuevo proceso principal iniciado. ID: {mainProcess.Id}, Estado: {mainProcess.Status}, TimerProcess {Data.Timer}.\n", LogType.t_info);
 
@@ -168,6 +172,22 @@ namespace CDS
             while (IsRunning) { }
 
             Log.Instance.WriteLog($" Proceso Finalizado.\n", LogType.t_info);
+        }
+
+        public void CheckFlagStation(ICommunication communication)
+        {
+            switch (Data.StationFlag)
+            {
+                case "AXION":
+                    communication = new DiscountAxion();
+                    break;
+                case "PUMA":
+                    communication = new DiscountPuma();
+                    break;
+                default:
+                    communication = new DiscountAxion();
+                    break;
+            }
         }
     }
 }

@@ -1,52 +1,31 @@
-﻿using System;
+﻿using FusionClass;
+using Polly;
+using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace CDS
 {
     public class ControllerFusion : Controller
     {
-        private string ip;
-        private string estacion;
-        private IDiscount discount;
+        private ICommunication communication;
+        private Fusion cFusion;
+        private readonly CultureInfo culture = CultureInfo.InvariantCulture;
 
-
-        public ControllerFusion(string ip, string estacion)
+        public ControllerFusion(ICommunication communication)
         {
-            IP = ip;
-            Estacion = estacion;
-            SetFlagDiscount();
-        }
-
-        public string IP
-        {
-            get => ip;
-            set
-            {
-                if (ip == null || !ip.Equals(value))
-                {
-                    ip = value;
-                }
-            }
-        }
-
-        public string Estacion
-        {
-            get => estacion;
-            set
-            {
-                if (estacion == null || !estacion.Equals(value))
-                {
-                    estacion = value;
-                }
-            }
+            this.communication = communication;
+            //SetFlagDiscount();
         }
 
         private void SetFlagDiscount()
         {
-            switch (Estacion)
+            /*
+             switch (Estacion)
             {
                 case "AXION":
                     SetDiscount(new DiscountAxion());
@@ -56,21 +35,67 @@ namespace CDS
                     break;
                 default:
                     break;
-            }
+            }*/
         }
-        private IDiscount GetDiscount()
+        private ICommunication GetDiscount()
         {
-            return discount;
+            return communication;
         }
 
-        private void SetDiscount(IDiscount value)
+        private void SetDiscount(ICommunication value)
         {
-            discount = value;
+            communication = value;
         }
 
         public override bool VerificarConexión()
         {
-            throw new NotImplementedException();
+            cFusion = null;
+            bool connection = false;
+            int retries = 1;
+
+            // Política de reintentos
+            PolicyResult policyResult = Policy.Handle<Exception>()
+                .WaitAndRetry(retryCount: 4,
+                              sleepDurationProvider: retryAttempt => TimeSpan.FromSeconds(Math.Pow(3, retryAttempt)),
+                              onRetry: (exception, TimeSpan, conttext) =>
+                              {
+                                  // Cerrar el pipe en caso de fallo
+                                  if (cFusion != null)
+                                  {
+                                      _ = cFusion.Close();
+                                      cFusion = null; // Limpiar el pipe para la nueva conexión
+                                  }
+                                  Log.Instance.WriteLog($"\n\t  Excepción: {exception.Message.Trim()} Intento: {retries}", LogType.t_error);
+                                  retries++;
+                              }).ExecuteAndCapture(() =>
+                              {
+                                  // Crear el pipeClient si está cerrado
+                                  if (cFusion == null)
+                                  {
+                                      cFusion = new Fusion();
+                                  }
+
+                                  cFusion.Connection(communication.GetConfiguration().IP);
+
+                                  _ = cFusion.Echo();
+                              });
+
+            // Verificación de resultado de conexión
+            if (policyResult.Outcome == 0)
+            {
+                _ = communication.ExecuteNonQuery($"UPDATE CheckConnection " +
+                                                  $"SET isConnected = 1, fecha = '{DateTime.Now:dd-MM-yyyy HH:mm:ss}' " +
+                                                  $"WHERE idConnection = 1");
+                connection = cFusion.ConnectionStatus();
+            }
+            else
+            {
+                _ = communication.ExecuteNonQuery($"UPDATE CheckConnection " +
+                                                  $"SET isConnected = 0, fecha = '{DateTime.Now:dd-MM-yyyy HH:mm:ss}' " +
+                                                  $"WHERE idConnection = 1");
+            }
+
+            return connection;
         }
 
         public override void ActualizarProductos()
@@ -103,12 +128,14 @@ namespace CDS
             GetDiscount().CheckDiscount();
         }
     }
-    internal interface IDiscount
+    public interface ICommunication
     {
         void CheckDiscount();
+        Data GetConfiguration();
+        int ExecuteNonQuery(string query);
     }
 
-    public class DiscountPuma : IDiscount
+    public class DiscountPuma : ICommunication
     {
         public DiscountPuma() { }
 
@@ -116,14 +143,34 @@ namespace CDS
         {
             throw new NotImplementedException();
         }
+
+        public int ExecuteNonQuery(string query)
+        {
+            return ConnectorSQLite.Instance.ExecuteNonQuery(query);
+        }
+
+        public Data GetConfiguration()
+        {
+            return Configuration.GetConfiguration();
+        }
     }
 
-    public class DiscountAxion : IDiscount
+    public class DiscountAxion : ICommunication
     {
         public DiscountAxion() { }
+
         public void CheckDiscount()
         {
             throw new NotImplementedException();
+        }
+        public int ExecuteNonQuery(string query)
+        {
+            return ConnectorSQLite.Instance.ExecuteNonQuery(query);
+        }
+
+        public Data GetConfiguration()
+        {
+            return Configuration.GetConfiguration();
         }
     }
 }

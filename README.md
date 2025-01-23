@@ -4,7 +4,7 @@
 
 This system is implemented for **CEM-44** and **FUSION** fuel dispenser controllers but can be extended to support additional pump control systems.
 
-## Key Features
+## Key Features ⛽️
 
 - **Station Configuration**  
   Retrieves the station configuration, including **dispensers, hoses, products, tanks**, etc.

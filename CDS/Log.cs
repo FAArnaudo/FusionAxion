@@ -64,7 +64,7 @@ namespace CDS
                 }
 
                 // Borra el log del dia anterior
-                string deleteFile = "log" + DateTime.Now.Subtract(new TimeSpan(2, 0, 0, 0)).ToString("dd-MM-yyyy") + ".txt";
+                string deleteFile = "log" + DateTime.Now.Subtract(new TimeSpan(3, 0, 0, 0)).ToString("dd-MM-yyyy") + ".txt";
                 if (File.Exists(Environment.CurrentDirectory + "/Log/" + deleteFile))
                 {
                     File.Delete(Environment.CurrentDirectory + "/Log/" + deleteFile);
@@ -80,7 +80,7 @@ namespace CDS
                             {
                                 using (StreamWriter outputFile = new StreamWriter(Path.Combine(path, logFile), true))
                                 {
-                                    outputFile.WriteLine(DateTime.Now.ToString("hh:mm:ss") + "  INFO:    " + message);
+                                    outputFile.WriteLine(DateTime.Now.ToString("HH:mm:ss") + "  INFO:    " + message);
                                 }
                             }
                         }
@@ -90,7 +90,7 @@ namespace CDS
                         {
                             using (StreamWriter outputFile = new StreamWriter(Path.Combine(path, logFile), true))
                             {
-                                outputFile.WriteLine(DateTime.Now.ToString("hh:mm:ss") + "  DEBUG:   " + message);
+                                outputFile.WriteLine(DateTime.Now.ToString("HH:mm:ss") + "  DEBUG:   " + message);
                             }
                         }
                         break;
@@ -101,7 +101,7 @@ namespace CDS
                             {
                                 using (StreamWriter outputFile = new StreamWriter(Path.Combine(path, logFile), true))
                                 {
-                                    outputFile.WriteLine(DateTime.Now.ToString("hh:mm:ss") + "  ERROR:   " + message);
+                                    outputFile.WriteLine(DateTime.Now.ToString("HH:mm:ss") + "  ERROR:   " + message);
                                 }
                             }
                         }

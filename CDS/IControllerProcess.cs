@@ -23,8 +23,6 @@ namespace CDS
         public Data Data { get; set; }
         private bool IsRunning { get; set; }
         private bool HacerCierre { get; set; }
-        private bool ActualizarTanques { get; set; }
-        private bool TraerCierreAnterior { get; set; }
 
         public CemProcess()
         {
@@ -45,7 +43,11 @@ namespace CDS
 
                 try
                 {
-                    while (!ControllerCem.VerificarConexión());
+                    while (!ControllerCem.VerificarConexión())
+                    {
+                        Thread.Sleep(1000 * Convert.ToInt32(Data.Timer));
+                    }
+
                     ControllerCem.ConfigurarEstacion();
                     ControllerCem.ActualizarTanques();
                     HacerCierre = false;
@@ -114,6 +116,7 @@ namespace CDS
         public ControllerFusion ControllerFusion { get; set; }
         public Data Data { get; set; }
         private bool IsRunning { get; set; }
+        private bool HacerCierre { get; set; }
 
         public FusionProcess()
         {
@@ -125,23 +128,25 @@ namespace CDS
         {
             ControllerFusion = new ControllerFusion(Data.IP, Data.StationFlag);
 
-            bool isConnected = false;
-            bool realizarCorte = false;
-            bool traerCorteAnterior = false;
-
-            IsRunning = true;
-
-            Log.Instance.WriteLog($"Nuevo proceso principal iniciado. ID: {mainProcess.Id}, Estado: {mainProcess.Status}.\n", LogType.t_info);
+            Log.Instance.WriteLog($"Nuevo proceso principal iniciado. ID: {mainProcess.Id}, Estado: {mainProcess.Status}, TimerProcess {Data.Timer}.\n", LogType.t_info);
 
             while (!CancellationToken.Token.IsCancellationRequested)
             {
+                IsRunning = true;
+                Log.Instance.WriteLog($"Iniciando Lecturas...\n", LogType.t_info);
+
                 try
                 {
-                    Log.Instance.WriteLog($" Estado del hilo {mainProcess.Id}: {mainProcess.Status}. TimerProcess {Data.Timer}\n", LogType.t_info);
+                    while (!HacerCierre && !CancellationToken.Token.IsCancellationRequested)
+                    {
+                        Thread.Sleep(Convert.ToInt32(1000 * Convert.ToInt32(Data.Timer)));
+                    }
 
-                    Thread.Sleep(Convert.ToInt32(1000 * Convert.ToInt32(Data.Timer)));
-
-                    _ = ConnectorSQLite.Instance.ExecuteNonQuery($"UPDATE CheckConnection SET isConnected = 0, fecha = '{DateTime.Now:dd-MM-yyyy HH:mm:ss}' WHERE idConnection = 1");
+                    // Hacer el cierre
+                    if (HacerCierre)
+                    {
+                        // TODO: Cierre
+                    }
                 }
                 catch (Exception e)
                 {

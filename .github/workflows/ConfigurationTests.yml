@@ -33,7 +33,7 @@ jobs:
 
     - name: Build Solution
       run: |
-        msbuild.exe CDS.sln /p:platform="Any CPU" /p:configuration="Release"
+        msbuild.exe CDS.sln /p:platform="x86" /p:configuration="Release"
 
     - name: Build Test Solution
       run: |

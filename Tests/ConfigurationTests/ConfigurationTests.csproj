@@ -171,6 +171,9 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="DLL_Fusion\FusionClass.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="ILLink\ILLink.Descriptors.LibraryBuild.xml" />
     <Content Include="Responses\CierreDeTurno.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

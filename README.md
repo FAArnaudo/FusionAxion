@@ -1,41 +1,45 @@
-CDS - Controlador de Surtidores
-CDS (Controlador de Surtidores) es un software que actúa como interfaz entre el hardware de controladores de bombas de gasolinera y el sistema de gestión de la estación de servicio.
+# CDS - Fuel Dispenser Controller
 
-Este sistema está diseñado para integrarse principalmente con los controladores de surtidores CEM-44 y FUSION, pero puede extenderse a otros sistemas de control de bombas.
+**CDS** (Fuel Dispenser Controller) is a software solution designed as an interface between gas station pump controllers and the station management system.
 
-Funcionalidades Clave
-Obtención de Configuración de la Estación
-Captura la configuración de la estación, incluyendo dispensadores, mangueras, productos, tanques, entre otros.
+This system is implemented for **CEM-44** and **FUSION** fuel dispenser controllers but can be extended to support additional pump control systems.
 
-Registro de Ventas
-Registra las ventas realizadas en el área de servicio, tanto en volumen como en el monto del pago.
+## Key Features
 
-Obtención de Mediciones de Combustible
-Permite obtener mediciones de combustible, configurar precios y realizar ajustes en la estación.
+- **Station Configuration**  
+  Retrieves the station configuration, including **dispensers, hoses, products, tanks**, etc.
 
-Cierre de Turno
-El sistema incluye una funcionalidad para realizar el cierre de turno, asegurando la correcta gestión de las operaciones al final de cada jornada.
+- **Sales Recording**  
+  Captures every sale at the service station forecourt, including both volume and payment amount.
 
-Base de Datos
-Toda la información se refleja en una base de datos SQLite que se crea automáticamente una vez que el sistema establece comunicación con el controlador correspondiente.
+- **Fuel Measurements and Pricing**  
+  Allows the system to obtain fuel measurements, configure prices, and make adjustments.
 
-Tecnología Utilizada
-Lenguaje de Programación:
+- **Shift Closing**  
+  Includes a feature for closing shifts, ensuring accurate management of station operations at the end of each workday.
 
-C#
-Base de Datos:
+## Database 💾
 
-SQLite
-Iconos:
-Puedes incluir iconos para hacer la documentación más atractiva. Por ejemplo:
+All information is stored in an **SQLite** database, which is automatically created once the system successfully communicates with the corresponding pump controller.
 
-🛠️ Instalación
-💾 Base de Datos
-🚗 Ventas y Combustible
-⏳ Cierre de Turno
-Instalación
-Clona el repositorio.
-Abre el proyecto en Visual Studio.
-Instala las dependencias necesarias.
-Configura los parámetros de conexión con el controlador de surtidor.
-Ejecuta el sistema.
+## Technologies Used
+
+- **Programming Language:**
+
+    <img src="https://sitecloudy.com/wp-content/uploads/2023/07/Que-es-C-y-cuales-son-sus-ventajas-y-desventajas-2.png" width="45" height="50" />
+  
+- **Database:**
+
+    <img src="https://cdn.iconscout.com/icon/free/png-256/free-sqlite-282687.png" width="70" height="70" />
+  
+
+
+## Installation 🛠️
+
+To get started with CDS, follow these steps:
+
+1. Clone the repository.
+2. Open the project in **Visual Studio**.
+3. Install the necessary dependencies.
+4. Configure the connection parameters for the dispenser controller.
+5. Run the system.

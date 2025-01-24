@@ -14,7 +14,7 @@ namespace CDS
     {
         private ICommunication communication;
         private Fusion cFusion;
-        private readonly CultureInfo culture = CultureInfo.InvariantCulture;
+        private static readonly CultureInfo invariantCulture = CultureInfo.InvariantCulture;
 
         public ControllerFusion(ICommunication communication)
         {

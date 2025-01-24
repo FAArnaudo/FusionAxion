@@ -19,23 +19,6 @@ namespace CDS
         public ControllerFusion(ICommunication communication)
         {
             this.communication = communication;
-            //SetFlagDiscount();
-        }
-
-        private void SetFlagDiscount()
-        {
-            /*
-             switch (Estacion)
-            {
-                case "AXION":
-                    SetDiscount(new DiscountAxion());
-                    break;
-                case "PUMA":
-                    SetDiscount(new DiscountPuma());
-                    break;
-                default:
-                    break;
-            }*/
         }
         private ICommunication GetDiscount()
         {

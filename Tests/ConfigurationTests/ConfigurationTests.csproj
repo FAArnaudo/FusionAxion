@@ -155,7 +155,6 @@
   <ItemGroup>
     <Compile Include="ConfigurationTest.cs" />
     <Compile Include="ConnectorCemTest.cs" />
-    <Compile Include="ControllerFusionTest.cs" />
     <Compile Include="PumpControllerTest.cs" />
     <Compile Include="LogTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -172,9 +171,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="dll\FusionClass.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <Content Include="ILLink\ILLink.Descriptors.LibraryBuild.xml" />
     <Content Include="Responses\CierreDeTurno.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

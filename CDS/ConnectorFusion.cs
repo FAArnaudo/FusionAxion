@@ -1,4 +1,5 @@
 ﻿using FusionClass;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -12,10 +13,7 @@ namespace CDS
     public class ConnectorFusion
     {
         private static readonly CultureInfo culture = CultureInfo.InvariantCulture;
-        public ConnectorFusion()
-        {
-
-        }
+        public ConnectorFusion() { }
 
         public void ComandoConfiguracionDeLaEstacion(Fusion cFusion)
         {
@@ -121,7 +119,49 @@ namespace CDS
             }
         }
 
-        private double ConvertDouble(string value)
+        public bool PumaDiscount(Fusion cFusion, int idSale, ref string descuento)
+        {
+            try
+            {
+                bool isTrue = cFusion.GetMPPaymentObject(idSale, ref descuento);
+
+                if (isTrue && !string.IsNullOrEmpty(descuento))
+                {
+                    return true;
+                }
+            }
+            catch (Exception e)
+            {
+                Log.Instance.WriteLog($"Error al obtener descuentos. Excepcion {e.Message}", LogType.t_error);
+            }
+
+            return false;
+        }
+
+        public bool AxionDiscount(Fusion cFusion, int idSale, ref string descuento)
+        {
+            try
+            {
+                FusionSale fusionSale = new FusionSale();
+                _ = cFusion.GetSale(idSale, fusionSale);
+
+                descuento = fusionSale.GetPaymentInfo();
+                /*
+                // Tiene descuento
+                descuento = "AUC=055127143~CL=39444994~DCA=600.00~DCI=200000000000000000001~" +
+                "DCP=15.00%~DPN=FIDELIDAD ON~PT=200000000000000000001~" +
+                "TEXTD=(1015) - Bienvenido a ON! Disfruta un 15% de descuento!~TICKET=871621";
+                */
+            }
+            catch (Exception e)
+            {
+                Log.Instance.WriteLog($"Error al obtener descuentos. Excepcion {e.Message}", LogType.t_error);
+            }
+
+            return descuento.StartsWith("AUC");
+        }
+
+        public double ConvertDouble(string value)
         {
             return double.TryParse(value, NumberStyles.Any, culture, out double result) ? result : result;
         }

@@ -666,11 +666,15 @@ namespace CDS
 
                             if (iteraciones > 0)
                             {
-                                if (respuesta[iteraciones] == 0 && respuesta[iteraciones - 1] == 0 && cont < 6)
+                                if (respuesta[iteraciones] == 0 && cont < 10)
                                 {
                                     cont++;
                                 }
-                                else if (respuesta[iteraciones] == 0 && cont >= 6)
+                                else if (respuesta[iteraciones] != 0 && cont < 10)
+                                {
+                                    cont = 0;
+                                }
+                                else if (respuesta[iteraciones] == 0 && cont >= 10)
                                 {
                                     break;
                                 }

@@ -1,4 +1,5 @@
 ﻿using FusionClass;
+using Newtonsoft.Json.Linq;
 using Polly;
 using System;
 using System.Collections;
@@ -306,7 +307,10 @@ namespace CDS
 
         public void CheckDiscount()
         {
-            GetDiscount().CheckDiscount();
+            if (VerificarConexión())
+            {
+                GetDiscount().CheckDiscount(ConnectorFusion, cFusion);
+            }
         }
 
         private double ConvertDouble(string value)
@@ -316,18 +320,102 @@ namespace CDS
     }
     public interface ICommunication
     {
-        void CheckDiscount();
+        void CheckDiscount(ConnectorFusion connectorFusion, Fusion cFusion);
         Data GetConfiguration();
         int ExecuteNonQuery(string query);
+        DataTable ExecuteSelectQuery(string query);
     }
 
-    public class DiscountPuma : ICommunication
+    public class PumaConnector : ICommunication
     {
-        public DiscountPuma() { }
+        public PumaConnector() { }
 
-        public void CheckDiscount()
+        public void CheckDiscount(ConnectorFusion connectorFusion, Fusion cFusion)
         {
-            throw new NotImplementedException();
+            DataTable tableDespachos = ExecuteSelectQuery($"SELECT * " +
+                                                          $"FROM Despachos " +
+                                                          $"ORDER BY id ASC LIMIT 16");
+
+            foreach (DataRow row in tableDespachos.Rows)
+            {
+                if (Convert.ToString(row["AUC"]) == "0")
+                {
+                    // Accedes al valor de la columna 'id' por su nombre
+                    int id = Convert.ToInt32(row["id"]);
+                    string descuento = "";
+
+                    if (connectorFusion.PumaDiscount(cFusion, id, ref descuento))
+                    {
+                        // Parsear la cadena JSON
+                        var json = JObject.Parse(descuento);
+
+                        // Datos principales
+                        string authCode = json["AuthCode"].ToString();
+                        int collectorId = json["CollectorId"].ToObject<int>();
+                        string currencyId = json["CurrencyId"].ToString();
+                        string dateCreated = json["DateCreated"].ToString();
+                        string description = json["Description"].ToString();
+                        string externalReference = json["external_reference"].ToString();
+                        string paymentMethodId = json["payment_method_id"].ToString();
+                        string paymentTypeId = json["PaymentTypeId"].ToString();
+
+                        // PuntoVenta
+                        _ = json["PuntoVenta"]["PosId"].ToString();
+                        var autoliquidables = (JArray)json["PuntoVenta"]["Autoliquidables"];
+                        foreach (var item in autoliquidables)
+                        {
+                            _ = item["cod"].ToString();
+                            _ = item["glosa"].ToString();
+                            _ = item["value"].ToObject<decimal>();
+                        }
+
+                        // Descuentos
+                        var discounts = (JArray)json["PuntoVenta"]["Discounts"];
+                        string totalGlosa = "";
+                        decimal totalDiscount = 0;
+                        foreach (var item in discounts)
+                        {
+                            string glosaDiscount = item["glosa"].ToString();
+                            decimal valueDiscount = item["value"].ToObject<decimal>();
+                            totalGlosa += glosaDiscount + " - ";
+                            totalDiscount += valueDiscount;
+                        }
+
+                        // Otros datos
+                        _ = json["PuntoVenta"]["Fecha"].ToString();
+                        _ = json["PuntoVenta"]["TotalPagoUsuario"].ToObject<decimal>();
+                        _ = json["PuntoVenta"]["TotalTransaccion"].ToObject<decimal>();
+                        _ = json["PuntoVenta"]["TotalTransaccionSinDescuentos"].ToObject<decimal>();
+
+                        string statementDescriptor = json["StatementDescriptor"].ToString();
+                        string status = json["status"].ToString();
+                        decimal transactionAmount = json["TransactionAmount"].ToObject<decimal>();
+
+                        string campos = "external_reference,AuthCode,CollectorId,CurrencyId,DateCreated,Description,PaymentTypeId," +
+                                        "StatementDescriptor,TransactionAmount,payment_method_id,status,Glosa,Descuento";
+
+                        string rows = string.Format("{0},{1},{2},'{3}','{4}','{5}','{6}','{7}',{8},'{9}','{10}','{11}',{12}",
+                                      externalReference, authCode, collectorId,
+                                      currencyId, dateCreated, description,
+                                      paymentTypeId, statementDescriptor,
+                                      transactionAmount, paymentMethodId,
+                                      status, totalGlosa, totalDiscount);
+
+                        ExecuteNonQuery(string.Format("INSERT INTO Descuentos ({0}) VALUES ({1})", campos, rows));
+
+                        _ = ExecuteNonQuery($"UPDATE Despachos " +
+                                                 $"SET AUC = '{authCode}', " +
+                                                     $"DCA = {0}, DCI = '{statementDescriptor}' , DCP = '{paymentMethodId}', " +
+                                                     $"DPN = '{paymentTypeId}', TXTD = '{description}' " +
+                                                     $"WHERE id = {id}");
+                    }
+                }
+            }
+        }
+
+        public Data GetConfiguration()
+        {
+            return Configuration.GetConfiguration();
         }
 
         public int ExecuteNonQuery(string query)
@@ -335,28 +423,96 @@ namespace CDS
             return ConnectorSQLite.Instance.ExecuteNonQuery(query);
         }
 
+        public DataTable ExecuteSelectQuery(string query)
+        {
+            return ConnectorSQLite.Instance.ExecuteSelectQuery(query);
+        }
+    }
+
+    public class AxionConnector : ICommunication
+    {
+        public AxionConnector() { }
+
+        public void CheckDiscount(ConnectorFusion connectorFusion, Fusion cFusion)
+        {
+            DataTable tableDespachos = ExecuteSelectQuery($"SELECT * " +
+                               $"FROM Despachos " +
+                               $"ORDER BY id ASC LIMIT 16");
+
+            foreach (DataRow row in tableDespachos.Rows)
+            {
+                if (Convert.ToString(row["AUC"]) == "0")
+                {
+                    // Accedes al valor de la columna 'id' por su nombre
+                    int id = Convert.ToInt32(row["id"]);
+                    string descuento = "";
+
+                    if (connectorFusion.AxionDiscount(cFusion, id, ref descuento))
+                    {
+                        string AUC = "";
+                        double DCA = 0;
+                        double DCP = 0;
+                        string DPN = "";
+                        string TEXTD = "";
+
+                        // Usamos el método Split para dividir el string por el carácter "~"
+                        string[] partes = descuento.Split('~');
+
+                        // Ahora podemos recorrer el arreglo 'partes' para acceder a cada subcadena
+                        foreach (string parte in partes)
+                        {
+                            // Dividimos cada parte por el carácter "=" para separar el nombre del valor
+                            string[] claveValor = parte.Split('=');
+
+                            string clave = claveValor[0].Trim(); // La clave (nombre)
+                            string valor = claveValor[1].Trim(); // El valor
+
+                            switch (clave)
+                            {
+                                case "AUC":
+                                    AUC = valor;
+                                    break;
+                                case "DCA":
+                                    DCA = connectorFusion.ConvertDouble(valor);
+                                    break;
+                                case "DCP":
+                                    DCP = connectorFusion.ConvertDouble(valor.Substring(0, 5));
+                                    break;
+                                case "DPN":
+                                    DPN = valor;
+                                    break;
+                                case "TEXTD":
+                                    TEXTD = valor;
+                                    break;
+                                case "TICKET":
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
+                        _ = ExecuteNonQuery($"UPDATE Despachos " +
+                                                 $"SET AUC = '{AUC}', " +
+                                                     $"DCA = {DCA}, DCP = '{Convert.ToString(DCP)}', " +
+                                                     $"DPN = '{DPN}', TXTD = '{TEXTD}' " +
+                                                     $"WHERE id = {id}");
+                    }
+                }
+            }
+        }
+
         public Data GetConfiguration()
         {
             return Configuration.GetConfiguration();
         }
-    }
 
-    public class DiscountAxion : ICommunication
-    {
-        public DiscountAxion() { }
-
-        public void CheckDiscount()
-        {
-            throw new NotImplementedException();
-        }
         public int ExecuteNonQuery(string query)
         {
             return ConnectorSQLite.Instance.ExecuteNonQuery(query);
         }
 
-        public Data GetConfiguration()
+        public DataTable ExecuteSelectQuery(string query)
         {
-            return Configuration.GetConfiguration();
+            return ConnectorSQLite.Instance.ExecuteSelectQuery(query);
         }
     }
 }

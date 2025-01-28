@@ -233,7 +233,7 @@ namespace CDS
                                    "PPU REAL NOT NULL, volumen REAL NOT NULL, " +
                                    "monto REAL NOT NULL, descripcion TEXT, facturado INTEGER, YPFRuta INTEGER, " +
                                    "despacho_pedido INTEGER, fecha TEXT DEFAULT(datetime('now', 'localtime')), " +
-                                   "AUC TEXT DEFAULT '0', DCA REAL, DCP TEXT, " +
+                                   "AUC TEXT DEFAULT '0', DCA REAL, DCI TEXT , DCP TEXT, " +
                                    "DPN TEXT, TXTD TEXT, cod_auto TEXT, glosa_auto TEXT, " +
                                    "valor_auto REAL, PRIMARY KEY(id,surtidor))";
 
@@ -309,6 +309,17 @@ namespace CDS
                                    "\nINSERT INTO Datos_CIO (id_cio, ip_vox, ip_bridge, ip_server, ip_libre, ruteo_estatico)" +
                                    "\nSELECT 1, '', '', '', '', '' " +
                                    "\nWHERE NOT EXISTS (SELECT 1 FROM Datos_CIO WHERE id_cio = 1);";
+
+                using (SQLiteCommand cmd = new SQLiteCommand(createTableQuery, connection))
+                {
+                    _ = cmd.ExecuteNonQuery();
+                }
+
+                createTableQuery = "CREATE TABLE IF NOT EXISTS Descuentos " +
+                                   "(external_reference INTEGER, AuthCode INTEGER, CollectorId INTEGER, " +
+                                   "CurrencyId TEXT, DateCreated TEXT, Description TEXT, PaymentTypeId TEXT, " +
+                                   "StatementDescriptor TEXT, TransactionAmount REAL, payment_method_id TEXT, status TEXT, " +
+                                   "Glosa TEXT, Descuento REAL, fecha date DEFAULT((strftime('%d-%m-%Y %H:%M:%S', 'now', 'localtime'))));";
 
                 using (SQLiteCommand cmd = new SQLiteCommand(createTableQuery, connection))
                 {

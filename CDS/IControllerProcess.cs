@@ -46,6 +46,7 @@ namespace CDS
                     while (!ControllerCem.VerificarConexión())
                     {
                         Thread.Sleep(1000 * Convert.ToInt32(Data.Timer));
+                        Log.Instance.WriteLog("Intentando establecer conexión.", LogType.t_debug);
                     }
 
                     ControllerCem.ConfigurarEstacion();
@@ -145,6 +146,7 @@ namespace CDS
                         while (!HacerCierre && !CancellationToken.Token.IsCancellationRequested)
                         {
                             ControllerFusion.GrabarDespachos();
+                            ControllerFusion.CheckDiscount();
 
                             CheckFlags();
 
@@ -186,13 +188,13 @@ namespace CDS
             switch (Data.StationFlag)
             {
                 case "AXION":
-                    communication = new DiscountAxion();
+                    communication = new AxionConnector();
                     break;
                 case "PUMA":
-                    communication = new DiscountPuma();
+                    communication = new PumaConnector();
                     break;
                 default:
-                    communication = new DiscountAxion();
+                    communication = new AxionConnector();
                     break;
             }
 

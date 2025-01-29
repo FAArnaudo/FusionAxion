@@ -67,6 +67,7 @@ namespace CDS
                     // Hacer el cierre
                     if (HacerCierre)
                     {
+                        Log.Instance.WriteLog("Iniciando: Realizando corte de turno.\n", LogType.t_info);
                         ControllerCem.GrabarCierre();
                     }
                 }
@@ -127,6 +128,7 @@ namespace CDS
 
         public void RunProcess(Task mainProcess)
         {
+            int firstTime = 1;
             CreateController();
 
             Log.Instance.WriteLog($"Nuevo proceso principal iniciado. ID: {mainProcess.Id}, Estado: {mainProcess.Status}, TimerProcess {Data.Timer}.\n", LogType.t_info);
@@ -137,6 +139,12 @@ namespace CDS
                 {
                     ControllerFusion.ConfigurarEstacion();
                     ControllerFusion.ActualizarTanques();
+
+                    if (firstTime == 1)
+                    {
+                        ControllerFusion.GrabarCierre();
+                        firstTime = 0;
+                    }
 
                     HacerCierre = false;
                     Log.Instance.WriteLog($"Iniciando Lecturas...\n", LogType.t_info);
@@ -156,7 +164,8 @@ namespace CDS
                         // Hacer el cierre
                         if (HacerCierre)
                         {
-                            // TODO: Cierre
+                            Log.Instance.WriteLog("Iniciando: Realizando corte de turno.\n", LogType.t_info);
+                            ControllerFusion.GrabarCierre();
                         }
                     }
                     catch (Exception e)

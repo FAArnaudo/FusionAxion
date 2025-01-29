@@ -161,6 +161,65 @@ namespace CDS
             return descuento.StartsWith("AUC");
         }
 
+        public CierreFusion ComandoCierresDeTurno(Fusion cFusion)
+        {
+            CierreFusion cierreDeTurno;
+
+            bool flag;
+            string type, periodType;
+            type = "S"; // S - Shift
+
+            string status, message, errorCode, periodID;
+            status = "";
+            message = "";
+            errorCode = "";
+            periodID = "";
+            periodType = "";
+
+            flag = cFusion.ShiftClose(type, ref status, ref message, ref errorCode, ref periodID, ref periodType);
+
+            cierreDeTurno = new CierreFusion
+            {
+                Estado = status,
+                Message = message
+            };
+
+            if (flag && status.Equals("OK"))
+            {
+                cierreDeTurno.ID = Convert.ToInt32(periodID);
+
+                Station station = Station.Instance;
+
+                foreach (Surtidor surtidor in station.Surtidores)
+                {
+                    foreach (Manguera manguera in surtidor.Mangueras)
+                    {
+                        string totalVolumen = "";
+                        string totalMonto = "";
+                        if (cFusion.GetTotalizers(surtidor.ID, manguera.ID, ref totalVolumen, ref totalMonto) != 0)
+                        {
+                            TotalPorManguera totalPorManguera = new TotalPorManguera
+                            {
+                                NumeroDeManguera = manguera.ID,
+                                NumeroDeSurtidor = surtidor.ID,
+                                TotalVntasVolumen = ConvertDouble(totalVolumen),
+                                TotalVntasMonto = ConvertDouble(totalMonto),
+                            };
+
+                            cierreDeTurno.TotalesPorManguera.Add(totalPorManguera);
+                        }
+                    }
+                }
+            }
+            else
+            {
+                Log.Instance.WriteLog($"Type: {type}, state: {status}, Message: {message}, Error code: {errorCode}.", LogType.t_error);
+                cierreDeTurno.ErrorCode = errorCode;
+            }
+
+            return cierreDeTurno;
+        }
+
         public double ConvertDouble(string value)
         {
             return double.TryParse(value, NumberStyles.Any, culture, out double result) ? result : result;

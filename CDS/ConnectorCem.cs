@@ -361,7 +361,7 @@ namespace CDS
             return despacho;
         }
 
-        public CierreDeTurnoCem ComandoCierresDeTurno(byte[] command)
+        public CierreCem ComandoCierresDeTurno(byte[] command)
         {
             int posicion = 1;
 
@@ -382,18 +382,18 @@ namespace CDS
                     break;
             }
 
-            CierreDeTurnoCem turno;
+            CierreCem turno;
 
             try
             {
                 if (reply[0] == 0xFF)
                 {
-                    turno = new CierreDeTurnoCem
+                    turno = new CierreCem
                     {
                         Estado = "SIN VENTAS"
                     };
 
-                    for (int i = 0; i < CierreDeTurnoCem.MEDIOS_DE_PAGO; i++)
+                    for (int i = 0; i < CierreCem.MEDIOS_DE_PAGO; i++)
                     {
                         TotalMedioDePago totalMedioDePago = new TotalMedioDePago()
                         {
@@ -493,9 +493,9 @@ namespace CDS
                     return turno;
                 }
 
-                turno = new CierreDeTurnoCem();
+                turno = new CierreCem();
 
-                for (int i = 0; i < CierreDeTurnoCem.MEDIOS_DE_PAGO; i++)
+                for (int i = 0; i < CierreCem.MEDIOS_DE_PAGO; i++)
                 {
                     TotalMedioDePago totalMedioDePago = new TotalMedioDePago()
                     {

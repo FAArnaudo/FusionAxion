@@ -181,23 +181,34 @@ namespace CDS
 
     public class CierreDeTurno
     {
-        public CierreDeTurno() { }
+        public CierreDeTurno()
+        {
+            TotalesPorManguera = new List<TotalPorManguera>();
+        }
 
         public int ID { get; set; }
         public string FechaCierre { get; set; }
         public double TotalesMonto { get; set; }
         public double TotalesVolumen { get; set; }
+        public List<TotalPorManguera> TotalesPorManguera { get; set; }
         public string Estado { get; set; }
     }
 
-    public class CierreDeTurnoCem : CierreDeTurno
+    public class CierreFusion : CierreDeTurno
+    {
+        public CierreFusion() { }
+
+        public string ErrorCode { get; set; }
+        public string Message { get; set; }
+    }
+
+    public class CierreCem : CierreDeTurno
     {
         public const int MEDIOS_DE_PAGO = 8;
-        public CierreDeTurnoCem()
+        public CierreCem()
         {
             TotalesMedioDePago = new List<TotalMedioDePago>();
             TotalesPorPeriodoPorNivelPorProducto = new List<List<List<TotalPorProducto>>>();
-            TotalesPorManguera = new List<TotalPorManguera>();
             TotalesPorTanque = new List<TotalPorTanque>();
             ProductosEnTanque = new List<ProductoEnTanque>();
         }
@@ -207,7 +218,6 @@ namespace CDS
         public int PeriodoDePrecios { get; set; }
         public int NivelesDePrecio { get; set; }
         public List<List<List<TotalPorProducto>>> TotalesPorPeriodoPorNivelPorProducto { get; set; }
-        public List<TotalPorManguera> TotalesPorManguera { get; set; } 
         public List<TotalPorTanque> TotalesPorTanque { get; set; }
         public List<ProductoEnTanque> ProductosEnTanque { get; set; }
     }

@@ -302,7 +302,124 @@ namespace CDS
 
         public override void GrabarCierre()
         {
-            throw new NotImplementedException();
+            int bufferLimit = 999999;
+            int tries = 0;
+            int stopTries = 3;
+            bool connection = false;
+
+            while (!connection && tries < stopTries)
+            {
+                if (VerificarConexión())
+                {
+                    connection = true;
+                }
+                tries++;
+            }
+
+            if (tries == stopTries)
+            {
+                throw new Exception("Conexión fallida.");
+            }
+
+            CierreFusion cierre = ConnectorFusion.ComandoCierresDeTurno(cFusion);
+
+            string campos;
+            string rows;
+
+            try
+            {
+                _ = ConnectorSQLite.Instance.ExecuteNonQuery("UPDATE cierreBandera SET hacerCierre = 0");
+
+                if (cierre.Estado.Equals("OK"))
+                {
+                    bool hasData = Convert.ToBoolean(Convert.ToInt32(ConnectorSQLite.Instance.ExecuteSelectQuery("SELECT CASE WHEN COUNT(*) > 0 THEN 1 ELSE 0 END AS HasData FROM Cierres;").Rows[0][0]));
+
+                    if (hasData)  //  Hay datos guardados
+                    {
+                        // Obtengo el ultimo id de la tabla Cierres
+                        DataTable tablaCierres = ConnectorSQLite.Instance.ExecuteSelectQuery("SELECT max(id) FROM Cierres");
+                        int lastID = Convert.ToInt32(tablaCierres.Rows[0][0]);
+
+                        DataTable ultimoCierrePorManguera = ConnectorSQLite.Instance.ExecuteSelectQuery($"SELECT * FROM CierresPorManguera WHERE id = {lastID}");
+
+                        List<TotalPorManguera> totalesPorManguera = new List<TotalPorManguera>();
+
+                        for (int manguera = 0; manguera < cierre.TotalesPorManguera.Count; manguera++)
+                        {
+                            TotalPorManguera totalPorManguera = new TotalPorManguera
+                            {
+                                NumeroDeManguera = cierre.TotalesPorManguera[manguera].NumeroDeManguera,
+                                NumeroDeSurtidor = cierre.TotalesPorManguera[manguera].NumeroDeSurtidor,
+                            };
+
+                            double volumenAnterior = 0;
+                            double montoAnterior = 0;
+
+                            foreach (DataRow dataRow in ultimoCierrePorManguera.Rows)
+                            {
+                                if (Convert.ToInt32(dataRow["surtidor"]) == cierre.TotalesPorManguera[manguera].NumeroDeSurtidor && Convert.ToInt32(dataRow["manguera"]) == cierre.TotalesPorManguera[manguera].NumeroDeManguera)
+                                {
+                                    volumenAnterior = Convert.ToDouble(dataRow["volumen"]);
+                                    montoAnterior = Convert.ToDouble(dataRow["monto"]);
+                                    break;
+                                }
+                            }
+
+                            
+
+                            if (cierre.TotalesPorManguera[manguera].TotalVntasVolumen - volumenAnterior >= 0)
+                            {
+                                totalPorManguera.TotalVntasVolumen = cierre.TotalesPorManguera[manguera].TotalVntasVolumen - volumenAnterior;
+                            }
+                            else
+                            {
+                                totalPorManguera.TotalVntasVolumen = cierre.TotalesPorManguera[manguera].TotalVntasVolumen + bufferLimit - volumenAnterior;
+                            }
+
+                            totalPorManguera.TotalVntasMonto = cierre.TotalesPorManguera[manguera].TotalVntasMonto - montoAnterior;
+
+                            totalesPorManguera.Add(totalPorManguera);
+                        }
+
+                        cierre.TotalesPorManguera = totalesPorManguera;
+
+                        InsertShift(cierre);
+                    }
+                    else    //  No datos registros en la tabla
+                    {
+                        InsertShift(cierre);
+                    }
+                }
+                else
+                {
+                    string message;
+
+                    switch (cierre.ErrorCode)
+                    {
+                        case "SHI0001":
+                            message = "El periodo a cerrar no tiene datos";
+                            break;
+                        case "SHI0002":
+                            message = "Error al aplicar el cierre de periodo a la base de datos";
+                            break;
+                        default:
+                            message = "Error no identificado";
+                            break;
+                    }
+
+                    campos = "state,message";
+
+                    rows = string.Format("'{0}','{1}'",
+                                          cierre.Estado,
+                                          message);
+
+                    communication.ExecuteNonQuery(string.Format("INSERT INTO Surtidores ({0}) VALUES ({1})", campos, rows));
+                }
+            }
+            catch (Exception e)
+            {
+                throw new Exception($"Error en el Cierre de turno. Excepción: {e.Message}");
+            }
         }
 
         public void CheckDiscount()
@@ -310,6 +427,38 @@ namespace CDS
             if (VerificarConexión())
             {
                 GetDiscount().CheckDiscount(ConnectorFusion, cFusion);
+            }
+        }
+
+        private void InsertShift(CierreFusion cierre)
+        {
+            string fields = "id_cierre,fecha,state,message";
+            string values = string.Format("{0},'{1}','{2}','{3}'",
+                cierre.ID,
+                DateTime.Now.ToString("dd-MM-yyyy HH:mm:ss"),
+                cierre.Estado,
+                cierre.Message);
+
+            _ = ConnectorSQLite.Instance.ExecuteNonQuery(string.Format("INSERT INTO Cierres ({0}) VALUES ({1})", fields, values));
+
+            // Traer ID del cierre para poder referenciar los detalles
+            DataTable tablaCierres = ConnectorSQLite.Instance.ExecuteSelectQuery("SELECT max(id) FROM Cierres");
+
+            int id = Convert.ToInt32(tablaCierres.Rows[0][0]);
+
+            // Grabar CierresPorManguera
+            fields = "id,surtidor,manguera,monto,volumen";
+
+            for (int manguera = 0; manguera < cierre.TotalesPorManguera.Count; manguera++)
+            {
+                values = string.Format("{0},{1},{2},{3},{4}",
+                    id,
+                    cierre.TotalesPorManguera[manguera].NumeroDeSurtidor,
+                    cierre.TotalesPorManguera[manguera].NumeroDeManguera,
+                    cierre.TotalesPorManguera[manguera].TotalVntasMonto,
+                    cierre.TotalesPorManguera[manguera].TotalVntasVolumen);
+
+                _ = ConnectorSQLite.Instance.ExecuteNonQuery(string.Format("INSERT INTO CierresPorManguera ({0}) VALUES ({1})", fields, values));
             }
         }
 

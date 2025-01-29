@@ -285,7 +285,7 @@ namespace ConfigurationTests
             string expected = "SIN VENTAS";
 
             // Act
-            CierreDeTurnoCem cierreDeTurno = connectorCem.ComandoCierresDeTurno(command);
+            CierreCem cierreDeTurno = connectorCem.ComandoCierresDeTurno(command);
 
             string actual = cierreDeTurno.Estado;
 

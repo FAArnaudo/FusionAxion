@@ -256,7 +256,7 @@ namespace CDS
                 createTableQuery = "CREATE TABLE IF NOT EXISTS Cierres " +
                                    "(id INTEGER, id_cierre INTEGER, fecha TEXT DEFAULT((strftime('%d-%m-%Y %H:%M:%S', 'now', 'localtime'))), " +
                                    "monto_contado TEXT, volumen_contado TEXT, " +
-                                   "monto_YPFruta TEXT, volumen_YPFruta TEXT, state TEXT, PRIMARY KEY(id AUTOINCREMENT))";
+                                   "monto_YPFruta TEXT, volumen_YPFruta TEXT, state TEXT, message TEXT, PRIMARY KEY(id AUTOINCREMENT))";
 
                 using (SQLiteCommand cmd = new SQLiteCommand(createTableQuery, connection))
                 {

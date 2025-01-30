@@ -333,8 +333,9 @@ namespace CDS
                 if (cierre.Estado.Equals("OK"))
                 {
                     bool hasData = Convert.ToBoolean(Convert.ToInt32(ConnectorSQLite.Instance.ExecuteSelectQuery("SELECT CASE WHEN COUNT(*) > 0 THEN 1 ELSE 0 END AS HasData FROM Cierres;").Rows[0][0]));
-
-                    if (hasData)  //  Hay datos guardados
+                    
+                    //  Comprobamos si hay datos guardados
+                    if (hasData)
                     {
                         // Obtengo el ultimo id de la tabla Cierres
                         DataTable tablaCierres = ConnectorSQLite.Instance.ExecuteSelectQuery("SELECT max(id) FROM Cierres");
@@ -352,43 +353,35 @@ namespace CDS
                                 NumeroDeSurtidor = cierre.TotalesPorManguera[manguera].NumeroDeSurtidor,
                             };
 
-                            double volumenAnterior = 0;
-                            double montoAnterior = 0;
+                            double volumenAnteriorAcumulado = 0;
+                            double montoAnteriorAcumulado = 0;
 
                             foreach (DataRow dataRow in ultimoCierrePorManguera.Rows)
                             {
                                 if (Convert.ToInt32(dataRow["surtidor"]) == cierre.TotalesPorManguera[manguera].NumeroDeSurtidor && Convert.ToInt32(dataRow["manguera"]) == cierre.TotalesPorManguera[manguera].NumeroDeManguera)
                                 {
-                                    volumenAnterior = Convert.ToDouble(dataRow["volumen"]);
-                                    montoAnterior = Convert.ToDouble(dataRow["monto"]);
+                                    volumenAnteriorAcumulado = Convert.ToDouble(dataRow["volumen_acumulado"]);
+                                    montoAnteriorAcumulado = Convert.ToDouble(dataRow["monto_acumulado"]);
                                     break;
                                 }
                             }
 
                             
 
-                            if (cierre.TotalesPorManguera[manguera].TotalVntasVolumen - volumenAnterior >= 0)
+                            if (cierre.TotalesPorManguera[manguera].TotalVntasVolumen - volumenAnteriorAcumulado >= 0)
                             {
-                                totalPorManguera.TotalVntasVolumen = cierre.TotalesPorManguera[manguera].TotalVntasVolumen - volumenAnterior;
+                                cierre.TotalesPorManguera[manguera].TotalVntasVolumen -= volumenAnteriorAcumulado;
                             }
                             else
                             {
-                                totalPorManguera.TotalVntasVolumen = cierre.TotalesPorManguera[manguera].TotalVntasVolumen + bufferLimit - volumenAnterior;
+                                cierre.TotalesPorManguera[manguera].TotalVntasVolumen = cierre.TotalesPorManguera[manguera].TotalVntasVolumen + bufferLimit - volumenAnteriorAcumulado;
                             }
 
-                            totalPorManguera.TotalVntasMonto = cierre.TotalesPorManguera[manguera].TotalVntasMonto - montoAnterior;
-
-                            totalesPorManguera.Add(totalPorManguera);
+                            cierre.TotalesPorManguera[manguera].TotalVntasMonto -= montoAnteriorAcumulado;
                         }
-
-                        cierre.TotalesPorManguera = totalesPorManguera;
-
-                        InsertShift(cierre);
                     }
-                    else    //  No datos registros en la tabla
-                    {
-                        InsertShift(cierre);
-                    }
+
+                    InsertShift(cierre);
                 }
                 else
                 {
@@ -447,16 +440,18 @@ namespace CDS
             int id = Convert.ToInt32(tablaCierres.Rows[0][0]);
 
             // Grabar CierresPorManguera
-            fields = "id,surtidor,manguera,monto,volumen";
+            fields = "id,surtidor,manguera,monto,volumen,monto_acumulado,volumen_acumulado";
 
             for (int manguera = 0; manguera < cierre.TotalesPorManguera.Count; manguera++)
             {
-                values = string.Format("{0},{1},{2},{3},{4}",
+                values = string.Format("{0},{1},{2},{3},{4},{5},{6}",
                     id,
                     cierre.TotalesPorManguera[manguera].NumeroDeSurtidor,
                     cierre.TotalesPorManguera[manguera].NumeroDeManguera,
                     cierre.TotalesPorManguera[manguera].TotalVntasMonto,
-                    cierre.TotalesPorManguera[manguera].TotalVntasVolumen);
+                    cierre.TotalesPorManguera[manguera].TotalVntasVolumen,
+                    cierre.TotalesPorManguera[manguera].TotalVntasSinControlMonto,
+                    cierre.TotalesPorManguera[manguera].TotalVntasSinControlVolumen);
 
                 _ = ConnectorSQLite.Instance.ExecuteNonQuery(string.Format("INSERT INTO CierresPorManguera ({0}) VALUES ({1})", fields, values));
             }

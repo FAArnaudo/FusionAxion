@@ -203,7 +203,9 @@ namespace CDS
                                 NumeroDeManguera = manguera.ID,
                                 NumeroDeSurtidor = surtidor.ID,
                                 TotalVntasVolumen = ConvertDouble(totalVolumen),
+                                TotalVntasSinControlVolumen = ConvertDouble(totalVolumen),
                                 TotalVntasMonto = ConvertDouble(totalMonto),
+                                TotalVntasSinControlMonto = ConvertDouble(totalMonto)
                             };
 
                             cierreDeTurno.TotalesPorManguera.Add(totalPorManguera);

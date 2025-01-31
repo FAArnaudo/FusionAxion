@@ -233,7 +233,7 @@ namespace CDS
                                    "PPU REAL NOT NULL, volumen REAL NOT NULL, " +
                                    "monto REAL NOT NULL, descripcion TEXT, facturado INTEGER, YPFRuta INTEGER, " +
                                    "despacho_pedido INTEGER, fecha TEXT DEFAULT(datetime('now', 'localtime')), " +
-                                   "AUC TEXT DEFAULT '0', DCA REAL, DCP TEXT, " +
+                                   "AUC TEXT DEFAULT '0', DCA REAL, DCI TEXT , DCP TEXT, " +
                                    "DPN TEXT, TXTD TEXT, cod_auto TEXT, glosa_auto TEXT, " +
                                    "valor_auto REAL, PRIMARY KEY(id,surtidor))";
 
@@ -256,7 +256,7 @@ namespace CDS
                 createTableQuery = "CREATE TABLE IF NOT EXISTS Cierres " +
                                    "(id INTEGER, id_cierre INTEGER, fecha TEXT DEFAULT((strftime('%d-%m-%Y %H:%M:%S', 'now', 'localtime'))), " +
                                    "monto_contado TEXT, volumen_contado TEXT, " +
-                                   "monto_YPFruta TEXT, volumen_YPFruta TEXT, state TEXT, PRIMARY KEY(id AUTOINCREMENT))";
+                                   "monto_YPFruta TEXT, volumen_YPFruta TEXT, state TEXT, message TEXT, PRIMARY KEY(id AUTOINCREMENT))";
 
                 using (SQLiteCommand cmd = new SQLiteCommand(createTableQuery, connection))
                 {
@@ -314,6 +314,17 @@ namespace CDS
                 {
                     _ = cmd.ExecuteNonQuery();
                 }
+
+                createTableQuery = "CREATE TABLE IF NOT EXISTS Descuentos " +
+                                   "(external_reference INTEGER, AuthCode INTEGER, CollectorId INTEGER, " +
+                                   "CurrencyId TEXT, DateCreated TEXT, Description TEXT, PaymentTypeId TEXT, " +
+                                   "StatementDescriptor TEXT, TransactionAmount REAL, payment_method_id TEXT, status TEXT, " +
+                                   "Glosa TEXT, Descuento REAL, fecha date DEFAULT((strftime('%d-%m-%Y %H:%M:%S', 'now', 'localtime'))));";
+
+                using (SQLiteCommand cmd = new SQLiteCommand(createTableQuery, connection))
+                {
+                    _ = cmd.ExecuteNonQuery();
+                }
             }
             catch (Exception ex)
             {
@@ -358,7 +369,7 @@ namespace CDS
         /// </summary>
         private void CloseConnection()
         {
-            if (connection.State != ConnectionState.Closed)
+            if (connection != null && connection.State != ConnectionState.Closed)
             {
                 connection.Close();
             }

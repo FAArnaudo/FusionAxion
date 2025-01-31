@@ -361,7 +361,7 @@ namespace CDS
             return despacho;
         }
 
-        public CierreDeTurnoCem ComandoCierresDeTurno(byte[] command)
+        public CierreCem ComandoCierresDeTurno(byte[] command)
         {
             int posicion = 1;
 
@@ -382,18 +382,18 @@ namespace CDS
                     break;
             }
 
-            CierreDeTurnoCem turno;
+            CierreCem turno;
 
             try
             {
                 if (reply[0] == 0xFF)
                 {
-                    turno = new CierreDeTurnoCem
+                    turno = new CierreCem
                     {
                         Estado = "SIN VENTAS"
                     };
 
-                    for (int i = 0; i < CierreDeTurnoCem.MEDIOS_DE_PAGO; i++)
+                    for (int i = 0; i < CierreCem.MEDIOS_DE_PAGO; i++)
                     {
                         TotalMedioDePago totalMedioDePago = new TotalMedioDePago()
                         {
@@ -493,9 +493,9 @@ namespace CDS
                     return turno;
                 }
 
-                turno = new CierreDeTurnoCem();
+                turno = new CierreCem();
 
-                for (int i = 0; i < CierreDeTurnoCem.MEDIOS_DE_PAGO; i++)
+                for (int i = 0; i < CierreCem.MEDIOS_DE_PAGO; i++)
                 {
                     TotalMedioDePago totalMedioDePago = new TotalMedioDePago()
                     {
@@ -640,7 +640,7 @@ namespace CDS
         /// </summary>
         /// <param name="respuesta"></param>
         /// <param name="nombreArchivo"></param>
-        public void SaveAnswer(byte[] respuesta, string nombreArchivo)
+        private void SaveAnswer(byte[] respuesta, string nombreArchivo)
         {
             nombreArchivo = string.Concat(nombreArchivo.Split(Path.GetInvalidFileNameChars())) + ".txt";
 
@@ -666,11 +666,15 @@ namespace CDS
 
                             if (iteraciones > 0)
                             {
-                                if (respuesta[iteraciones] == 0 && respuesta[iteraciones - 1] == 0 && cont < 6)
+                                if (respuesta[iteraciones] == 0 && cont < 10)
                                 {
                                     cont++;
                                 }
-                                else if (respuesta[iteraciones] == 0 && cont >= 6)
+                                else if (respuesta[iteraciones] != 0 && cont < 10)
+                                {
+                                    cont = 0;
+                                }
+                                else if (respuesta[iteraciones] == 0 && cont >= 10)
                                 {
                                     break;
                                 }
@@ -738,7 +742,7 @@ namespace CDS
         /// </summary>
         /// <param name="data"></param>
         /// <param name="pos"></param>
-        public string LeerCampoVariable(byte[] data, ref int pos)
+        private string LeerCampoVariable(byte[] data, ref int pos)
         {
             string ret = "";
             ret += Encoding.ASCII.GetString(new byte[] { data[pos] });
@@ -760,7 +764,7 @@ namespace CDS
         /// </summary>
         /// <param name="data"></param>
         /// <param name="pos"></param>
-        public void DescartarCampoVariable(byte[] data, ref int pos)
+        private void DescartarCampoVariable(byte[] data, ref int pos)
         {
             while (data[pos] != separador)
             {
@@ -769,7 +773,7 @@ namespace CDS
             pos++;
         }
 
-        public double ConvertDouble(string value)
+        private double ConvertDouble(string value)
         {
             return double.TryParse(value, NumberStyles.Any, culture, out double result) ? result : result;
         }
@@ -788,16 +792,15 @@ namespace CDS
     {
 
         private readonly string pipeName = "CEM44POSPIPE";
-        private string ipController;
-        private string protocol;
+
         public CemCommunication()
         {
             ReloadData();
         }
 
-        public string IpController { get => ipController; set => ipController = value; }
+        public string IpController { get; set; }
 
-        public string Protocol { get => protocol; set => protocol = value; }
+        public string Protocol { get; set; }
 
         public byte[] EnviarComando(byte[] comando)
         {
@@ -827,7 +830,7 @@ namespace CDS
                                       // Crear el pipeClient si está cerrado
                                       if (pipeClient == null)
                                       {
-                                          pipeClient = new NamedPipeClientStream(ipController, pipeName);
+                                          pipeClient = new NamedPipeClientStream(IpController, pipeName);
                                       }
 
                                       // Conectar con tiempo de espera
@@ -871,8 +874,8 @@ namespace CDS
 
         public void ReloadData()
         {
-            ipController = Configuration.GetConfiguration().IP;
-            protocol = Configuration.GetConfiguration().Protocol;
+            IpController = Configuration.GetConfiguration().IP;
+            Protocol = Configuration.GetConfiguration().Protocol;
         }
 
         public Data GetConfiguration()

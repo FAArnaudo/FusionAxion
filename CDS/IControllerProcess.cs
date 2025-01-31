@@ -46,6 +46,7 @@ namespace CDS
                     while (!ControllerCem.VerificarConexión())
                     {
                         Thread.Sleep(1000 * Convert.ToInt32(Data.Timer));
+                        Log.Instance.WriteLog("Intentando establecer conexión.", LogType.t_debug);
                     }
 
                     ControllerCem.ConfigurarEstacion();
@@ -66,6 +67,7 @@ namespace CDS
                     // Hacer el cierre
                     if (HacerCierre)
                     {
+                        Log.Instance.WriteLog("Iniciando: Realizando corte de turno.\n", LogType.t_info);
                         ControllerCem.GrabarCierre();
                     }
                 }
@@ -126,31 +128,43 @@ namespace CDS
 
         public void RunProcess(Task mainProcess)
         {
-            ControllerFusion = new ControllerFusion(Data.IP, Data.StationFlag);
+            CreateController();
 
             Log.Instance.WriteLog($"Nuevo proceso principal iniciado. ID: {mainProcess.Id}, Estado: {mainProcess.Status}, TimerProcess {Data.Timer}.\n", LogType.t_info);
 
             while (!CancellationToken.Token.IsCancellationRequested)
             {
-                IsRunning = true;
-                Log.Instance.WriteLog($"Iniciando Lecturas...\n", LogType.t_info);
-
-                try
+                if (ControllerFusion.VerificarConexión())
                 {
-                    while (!HacerCierre && !CancellationToken.Token.IsCancellationRequested)
-                    {
-                        Thread.Sleep(Convert.ToInt32(1000 * Convert.ToInt32(Data.Timer)));
-                    }
+                    ControllerFusion.ConfigurarEstacion();
+                    ControllerFusion.ActualizarTanques();
 
-                    // Hacer el cierre
-                    if (HacerCierre)
+                    HacerCierre = false;
+                    Log.Instance.WriteLog($"Iniciando Lecturas...\n", LogType.t_info);
+
+                    try
                     {
-                        // TODO: Cierre
+                        while (!HacerCierre && !CancellationToken.Token.IsCancellationRequested)
+                        {
+                            ControllerFusion.GrabarDespachos();
+                            ControllerFusion.CheckDiscount();
+
+                            CheckFlags();
+
+                            Thread.Sleep(Convert.ToInt32(1000 * Convert.ToInt32(Data.Timer)));
+                        }
+
+                        // Hacer el cierre
+                        if (HacerCierre)
+                        {
+                            Log.Instance.WriteLog("Iniciando: Realizando corte de turno.\n", LogType.t_info);
+                            ControllerFusion.GrabarCierre();
+                        }
                     }
-                }
-                catch (Exception e)
-                {
-                    Log.Instance.WriteLog($" Estado del hilo {mainProcess.Id}: {mainProcess.Status} - Error en el loop del controlador.\n\t  Excepción: {e.Message}\n", LogType.t_error);
+                    catch (Exception e)
+                    {
+                        Log.Instance.WriteLog($" Estado del hilo {mainProcess.Id}: {mainProcess.Status} - Error en el loop del controlador.\n\t  Excepción: {e.Message}\n", LogType.t_error);
+                    }
                 }
             }
 
@@ -168,6 +182,32 @@ namespace CDS
             while (IsRunning) { }
 
             Log.Instance.WriteLog($" Proceso Finalizado.\n", LogType.t_info);
+        }
+
+        public void CreateController()
+        {
+            ICommunication communication;
+            switch (Data.StationFlag)
+            {
+                case "AXION":
+                    communication = new AxionConnector();
+                    break;
+                case "PUMA":
+                    communication = new PumaConnector();
+                    break;
+                default:
+                    communication = new AxionConnector();
+                    break;
+            }
+
+            ControllerFusion = new ControllerFusion(communication);
+        }
+
+        public void CheckFlags()
+        {
+            DataTable flags = ConnectorSQLite.Instance.ExecuteSelectQuery($"SELECT * FROM cierreBandera");
+
+            HacerCierre = Convert.ToBoolean(flags.Rows[0][0]);
         }
     }
 }

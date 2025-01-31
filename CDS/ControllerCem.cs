@@ -255,9 +255,7 @@ namespace CDS
 
         public override void GrabarCierre()
         {
-            Log.Instance.WriteLog("Iniciando: Realizando corte de turno.\n", LogType.t_info);
-
-            CierreDeTurnoCem cierreDeTurno = ConnectorCem.ComandoCierresDeTurno(ProtocolCommand.CierreDeTurnoCommand);
+            CierreCem cierreDeTurno = ConnectorCem.ComandoCierresDeTurno(ProtocolCommand.CierreDeTurnoCommand);
 
             try
             {
@@ -317,7 +315,7 @@ namespace CDS
             }
             catch (Exception e)
             {
-                throw new Exception($"Excepción: {e.Message}");
+                throw new Exception($"Error en el Cierre de turno. Excepción: {e.Message}");
             }
 
             CheckTableSize();
@@ -327,7 +325,7 @@ namespace CDS
         {
             Log.Instance.WriteLog("Iniciando: Traer la Informacion del ultimo cierre de turno cortado.\n", LogType.t_info);
 
-            CierreDeTurnoCem turnoAnterior = ConnectorCem.ComandoCierresDeTurno(ProtocolCommand.CierreAnteriorCommand);
+            CierreCem turnoAnterior = ConnectorCem.ComandoCierresDeTurno(ProtocolCommand.CierreAnteriorCommand);
             turnoAnterior.Estado = "Turno Rectificado - OK";
 
             try

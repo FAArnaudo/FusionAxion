@@ -117,6 +117,7 @@ namespace CDS
         public string Descripcion { get; set; }
         public int ID { get; set; }
         public double PrecioUnitario { get; set; }
+        public int IdTanque { get; set; }
     }
     public class ProductoCem : Producto
     {
@@ -144,13 +145,13 @@ namespace CDS
         private double monto;
         private double volumen;
         private double ppu;
-        private int idDesoacho;
+        private int idDespacho;
         public Despacho() { }
         public int IdProducto { get => idProducto; set => idProducto = value; }
         public double Monto { get => monto; set => monto = value; }
         public double Volumen { get => volumen; set => volumen = value; }
         public double PPU { get => ppu; set => ppu = value; }
-        public int IdDespacho { get => idDesoacho; set => idDesoacho = value; }
+        public int IdDespacho { get => idDespacho; set => idDespacho = value; }
         public string Producto { get => producto; set => producto = value; }
         public int IdSurtidor { get => idSurtidor; set => idSurtidor = value; }
         public int IdManguera { get => idManguera; set => idManguera = value; }
@@ -180,23 +181,34 @@ namespace CDS
 
     public class CierreDeTurno
     {
-        public CierreDeTurno() { }
+        public CierreDeTurno()
+        {
+            TotalesPorManguera = new List<TotalPorManguera>();
+        }
 
         public int ID { get; set; }
         public string FechaCierre { get; set; }
         public double TotalesMonto { get; set; }
         public double TotalesVolumen { get; set; }
+        public List<TotalPorManguera> TotalesPorManguera { get; set; }
         public string Estado { get; set; }
     }
 
-    public class CierreDeTurnoCem : CierreDeTurno
+    public class CierreFusion : CierreDeTurno
+    {
+        public CierreFusion() { }
+
+        public string ErrorCode { get; set; }
+        public string Message { get; set; }
+    }
+
+    public class CierreCem : CierreDeTurno
     {
         public const int MEDIOS_DE_PAGO = 8;
-        public CierreDeTurnoCem()
+        public CierreCem()
         {
             TotalesMedioDePago = new List<TotalMedioDePago>();
             TotalesPorPeriodoPorNivelPorProducto = new List<List<List<TotalPorProducto>>>();
-            TotalesPorManguera = new List<TotalPorManguera>();
             TotalesPorTanque = new List<TotalPorTanque>();
             ProductosEnTanque = new List<ProductoEnTanque>();
         }
@@ -206,7 +218,6 @@ namespace CDS
         public int PeriodoDePrecios { get; set; }
         public int NivelesDePrecio { get; set; }
         public List<List<List<TotalPorProducto>>> TotalesPorPeriodoPorNivelPorProducto { get; set; }
-        public List<TotalPorManguera> TotalesPorManguera { get; set; } 
         public List<TotalPorTanque> TotalesPorTanque { get; set; }
         public List<ProductoEnTanque> ProductosEnTanque { get; set; }
     }

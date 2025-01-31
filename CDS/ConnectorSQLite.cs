@@ -369,7 +369,7 @@ namespace CDS
         /// </summary>
         private void CloseConnection()
         {
-            if (connection.State != ConnectionState.Closed)
+            if (connection != null && connection.State != ConnectionState.Closed)
             {
                 connection.Close();
             }

@@ -506,11 +506,14 @@ namespace CDS
                         // PuntoVenta
                         _ = json["PuntoVenta"]["PosId"].ToString();
                         var autoliquidables = (JArray)json["PuntoVenta"]["Autoliquidables"];
+                        string cod_auto = "";
+                        string glosa_auto = "";
+                        decimal valor_auto = 0;
                         foreach (var item in autoliquidables)
                         {
-                            _ = item["cod"].ToString();
-                            _ = item["glosa"].ToString();
-                            _ = item["value"].ToObject<decimal>();
+                            cod_auto = item["cod"].ToString();
+                            glosa_auto = item["glosa"].ToString();
+                            valor_auto = item["value"].ToObject<decimal>();
                         }
 
                         // Descuentos
@@ -545,12 +548,16 @@ namespace CDS
                                       transactionAmount, paymentMethodId,
                                       status, totalGlosa, totalDiscount);
 
-                        ExecuteNonQuery(string.Format("INSERT INTO Descuentos ({0}) VALUES ({1})", campos, rows));
+                        if (ExecuteSelectQuery($"SELECT * FROM Descuentos WHERE external_reference = {externalReference}") != null)
+                        {
+                            ExecuteNonQuery(string.Format("INSERT INTO Descuentos ({0}) VALUES ({1})", campos, rows));
+                        }
 
                         _ = ExecuteNonQuery($"UPDATE Despachos " +
                                                  $"SET AUC = '{authCode}', " +
                                                      $"DCA = {0}, DCI = '{statementDescriptor}' , DCP = '{paymentMethodId}', " +
-                                                     $"DPN = '{paymentTypeId}', TXTD = '{description}' " +
+                                                     $"DPN = '{paymentTypeId}', TXTD = '{description}', cod_auto = '{cod_auto}', " +
+                                                     $"glosa_auto = '{glosa_auto}', valor_auto = {valor_auto} " +
                                                      $"WHERE id = {id}");
                     }
                 }

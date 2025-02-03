@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace CDS
 {
@@ -138,33 +134,22 @@ namespace CDS
 
     public class Despacho
     {
-        private int idProducto;
-        private int idSurtidor;
-        private int idManguera;
-        private string producto;
-        private double monto;
-        private double volumen;
-        private double ppu;
-        private int idDespacho;
         public Despacho() { }
-        public int IdProducto { get => idProducto; set => idProducto = value; }
-        public double Monto { get => monto; set => monto = value; }
-        public double Volumen { get => volumen; set => volumen = value; }
-        public double PPU { get => ppu; set => ppu = value; }
-        public int IdDespacho { get => idDespacho; set => idDespacho = value; }
-        public string Producto { get => producto; set => producto = value; }
-        public int IdSurtidor { get => idSurtidor; set => idSurtidor = value; }
-        public int IdManguera { get => idManguera; set => idManguera = value; }
+        public int IdProducto { get; set; }
+        public double Monto { get; set; }
+        public double Volumen { get; set; }
+        public double PPU { get; set; }
+        public int IdDespacho { get; set; }
+        public string Producto { get; set; }
+        public int IdSurtidor { get; set; }
+        public int IdManguera { get; set; }
     }
     public class DespachoCem : Despacho
     {
-        private ESTADO_SURTIDOR status;
-        private bool ventaFacturada;
-        private int nroDeVenta;
         public DespachoCem() { }
-        public ESTADO_SURTIDOR Status { get => status; set => status = value; }
-        public bool VentaFacturada { get => ventaFacturada; set => ventaFacturada = value; }
-        public int NroDeVenta { get => nroDeVenta; set => nroDeVenta = value; }
+        public ESTADO_SURTIDOR Status { get; set; }
+        public bool VentaFacturada { get; set; }
+        public int NroDeVenta { get; set; }
 
         public enum ESTADO_SURTIDOR
         {

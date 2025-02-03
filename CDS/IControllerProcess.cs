@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -134,6 +131,8 @@ namespace CDS
 
             while (!CancellationToken.Token.IsCancellationRequested)
             {
+                IsRunning = true;
+
                 if (ControllerFusion.VerificarConexión())
                 {
                     ControllerFusion.ConfigurarEstacion();
@@ -166,6 +165,7 @@ namespace CDS
                         Log.Instance.WriteLog($" Estado del hilo {mainProcess.Id}: {mainProcess.Status} - Error en el loop del controlador.\n\t  Excepción: {e.Message}\n", LogType.t_error);
                     }
                 }
+                ControllerFusion.CloseConnection();
             }
 
             Log.Instance.WriteLog($" Estado del hilo: {mainProcess.Id} - Finalizando.", LogType.t_info);
@@ -179,7 +179,10 @@ namespace CDS
         {
             CancellationToken?.Cancel();
 
-            while (IsRunning) { }
+            while (IsRunning)
+            {
+                Thread.Sleep(100);
+            }
 
             Log.Instance.WriteLog($" Proceso Finalizado.\n", LogType.t_info);
         }

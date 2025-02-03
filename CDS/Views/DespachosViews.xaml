@@ -4,7 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:CDS.Views"
-        Icon="/Images/LogoSurtidor.ico"
+        Icon="LogoSurtidor.ico"
         ResizeMode="NoResize"
         mc:Ignorable="d"
         Title="Vista de los Despachos"  Height="460" Width="950">

@@ -48,7 +48,7 @@ namespace CDS
         /// <param name="e"></param>
         private void ControlPanel_Loaded(object sender, RoutedEventArgs e)
         {
-            Icon = new BitmapImage(new Uri("pack://application:,,,/CDS;component/Images/LogoSurtidor.ico"));
+            Icon = new BitmapImage(new Uri(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Images", "LogoSurtidor.ico")));
             stackPanel = new StackPanel();
             label = new Label();
 
@@ -257,7 +257,7 @@ namespace CDS
         {
             notifyIcon = new NotifyIcon
             {
-                Icon = new Icon(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "..", "Images", "LogoSurtidor.ico")),
+                Icon = new Icon(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Images", "LogoSurtidor.ico")),
                 Visible = false,
                 Text = "Controlador De Surtidores"
             };

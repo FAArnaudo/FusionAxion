@@ -2,14 +2,9 @@
 using Newtonsoft.Json.Linq;
 using Polly;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace CDS
 {
@@ -259,7 +254,6 @@ namespace CDS
                                     Volumen = ConvertDouble(fusionSale.GetVolume()),
                                     PPU = ConvertDouble(fusionSale.GetPPU()),
                                     Producto = cFusion.GetConfig().GetGradeByID(fusionSale.GetGradeNr()),
-                                    
                                 };
                                 string fecha = fechaFormateada.ToString("dd-MM-yyyy HH:mm:ss");
 
@@ -333,7 +327,6 @@ namespace CDS
                 if (cierre.Estado.Equals("OK"))
                 {
                     bool hasData = Convert.ToBoolean(Convert.ToInt32(ConnectorSQLite.Instance.ExecuteSelectQuery("SELECT CASE WHEN COUNT(*) > 0 THEN 1 ELSE 0 END AS HasData FROM Cierres;").Rows[0][0]));
-                    
                     //  Comprobamos si hay datos guardados
                     if (hasData)
                     {
@@ -365,8 +358,6 @@ namespace CDS
                                     break;
                                 }
                             }
-
-                            
 
                             if (cierre.TotalesPorManguera[manguera].TotalVntasVolumen - volumenAnteriorAcumulado >= 0)
                             {
@@ -406,7 +397,7 @@ namespace CDS
                                           cierre.Estado,
                                           message);
 
-                    communication.ExecuteNonQuery(string.Format("INSERT INTO Surtidores ({0}) VALUES ({1})", campos, rows));
+                    _ = communication.ExecuteNonQuery(string.Format("INSERT INTO Surtidores ({0}) VALUES ({1})", campos, rows));
                 }
             }
             catch (Exception e)
@@ -457,6 +448,11 @@ namespace CDS
             }
         }
 
+        public void CloseConnection()
+        {
+            cFusion.Close();
+        }
+
         private double ConvertDouble(string value)
         {
             return double.TryParse(value, NumberStyles.Any, culture, out double result) ? result : result;
@@ -464,9 +460,32 @@ namespace CDS
     }
     public interface ICommunication
     {
+
+        /// <summary>
+        /// Verifica y aplica descuentos a los despachos en la base de datos.
+        /// </summary>
+        /// <param name="connectorFusion">Instancia de ConnectorFusion para manejar la conexión.</param>
+        /// <param name="cFusion">Objeto Fusion utilizado en la conexión.</param>
         void CheckDiscount(ConnectorFusion connectorFusion, Fusion cFusion);
+
+        /// <summary>
+        /// Obtiene la configuración actual de la aplicación.
+        /// </summary>
+        /// <returns>Objeto Data con la configuración.</returns>
         Data GetConfiguration();
+
+        /// <summary>
+        /// Ejecuta una consulta SQL que no devuelve resultados.
+        /// </summary>
+        /// <param name="query">Consulta SQL a ejecutar.</param>
+        /// <returns>Número de filas afectadas.</returns>
         int ExecuteNonQuery(string query);
+
+        /// <summary>
+        /// Ejecuta una consulta SQL y devuelve los resultados en un DataTable.
+        /// </summary>
+        /// <param name="query">Consulta SQL a ejecutar.</param>
+        /// <returns>DataTable con los resultados.</returns>
         DataTable ExecuteSelectQuery(string query);
     }
 
@@ -491,7 +510,7 @@ namespace CDS
                     if (connectorFusion.PumaDiscount(cFusion, id, ref descuento))
                     {
                         // Parsear la cadena JSON
-                        var json = JObject.Parse(descuento);
+                        JObject json = JObject.Parse(descuento);
 
                         // Datos principales
                         string authCode = json["AuthCode"].ToString();
@@ -505,11 +524,11 @@ namespace CDS
 
                         // PuntoVenta
                         _ = json["PuntoVenta"]["PosId"].ToString();
-                        var autoliquidables = (JArray)json["PuntoVenta"]["Autoliquidables"];
+                        JArray autoliquidables = (JArray)json["PuntoVenta"]["Autoliquidables"];
                         string cod_auto = "";
                         string glosa_auto = "";
                         decimal valor_auto = 0;
-                        foreach (var item in autoliquidables)
+                        foreach (JToken item in autoliquidables)
                         {
                             cod_auto = item["cod"].ToString();
                             glosa_auto = item["glosa"].ToString();
@@ -517,10 +536,10 @@ namespace CDS
                         }
 
                         // Descuentos
-                        var discounts = (JArray)json["PuntoVenta"]["Discounts"];
+                        JArray discounts = (JArray)json["PuntoVenta"]["Discounts"];
                         string totalGlosa = "";
                         decimal totalDiscount = 0;
-                        foreach (var item in discounts)
+                        foreach (JToken item in discounts)
                         {
                             string glosaDiscount = item["glosa"].ToString();
                             decimal valueDiscount = item["value"].ToObject<decimal>();
@@ -550,7 +569,7 @@ namespace CDS
 
                         if (ExecuteSelectQuery($"SELECT * FROM Descuentos WHERE external_reference = {externalReference}") != null)
                         {
-                            ExecuteNonQuery(string.Format("INSERT INTO Descuentos ({0}) VALUES ({1})", campos, rows));
+                            _ = ExecuteNonQuery(string.Format("INSERT INTO Descuentos ({0}) VALUES ({1})", campos, rows));
                         }
 
                         _ = ExecuteNonQuery($"UPDATE Despachos " +
@@ -563,17 +582,14 @@ namespace CDS
                 }
             }
         }
-
         public Data GetConfiguration()
         {
             return Configuration.GetConfiguration();
         }
-
         public int ExecuteNonQuery(string query)
         {
             return ConnectorSQLite.Instance.ExecuteNonQuery(query);
         }
-
         public DataTable ExecuteSelectQuery(string query)
         {
             return ConnectorSQLite.Instance.ExecuteSelectQuery(query);
@@ -583,7 +599,6 @@ namespace CDS
     public class AxionConnector : ICommunication
     {
         public AxionConnector() { }
-
         public void CheckDiscount(ConnectorFusion connectorFusion, Fusion cFusion)
         {
             DataTable tableDespachos = ExecuteSelectQuery($"SELECT * " +
@@ -650,17 +665,14 @@ namespace CDS
                 }
             }
         }
-
         public Data GetConfiguration()
         {
             return Configuration.GetConfiguration();
         }
-
         public int ExecuteNonQuery(string query)
         {
             return ConnectorSQLite.Instance.ExecuteNonQuery(query);
         }
-
         public DataTable ExecuteSelectQuery(string query)
         {
             return ConnectorSQLite.Instance.ExecuteSelectQuery(query);

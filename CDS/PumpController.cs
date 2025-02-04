@@ -132,7 +132,10 @@ namespace CDS
 
         public void EndProcess()
         {
-            ControllerProcess.StopProcess();
+            if (ControllerProcess != null)
+            {
+                ControllerProcess.StopProcess();
+            }
 
             ControllerProcess = null;
         }

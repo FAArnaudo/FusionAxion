@@ -8,7 +8,8 @@
         WindowStyle="None"
         Icon="LogoSurtidor.ico"
         Title="Controlador de Surtidores" Height="350" Width="400"
-        ResizeMode="CanMinimize" MouseDown="Window_MouseDown">
+        ResizeMode="CanMinimize" MouseDown="Window_MouseDown"
+        PreviewKeyDown="Window_PreviewKeyDown">
     <Border Background="#D6E2E8">
         <Grid x:Name="GridStatus">
             <!--#region ROWS-->

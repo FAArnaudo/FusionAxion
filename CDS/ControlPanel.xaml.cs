@@ -17,6 +17,7 @@ using ContextMenu = System.Windows.Forms.ContextMenu;
 using Image = System.Windows.Controls.Image;
 using Label = System.Windows.Controls.Label;
 using MessageBox = System.Windows.MessageBox;
+using KeyEventArgs = System.Windows.Input.KeyEventArgs;
 
 namespace CDS
 {
@@ -246,9 +247,22 @@ namespace CDS
 
                 stackPanel.IsEnabled = true;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Log.Instance.WriteLog($"Error al actualizar los tanques. Excepción: {ex.Message}", LogType.t_error);
+            }
+        }
 
+        private void Window_PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            // Combinación de teclas Ctrl + Shift + E
+            if (Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl))
+            {
+                if (e.Key == Key.C)
+                {
+                    Button buttonCierreAnterior = stackPanel.Children[3] as Button;
+                    buttonCierreAnterior.IsEnabled = !buttonCierreAnterior.IsEnabled;
+                }
             }
         }
         #endregion
@@ -387,7 +401,8 @@ namespace CDS
                     HorizontalAlignment = System.Windows.HorizontalAlignment.Center,
                     VerticalAlignment = VerticalAlignment.Center,
                     Style = (Style)Resources["Styles"],
-                    Margin = new Thickness(2)
+                    Margin = new Thickness(2),
+                    IsEnabled = false
                 };
 
                 btnCierreAnterior.Click += BtnCierreAnterior_Click;

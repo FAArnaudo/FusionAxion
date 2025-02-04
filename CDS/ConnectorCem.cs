@@ -288,7 +288,7 @@ namespace CDS
 
                 if (!File.Exists(Environment.CurrentDirectory + $"\\Responses\\Despacho-{numeroDeSurtidor}.txt"))
                 {
-                    SaveAnswer(reply, $"{numeroDeSurtidor}");
+                    SaveAnswer(reply, $"Despacho-{numeroDeSurtidor}");
                 }
 
                 // Proceso ultima venta

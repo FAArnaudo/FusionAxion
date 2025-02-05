@@ -57,6 +57,7 @@ _ReSharper*/
 *.DotSettings.user
 
 # Extras
+ControladorDeSurtidores/
 
 # Excepciones para Responses
 !Tests/ConfigurationTests/bin/

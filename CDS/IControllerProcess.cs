@@ -48,7 +48,9 @@ namespace CDS
 
                     ControllerCem.ConfigurarEstacion();
                     ControllerCem.ActualizarTanques();
+
                     HacerCierre = false;
+                    Log.Instance.WriteLog($"Iniciando Lecturas...\n", LogType.t_info);
 
                     while (!HacerCierre && !CancellationToken.Token.IsCancellationRequested)
                     {

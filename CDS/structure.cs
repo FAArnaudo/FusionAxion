@@ -112,6 +112,7 @@ namespace CDS
 
         public string Descripcion { get; set; }
         public int ID { get; set; }
+        public int ID_SIGES { get; set; }
         public double PrecioUnitario { get; set; }
         public int IdTanque { get; set; }
     }
@@ -257,5 +258,18 @@ namespace CDS
         public double AguaEnTanques { get; set; }
         public double VacioEnTanques { get; set; }
         public double CapacidadEnTanques { get; set; }
+    }
+
+    public enum CODIGO_PRODUCTOS
+    {
+        SUPER = 1,
+        NAFTA_NORMAL,
+        ULTRA_DIESEL,
+        INFINIA,
+        KEROSENE,
+        INFINIA_DIESEL,
+        GNC,
+        DIESEL,
+        AZUL_32
     }
 }

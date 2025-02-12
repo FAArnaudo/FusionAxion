@@ -121,10 +121,11 @@ namespace CDS
 
                     foreach (Producto producto in station.Productos)
                     {
-                        string campos = "id_producto,producto,precio";
+                        string campos = "id_producto,id_siges,producto,precio";
 
-                        string rows = string.Format("{0},'{1}',{2}",
+                        string rows = string.Format("{0},{1},'{2}',{3}",
                                                      producto.ID,
+                                                     producto.ID_SIGES,
                                                      producto.Descripcion,
                                                      producto.PrecioUnitario);
 

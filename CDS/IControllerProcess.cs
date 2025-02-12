@@ -148,6 +148,10 @@ namespace CDS
                         while (!HacerCierre && !CancellationToken.Token.IsCancellationRequested)
                         {
                             ControllerFusion.GrabarDespachos();
+
+                            if (!CancellationToken.Token.IsCancellationRequested)
+                                continue;
+
                             ControllerFusion.CheckDiscount();
 
                             CheckFlags();

@@ -190,7 +190,7 @@ namespace CDS.Views
             bool parametersOk = false;
             if (TextBoxRazonSocial.Text != "")
             {
-                if (TextBoxRutaProyecto.Text != "")
+                if (TextBoxRutaProyecto.Text != "" && TextBoxRutaProyecto.Text.Trim().ToLower().EndsWith(@"sistema\proy_nuevo"))
                 {
                     if (TextBoxIpControlador.Text != "")
                     {

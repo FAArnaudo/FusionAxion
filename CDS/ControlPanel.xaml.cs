@@ -160,9 +160,13 @@ namespace CDS
             // Verificar la respuesta del usuario
             if (result == MessageBoxResult.Yes)
             {
+                // Mostrar un MessageBox para informar al usuario
+                _ = MessageBox.Show("El sistema está por detenerse. Espere mientras se completa el proceso.", "Aviso", MessageBoxButton.OK, MessageBoxImage.Information);
+
                 PumpController.EndProcess();
                 notifyIcon.Dispose();
                 base.OnClosed(e);
+
                 Close();
             }
         }

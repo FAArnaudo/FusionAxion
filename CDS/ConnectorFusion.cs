@@ -37,6 +37,8 @@ namespace CDS
                                 Descripcion = fusionProduct.m_iProductId,
                             };
 
+                            GetCodigoSiges(producto);
+
                             productos.Add(producto);
                         }
                     }
@@ -221,6 +223,34 @@ namespace CDS
         public double ConvertDouble(string value)
         {
             return double.TryParse(value, NumberStyles.Any, culture, out double result) ? result : result;
+        }
+
+        private void GetCodigoSiges(Producto producto)
+        {
+            if (producto.Descripcion.Contains("SUPER"))
+            {
+                producto.ID_SIGES = 1;
+            }
+            else if (producto.Descripcion.Equals("MAX_PREMIUM") || producto.Descripcion.Equals("REGULAR") || producto.Descripcion.Equals("QUANTIUM"))
+            {
+                producto.ID_SIGES = 4;
+            }
+            else if(producto.Descripcion.Equals("ION_DIESEL"))
+            {
+                producto.ID_SIGES = 6;
+            }
+            else if (producto.Descripcion.Equals("GNC"))
+            {
+                producto.ID_SIGES = 7;
+            }
+            else if(producto.Descripcion.Equals("PUMA_DIESEL") || producto.Descripcion.Equals("DIESEL"))
+            {
+                producto.ID_SIGES = 8;
+            }
+            else
+            {
+                producto.ID_SIGES = producto.ID;
+            }
         }
     }
 }

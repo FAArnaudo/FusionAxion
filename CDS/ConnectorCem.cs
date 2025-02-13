@@ -87,6 +87,8 @@ namespace CDS
                         PrecioUnitario = ConvertDouble(LeerCampoVariable(reply, ref posicion))
                     };
 
+                    product.ID_SIGES = product.ID;
+
                     DescartarCampoVariable(reply, ref posicion);
 
                     switch (product.ID)

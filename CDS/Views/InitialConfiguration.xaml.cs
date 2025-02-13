@@ -149,7 +149,7 @@ namespace CDS.Views
                                                      $"\n\tBandera:\t\t{estacion.Content}" +
                                                      $"\n\tControlador:\t{controlador.Content}" +
                                                      $"\n\tIP Controlador:\t{TextBoxIpControlador.Text}" +
-                                                     $"\n\tProtocolo:\t\t{protocol}" +
+                                                     $"\n\tProtocolo:\t{protocol}" +
                                                      $"\n\tTimer de proceso:\t{TextBoxTimer.Text}\n" +
                                                      $"\n¿Los datos son correctos?", "Confirmación",
                                                           MessageBoxButton.YesNo,
@@ -169,7 +169,7 @@ namespace CDS.Views
                         Modo = modo.Content.ToString(),
                         Logger = logger.Content.ToString()
                     };
-                    Log.Instance.SetLogType(logger.ToString());
+                    Log.Instance.SetLogType(logger.Content.ToString());
 
                     if (Configuration.SaveConfiguration(data))
                     {
@@ -190,7 +190,7 @@ namespace CDS.Views
             bool parametersOk = false;
             if (TextBoxRazonSocial.Text != "")
             {
-                if (TextBoxRutaProyecto.Text != "")
+                if (TextBoxRutaProyecto.Text != "" && TextBoxRutaProyecto.Text.Trim().ToLower().EndsWith(@"sistema\proy_nuevo"))
                 {
                     if (TextBoxIpControlador.Text != "")
                     {

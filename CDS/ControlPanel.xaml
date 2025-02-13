@@ -44,7 +44,7 @@
                            FontSize="20" Foreground="White"></TextBlock>
                 <!--#endregion-->
                 <!--#region IMAGE-->
-                <Image Source="pack://application:,,,/Images/LogoSurtidor.ico"
+                <Image Source="pack://application:,,,/LogoSurtidor.ico"
                        Width="25" Height="25"
                        HorizontalAlignment="Left" VerticalAlignment="Center" Margin="5,2,0,3"></Image>
                 <!--#endregion-->

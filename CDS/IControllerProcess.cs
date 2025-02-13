@@ -149,7 +149,7 @@ namespace CDS
                         {
                             ControllerFusion.GrabarDespachos();
 
-                            if (!CancellationToken.Token.IsCancellationRequested)
+                            if (CancellationToken.Token.IsCancellationRequested)
                                 continue;
 
                             ControllerFusion.CheckDiscount();

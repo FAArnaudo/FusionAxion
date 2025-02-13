@@ -230,9 +230,10 @@ namespace CDS
 
         public override void GrabarDespachos()
         {
-            string debugMessage = "";
+            string debugMessage;
             foreach (Surtidor surtidor in Station.Instance.Surtidores)
             {
+                debugMessage = "";
                 if (VerificarConexión())
                 {
                     FusionSale fusionSale = new FusionSale();
@@ -246,17 +247,15 @@ namespace CDS
 
                                 string fechaHora = fusionSale.GetDateOfTransaction().Trim() + " " + fusionSale.GetInitTimeOfTransaction().Trim();
                                 debugMessage += $"fechaHora: {fechaHora} - ";
-                                DateTime fechaFormateada;
 
-                                try
-                                {
-                                    fechaFormateada = DateTime.ParseExact(fechaHora, "yyyyMMdd HHmmss", null);
-                                }
-                                catch (FormatException ex)
+                                bool exito = DateTime.TryParseExact(fechaHora, "yyyyMMdd HHmmss", null, System.Globalization.DateTimeStyles.None, out DateTime fechaFormateada);
+
+                                if (!exito)
                                 {
                                     fechaFormateada = DateTime.Now;
-                                    Log.Instance.WriteLog($"Error de formato: {fechaFormateada}. Excepción: {ex.Message}", LogType.t_debug);
+                                    Log.Instance.WriteLog($"Error de formato: {fechaFormateada}.", LogType.t_debug);
                                 }
+
                                 debugMessage += $"dechaFormateada: {fechaFormateada} - ";
 
                                 Despacho despacho = new Despacho()
@@ -312,6 +311,14 @@ namespace CDS
                                               $"Excepción: {e.Message}, Debug: {debugMessage}", LogType.t_error);
                     }
                 }
+            }
+        }
+
+        public void CheckDiscount()
+        {
+            if (VerificarConexión())
+            {
+                GetDiscount().CheckDiscount(ConnectorFusion, cFusion);
             }
         }
 
@@ -427,14 +434,6 @@ namespace CDS
             }
         }
 
-        public void CheckDiscount()
-        {
-            if (VerificarConexión())
-            {
-                GetDiscount().CheckDiscount(ConnectorFusion, cFusion);
-            }
-        }
-
         private void InsertShift(CierreFusion cierre)
         {
             string fields = "id_cierre,fecha,state,message";
@@ -460,10 +459,10 @@ namespace CDS
                     id,
                     cierre.TotalesPorManguera[manguera].NumeroDeSurtidor,
                     cierre.TotalesPorManguera[manguera].NumeroDeManguera,
-                    cierre.TotalesPorManguera[manguera].TotalVntasMonto,
-                    cierre.TotalesPorManguera[manguera].TotalVntasVolumen,
-                    cierre.TotalesPorManguera[manguera].TotalVntasSinControlMonto,
-                    cierre.TotalesPorManguera[manguera].TotalVntasSinControlVolumen);
+                    cierre.TotalesPorManguera[manguera].TotalVntasMonto.ToString(),
+                    cierre.TotalesPorManguera[manguera].TotalVntasVolumen.ToString(),
+                    cierre.TotalesPorManguera[manguera].TotalVntasSinControlMonto.ToString(),
+                    cierre.TotalesPorManguera[manguera].TotalVntasSinControlVolumen.ToString());
 
                 _ = ConnectorSQLite.Instance.ExecuteNonQuery(string.Format("INSERT INTO CierresPorManguera ({0}) VALUES ({1})", fields, values));
             }

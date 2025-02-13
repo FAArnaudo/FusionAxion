@@ -73,6 +73,7 @@ namespace CDS
 
             if (Configuration.ExistConfiguracion())
             {
+                Log.Instance.SetLogType(Configuration.GetConfiguration().Logger);
                 ConfigureExpander(Configuration.GetConfiguration().StationFlag, Configuration.GetConfiguration().Controller);
 
                 if (PumpController.Data == null)

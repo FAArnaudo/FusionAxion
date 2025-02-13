@@ -184,9 +184,9 @@ namespace CDS
 
             if (VerificarConexión())
             {
-                try
+                foreach (Tanque tanque in tanques)
                 {
-                    foreach (Tanque tanque in tanques)
+                    try
                     {
                         if (tanque.ID > 0)
                         {
@@ -216,10 +216,10 @@ namespace CDS
                                 ConnectorSQLite.Instance.ExecuteNonQuery(string.Format("UPDATE Tanques SET volumen_actual = ({0}), capacidad_maxima = ({1}), actualizado = ('{2}') WHERE id_tanque = ({3})", tanque.VolumenDeProducto, tanque.CapacidadMaxima, DateTime.Now.ToString("dd-MM-yyyy HH:mm:ss"), tanque.ID));
                         }
                     }
-                }
-                catch (Exception e)
-                {
-                    throw new Exception($"Error al obtener los tanques. Excepción: {e.Message}");
+                    catch (Exception e)
+                    {
+                        Log.Instance.WriteLog($"Error al actualizar el tanque(id) : {tanque.ID}. Excepción: {e.Message}", LogType.t_error);
+                    }
                 }
             }
             else
@@ -230,6 +230,7 @@ namespace CDS
 
         public override void GrabarDespachos()
         {
+            string debugMessage = "";
             foreach (Surtidor surtidor in Station.Instance.Surtidores)
             {
                 if (VerificarConexión())
@@ -242,8 +243,21 @@ namespace CDS
                         {
                             if (!fusionSale.GetAmount().Equals("0.00"))
                             {
+
                                 string fechaHora = fusionSale.GetDateOfTransaction().Trim() + " " + fusionSale.GetInitTimeOfTransaction().Trim();
-                                DateTime fechaFormateada = DateTime.ParseExact(fechaHora, "yyyyMMdd HHmmss", null);
+                                debugMessage += $"fechaHora: {fechaHora} - ";
+                                DateTime fechaFormateada;
+
+                                try
+                                {
+                                    fechaFormateada = DateTime.ParseExact(fechaHora, "yyyyMMdd HHmmss", null);
+                                }
+                                catch (FormatException ex)
+                                {
+                                    fechaFormateada = DateTime.Now;
+                                    Log.Instance.WriteLog($"Error de formato: {fechaFormateada}. Excepción: {ex.Message}", LogType.t_debug);
+                                }
+                                debugMessage += $"dechaFormateada: {fechaFormateada} - ";
 
                                 Despacho despacho = new Despacho()
                                 {
@@ -257,8 +271,12 @@ namespace CDS
                                     Producto = cFusion.GetConfig().GetGradeByID(fusionSale.GetGradeNr()),
                                 };
                                 string fecha = fechaFormateada.ToString("dd-MM-yyyy HH:mm:ss");
+                                debugMessage += $"fecha: {fecha}.";
 
-                                Log.Instance.WriteLog($"Despacho obtenido: {despacho.IdDespacho}.\n", LogType.t_debug);
+                                Log.Instance.WriteLog($"Despacho obtenido" +
+                                    $"\nID: {despacho.IdDespacho}" +
+                                    $"\nMonto: {despacho.Monto}." +
+                                    $"\nVolumen: {despacho.Volumen}", LogType.t_debug);
 
                                 DataTable tablaDespachos = ConnectorSQLite.Instance.ExecuteSelectQuery($"SELECT * " +
                                                                                                        $"FROM Despachos " +
@@ -289,7 +307,9 @@ namespace CDS
                     }
                     catch (Exception e)
                     {
-                        Log.Instance.WriteLog($"\nError al obtener la ultima venta. Excepción: {e.Message}", LogType.t_error);
+                        Log.Instance.WriteLog($"\nError al obtener la ultima venta.\n" +
+                                              $"Surtidor: {surtidor.ID}\n" +
+                                              $"Excepción: {e.Message}, Debug: {debugMessage}", LogType.t_error);
                     }
                 }
             }
@@ -451,7 +471,7 @@ namespace CDS
 
         public void CloseConnection()
         {
-            cFusion.Close();
+            _ = cFusion.Close();
         }
 
         private double ConvertDouble(string value)
@@ -498,88 +518,101 @@ namespace CDS
         {
             DataTable tableDespachos = ExecuteSelectQuery($"SELECT * " +
                                                           $"FROM Despachos " +
-                                                          $"ORDER BY id ASC LIMIT 16");
-
+                                                          $"ORDER BY id ASC LIMIT 20");
+            string debugMessage = "";
             foreach (DataRow row in tableDespachos.Rows)
             {
-                if (Convert.ToString(row["AUC"]) == "0")
+                try
                 {
-                    // Accedes al valor de la columna 'id' por su nombre
-                    int id = Convert.ToInt32(row["id"]);
-                    string descuento = "";
-
-                    if (connectorFusion.PumaDiscount(cFusion, id, ref descuento))
+                    if (Convert.ToString(row["AUC"]) == "0")
                     {
-                        // Parsear la cadena JSON
-                        JObject json = JObject.Parse(descuento);
+                        // Accedes al valor de la columna 'id' por su nombre
+                        int id = Convert.ToInt32(row["id"]);
+                        string descuento = "";
 
-                        // Datos principales
-                        string authCode = json["AuthCode"].ToString();
-                        int collectorId = json["CollectorId"].ToObject<int>();
-                        string currencyId = json["CurrencyId"].ToString();
-                        string dateCreated = json["DateCreated"].ToString();
-                        string description = json["Description"].ToString();
-                        string externalReference = json["external_reference"].ToString();
-                        string paymentMethodId = json["payment_method_id"].ToString();
-                        string paymentTypeId = json["PaymentTypeId"].ToString();
+                        debugMessage = $"ID: {id} - ";
 
-                        // PuntoVenta
-                        _ = json["PuntoVenta"]["PosId"].ToString();
-                        JArray autoliquidables = (JArray)json["PuntoVenta"]["Autoliquidables"];
-                        string cod_auto = "";
-                        string glosa_auto = "";
-                        decimal valor_auto = 0;
-                        foreach (JToken item in autoliquidables)
+                        if (connectorFusion.PumaDiscount(cFusion, id, ref descuento))
                         {
-                            cod_auto = item["cod"].ToString();
-                            glosa_auto = item["glosa"].ToString();
-                            valor_auto = item["value"].ToObject<decimal>();
+                            // Parsear la cadena JSON
+                            JObject json = JObject.Parse(descuento);
+
+                            debugMessage += "Datos Principales - ";
+                            // Datos principales
+                            string authCode = json["AuthCode"].ToString();
+                            int collectorId = json["CollectorId"].ToObject<int>();
+                            string currencyId = json["CurrencyId"].ToString();
+                            string dateCreated = json["DateCreated"].ToString();
+                            string description = json["Description"].ToString();
+                            string externalReference = json["external_reference"].ToString();
+                            string paymentMethodId = json["payment_method_id"].ToString();
+                            string paymentTypeId = json["PaymentTypeId"].ToString();
+
+                            debugMessage += "PuntoVenta - ";
+                            // PuntoVenta
+                            _ = json["PuntoVenta"]["PosId"].ToString();
+                            JArray autoliquidables = (JArray)json["PuntoVenta"]["Autoliquidables"];
+                            string cod_auto = "";
+                            string glosa_auto = "";
+                            decimal valor_auto = 0;
+                            foreach (JToken item in autoliquidables)
+                            {
+                                cod_auto = item["cod"].ToString();
+                                glosa_auto = item["glosa"].ToString();
+                                valor_auto = item["value"].ToObject<decimal>();
+                            }
+
+                            debugMessage += "Descuentos - ";
+                            // Descuentos
+                            JArray discounts = (JArray)json["PuntoVenta"]["Discounts"];
+                            string totalGlosa = "";
+                            decimal totalDiscount = 0;
+                            foreach (JToken item in discounts)
+                            {
+                                string glosaDiscount = item["glosa"].ToString();
+                                decimal valueDiscount = item["value"].ToObject<decimal>();
+                                totalGlosa += glosaDiscount + " - ";
+                                totalDiscount += valueDiscount;
+                            }
+
+                            debugMessage += "Otros datos - ";
+                            // Otros datos
+                            _ = json["PuntoVenta"]["Fecha"].ToString();
+                            _ = json["PuntoVenta"]["TotalPagoUsuario"].ToObject<decimal>();
+                            _ = json["PuntoVenta"]["TotalTransaccion"].ToObject<decimal>();
+                            _ = json["PuntoVenta"]["TotalTransaccionSinDescuentos"].ToObject<decimal>();
+
+                            string statementDescriptor = json["StatementDescriptor"].ToString();
+                            string status = json["status"].ToString();
+                            decimal transactionAmount = json["TransactionAmount"].ToObject<decimal>();
+
+                            string campos = "external_reference,AuthCode,CollectorId,CurrencyId,DateCreated,Description,PaymentTypeId," +
+                                            "StatementDescriptor,TransactionAmount,payment_method_id,status,Glosa,Descuento";
+
+                            string rows = string.Format("{0},{1},{2},'{3}','{4}','{5}','{6}','{7}',{8},'{9}','{10}','{11}',{12}",
+                                          externalReference, authCode, collectorId,
+                                          currencyId, dateCreated, description,
+                                          paymentTypeId, statementDescriptor,
+                                          transactionAmount, paymentMethodId,
+                                          status, totalGlosa, totalDiscount);
+
+                            if (ExecuteSelectQuery($"SELECT * FROM Descuentos WHERE external_reference = {externalReference}") != null)
+                            {
+                                _ = ExecuteNonQuery(string.Format("INSERT INTO Descuentos ({0}) VALUES ({1})", campos, rows));
+                            }
+
+                            _ = ExecuteNonQuery($"UPDATE Despachos " +
+                                                     $"SET AUC = '{authCode}', " +
+                                                         $"DCA = {0}, DCI = '{statementDescriptor}' , DCP = '{paymentMethodId}', " +
+                                                         $"DPN = '{paymentTypeId}', TXTD = '{description}', cod_auto = '{cod_auto}', " +
+                                                         $"glosa_auto = '{glosa_auto}', valor_auto = {valor_auto} " +
+                                                         $"WHERE id = {id}");
                         }
-
-                        // Descuentos
-                        JArray discounts = (JArray)json["PuntoVenta"]["Discounts"];
-                        string totalGlosa = "";
-                        decimal totalDiscount = 0;
-                        foreach (JToken item in discounts)
-                        {
-                            string glosaDiscount = item["glosa"].ToString();
-                            decimal valueDiscount = item["value"].ToObject<decimal>();
-                            totalGlosa += glosaDiscount + " - ";
-                            totalDiscount += valueDiscount;
-                        }
-
-                        // Otros datos
-                        _ = json["PuntoVenta"]["Fecha"].ToString();
-                        _ = json["PuntoVenta"]["TotalPagoUsuario"].ToObject<decimal>();
-                        _ = json["PuntoVenta"]["TotalTransaccion"].ToObject<decimal>();
-                        _ = json["PuntoVenta"]["TotalTransaccionSinDescuentos"].ToObject<decimal>();
-
-                        string statementDescriptor = json["StatementDescriptor"].ToString();
-                        string status = json["status"].ToString();
-                        decimal transactionAmount = json["TransactionAmount"].ToObject<decimal>();
-
-                        string campos = "external_reference,AuthCode,CollectorId,CurrencyId,DateCreated,Description,PaymentTypeId," +
-                                        "StatementDescriptor,TransactionAmount,payment_method_id,status,Glosa,Descuento";
-
-                        string rows = string.Format("{0},{1},{2},'{3}','{4}','{5}','{6}','{7}',{8},'{9}','{10}','{11}',{12}",
-                                      externalReference, authCode, collectorId,
-                                      currencyId, dateCreated, description,
-                                      paymentTypeId, statementDescriptor,
-                                      transactionAmount, paymentMethodId,
-                                      status, totalGlosa, totalDiscount);
-
-                        if (ExecuteSelectQuery($"SELECT * FROM Descuentos WHERE external_reference = {externalReference}") != null)
-                        {
-                            _ = ExecuteNonQuery(string.Format("INSERT INTO Descuentos ({0}) VALUES ({1})", campos, rows));
-                        }
-
-                        _ = ExecuteNonQuery($"UPDATE Despachos " +
-                                                 $"SET AUC = '{authCode}', " +
-                                                     $"DCA = {0}, DCI = '{statementDescriptor}' , DCP = '{paymentMethodId}', " +
-                                                     $"DPN = '{paymentTypeId}', TXTD = '{description}', cod_auto = '{cod_auto}', " +
-                                                     $"glosa_auto = '{glosa_auto}', valor_auto = {valor_auto} " +
-                                                     $"WHERE id = {id}");
                     }
+                }
+                catch (Exception e)
+                {
+                    Log.Instance.WriteLog($"\nError al obtener Descuentos. Excepción: {e.Message}, Mensaje: {debugMessage}", LogType.t_error);
                 }
             }
         }
@@ -605,64 +638,72 @@ namespace CDS
             DataTable tableDespachos = ExecuteSelectQuery($"SELECT * " +
                                $"FROM Despachos " +
                                $"ORDER BY id ASC LIMIT 16");
-
+            string debugMessage = "";
             foreach (DataRow row in tableDespachos.Rows)
             {
-                if (Convert.ToString(row["AUC"]) == "0")
+                try
                 {
-                    // Accedes al valor de la columna 'id' por su nombre
-                    int id = Convert.ToInt32(row["id"]);
-                    string descuento = "";
-
-                    if (connectorFusion.AxionDiscount(cFusion, id, ref descuento))
+                    if (Convert.ToString(row["AUC"]) == "0")
                     {
-                        string AUC = "";
-                        double DCA = 0;
-                        double DCP = 0;
-                        string DPN = "";
-                        string TEXTD = "";
+                        // Accedes al valor de la columna 'id' por su nombre
+                        int id = Convert.ToInt32(row["id"]);
+                        string descuento = "";
+                        debugMessage = $"ID: {id} - ";
 
-                        // Usamos el método Split para dividir el string por el carácter "~"
-                        string[] partes = descuento.Split('~');
-
-                        // Ahora podemos recorrer el arreglo 'partes' para acceder a cada subcadena
-                        foreach (string parte in partes)
+                        if (connectorFusion.AxionDiscount(cFusion, id, ref descuento))
                         {
-                            // Dividimos cada parte por el carácter "=" para separar el nombre del valor
-                            string[] claveValor = parte.Split('=');
+                            string AUC = "";
+                            double DCA = 0;
+                            double DCP = 0;
+                            string DPN = "";
+                            string TEXTD = "";
 
-                            string clave = claveValor[0].Trim(); // La clave (nombre)
-                            string valor = claveValor[1].Trim(); // El valor
+                            // Usamos el método Split para dividir el string por el carácter "~"
+                            string[] partes = descuento.Split('~');
 
-                            switch (clave)
+                            // Ahora podemos recorrer el arreglo 'partes' para acceder a cada subcadena
+                            foreach (string parte in partes)
                             {
-                                case "AUC":
-                                    AUC = valor;
-                                    break;
-                                case "DCA":
-                                    DCA = connectorFusion.ConvertDouble(valor);
-                                    break;
-                                case "DCP":
-                                    DCP = connectorFusion.ConvertDouble(valor.Substring(0, 5));
-                                    break;
-                                case "DPN":
-                                    DPN = valor;
-                                    break;
-                                case "TEXTD":
-                                    TEXTD = valor;
-                                    break;
-                                case "TICKET":
-                                    break;
-                                default:
-                                    break;
+                                // Dividimos cada parte por el carácter "=" para separar el nombre del valor
+                                string[] claveValor = parte.Split('=');
+
+                                string clave = claveValor[0].Trim(); // La clave (nombre)
+                                string valor = claveValor[1].Trim(); // El valor
+
+                                switch (clave)
+                                {
+                                    case "AUC":
+                                        AUC = valor;
+                                        break;
+                                    case "DCA":
+                                        DCA = connectorFusion.ConvertDouble(valor);
+                                        break;
+                                    case "DCP":
+                                        DCP = connectorFusion.ConvertDouble(valor.Substring(0, 5));
+                                        break;
+                                    case "DPN":
+                                        DPN = valor;
+                                        break;
+                                    case "TEXTD":
+                                        TEXTD = valor;
+                                        break;
+                                    case "TICKET":
+                                        break;
+                                    default:
+                                        break;
+                                }
                             }
+                            _ = ExecuteNonQuery($"UPDATE Despachos " +
+                                                     $"SET AUC = '{AUC}', " +
+                                                         $"DCA = {DCA}, DCP = '{Convert.ToString(DCP)}', " +
+                                                         $"DPN = '{DPN}', TXTD = '{TEXTD}' " +
+                                                         $"WHERE id = {id}");
                         }
-                        _ = ExecuteNonQuery($"UPDATE Despachos " +
-                                                 $"SET AUC = '{AUC}', " +
-                                                     $"DCA = {DCA}, DCP = '{Convert.ToString(DCP)}', " +
-                                                     $"DPN = '{DPN}', TXTD = '{TEXTD}' " +
-                                                     $"WHERE id = {id}");
                     }
+                }
+                catch (Exception e)
+                {
+                    Log.Instance.WriteLog($"\nError al obtener Descuentos. Excepción: {e.Message}, Mensaje: {debugMessage}", LogType.t_error);
                 }
             }
         }

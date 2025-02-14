@@ -180,6 +180,7 @@ namespace CDS
             periodType = "";
 
             flag = cFusion.ShiftClose(type, ref status, ref message, ref errorCode, ref periodID, ref periodType);
+            Log.Instance.WriteLog($"Ejecucion SHiftClose: {flag}", LogType.t_debug);
 
             cierreDeTurno = new CierreFusion
             {
@@ -189,6 +190,8 @@ namespace CDS
 
             if (flag && status.Equals("OK"))
             {
+                Log.Instance.WriteLog($"Estado devuelto del cierre: {status}", LogType.t_debug);
+
                 cierreDeTurno.ID = Convert.ToInt32(periodID);
 
                 Station station = Station.Instance;

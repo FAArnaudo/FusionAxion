@@ -120,15 +120,18 @@ namespace CDS
         public bool PumaDiscount(Fusion cFusion, int idSale, ref string descuento)
         {
             Log.Instance.WriteLog($"Verificando descuento Puma. ID: {idSale}", LogType.t_debug);
+
             try
             {
-                bool isTrue = cFusion.GetMPPaymentObject(idSale, ref descuento);
+                bool tieneDescuento = cFusion.GetMPPaymentObject(idSale, ref descuento);
 
-                if (isTrue && !string.IsNullOrEmpty(descuento))
+                if (tieneDescuento && !string.IsNullOrEmpty(descuento))
                 {
-                    Log.Instance.WriteLog($"Descuento encontrado. \nID: {idSale}\nDescuento: {descuento}", LogType.t_debug);
+                    Log.Instance.WriteLog($"Descuento {tieneDescuento}. \nID: {idSale}\nDescuento: {descuento}", LogType.t_debug);
                     return true;
                 }
+
+                Log.Instance.WriteLog($"Descuento {tieneDescuento}. \nID: {idSale}\nDescuento: {descuento}", LogType.t_debug);
             }
             catch (Exception e)
             {

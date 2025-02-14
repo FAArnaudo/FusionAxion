@@ -425,7 +425,7 @@ namespace CDS
                                           cierre.Estado,
                                           message);
 
-                    _ = communication.ExecuteNonQuery(string.Format("INSERT INTO Surtidores ({0}) VALUES ({1})", campos, rows));
+                    _ = communication.ExecuteNonQuery(string.Format("INSERT INTO Cierres ({0}) VALUES ({1})", campos, rows));
                 }
             }
             catch (Exception e)

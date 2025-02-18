@@ -59,19 +59,13 @@ namespace CDS
                               });
 
             // Verificación de resultado de conexión
-            if (policyResult.Outcome == OutcomeType.Successful && connection)
-            {
-                _ = communication.ExecuteNonQuery($"UPDATE CheckConnection " +
+            _ = policyResult.Outcome == OutcomeType.Successful && connection
+                ? communication.ExecuteNonQuery($"UPDATE CheckConnection " +
                                                   $"SET isConnected = 1, fecha = '{DateTime.Now:dd-MM-yyyy HH:mm:ss}' " +
-                                                  $"WHERE idConnection = 1");
-
-            }
-            else
-            {
-                _ = communication.ExecuteNonQuery($"UPDATE CheckConnection " +
+                                                  $"WHERE idConnection = 1")
+                : communication.ExecuteNonQuery($"UPDATE CheckConnection " +
                                                   $"SET isConnected = 0, fecha = '{DateTime.Now:dd-MM-yyyy HH:mm:ss}' " +
                                                   $"WHERE idConnection = 1");
-            }
 
             return connection;
         }
@@ -109,7 +103,7 @@ namespace CDS
                                                                                        "SET Producto = ('{0}'), Precio = ('{1}'), DescProd = ('{2}') " +
                                                                                        "WHERE IdSurtidor = ({3}) AND Manguera = ('{4}')",
                                                                                        manguera.Producto.ID,
-                                                                                       manguera.Producto.PrecioUnitario,
+                                                                                       manguera.Producto.PrecioUnitario.ToString(CultureInfo.InvariantCulture),
                                                                                        manguera.Producto.Descripcion,
                                                                                        surtidor.ID,
                                                                                        manguera.ID));
@@ -139,7 +133,7 @@ namespace CDS
                                                                                    "SET producto = ('{0}'), precio = ({1}) " +
                                                                                    "WHERE id_producto = ({2})",
                                                                                    producto.Descripcion,
-                                                                                   producto.PrecioUnitario,
+                                                                                   producto.PrecioUnitario.ToString(CultureInfo.InvariantCulture),
                                                                                    producto.ID));
 
                         Log.Instance.WriteLog(string.Format("PRODUCTO: ({0}) DESCRIPCION: ({1}) PRECIO: ({2})",
@@ -153,16 +147,15 @@ namespace CDS
 
                         string rows = string.Format("{0},'{1}',{2}",
                                                      tanque.ID,
-                                                     tanque.VolumenDeProducto,
-                                                     tanque.CapacidadMaxima);
+                                                     tanque.VolumenDeProducto.ToString(CultureInfo.InvariantCulture),
+                                                     tanque.CapacidadMaxima.ToString(CultureInfo.InvariantCulture));
 
                         DataTable tablaTanques = ConnectorSQLite.Instance.ExecuteSelectQuery("SELECT * " +
                                                                                                "FROM Tanques " +
                                                                                               $"WHERE id_tanque = {tanque.ID}");
 
                         _ = tablaTanques.Rows.Count == 0 ? ConnectorSQLite.Instance.ExecuteNonQuery(string.Format("INSERT INTO Tanques ({0}) VALUES ({1})", campos, rows)) : ConnectorSQLite.Instance.ExecuteNonQuery(string.Format("UPDATE Tanques " + "SET volumen_actual = ('{0}'), capacidad_maxima = ({1}) " + "WHERE id_tanque = ({2})", tanque.VolumenDeProducto, tanque.CapacidadMaxima, tanque.ID));
-                        Log.Instance.WriteLog(string.Format("TANQUE: ({0}) CAPACIDAD: ({1}))",
-                                                                tanque.ID, tanque.CapacidadMaxima), LogType.t_info);
+                        Log.Instance.WriteLog(string.Format("TANQUE: ({0}))", tanque.ID), LogType.t_info);
                     }
                     Log.Instance.WriteLog("\n", LogType.t_info);
                 }
@@ -198,14 +191,14 @@ namespace CDS
                             tanque.CapacidadMaxima = Convert.ToDouble(fusionTank.TankVolumeCapacity());
                             tanque.VolumenVacio = tanque.CapacidadMaxima - (tanque.VolumenDeProducto + tanque.VolumenDeAgua);
 
-                            Log.Instance.WriteLog($"\nTanque {tanque.ID}, Volumen Total {tanque.CapacidadMaxima}, Volumen de Producto {tanque.VolumenDeProducto}", LogType.t_debug);
+                            Log.Instance.WriteLog($"Tanque {tanque.ID}, Volumen Total {tanque.CapacidadMaxima}, Volumen de Producto {tanque.VolumenDeProducto}", LogType.t_info);
 
                             string campos = "id_tanque,volumen_actual,capacidad_maxima,actualizado";
 
                             string rows = string.Format("{0},{1},{2},{3}",
                                                          tanque.ID,
-                                                         tanque.VolumenDeProducto.ToString(),
-                                                         tanque.CapacidadMaxima.ToString(),
+                                                         tanque.VolumenDeProducto.ToString(CultureInfo.InvariantCulture),
+                                                         tanque.CapacidadMaxima.ToString().ToString(CultureInfo.InvariantCulture),
                                                          DateTime.Now.ToString("dd-MM-yyyy HH:mm:ss"));
 
                             DataTable tablaTanques = ConnectorSQLite.Instance.ExecuteSelectQuery("SELECT * " +
@@ -216,6 +209,7 @@ namespace CDS
                                 ConnectorSQLite.Instance.ExecuteNonQuery(string.Format("INSERT INTO Tanques ({0}) VALUES ({1})", campos, rows)) :
                                 ConnectorSQLite.Instance.ExecuteNonQuery(string.Format("UPDATE Tanques SET volumen_actual = ({0}), capacidad_maxima = ({1}), actualizado = ('{2}') WHERE id_tanque = ({3})", tanque.VolumenDeProducto, tanque.CapacidadMaxima, DateTime.Now.ToString("dd-MM-yyyy HH:mm:ss"), tanque.ID));
                         }
+                        Log.Instance.WriteLog($"\n", LogType.t_info);
                     }
                     catch (Exception e)
                     {
@@ -249,7 +243,7 @@ namespace CDS
                                 string fechaHora = fusionSale.GetDateOfTransaction().Trim() + " " + fusionSale.GetInitTimeOfTransaction().Trim();
                                 debugMessage += $"fechaHora: {fechaHora} - ";
 
-                                bool exito = DateTime.TryParseExact(fechaHora, "yyyyMMdd HHmmss", null, System.Globalization.DateTimeStyles.None, out DateTime fechaFormateada);
+                                bool exito = DateTime.TryParseExact(fechaHora, "yyyyMMdd HHmmss", null, DateTimeStyles.None, out DateTime fechaFormateada);
 
                                 if (!exito)
                                 {
@@ -275,7 +269,7 @@ namespace CDS
 
                                 Log.Instance.WriteLog($"Despacho obtenido" +
                                     $"\nID: {despacho.IdDespacho}" +
-                                    $"\nMonto: {despacho.Monto}." +
+                                    $"\nMonto: {despacho.Monto}" +
                                     $"\nVolumen: {despacho.Volumen}", LogType.t_debug);
 
                                 DataTable tablaDespachos = ConnectorSQLite.Instance.ExecuteSelectQuery($"SELECT * " +
@@ -460,10 +454,12 @@ namespace CDS
                     id,
                     cierre.TotalesPorManguera[manguera].NumeroDeSurtidor,
                     cierre.TotalesPorManguera[manguera].NumeroDeManguera,
-                    cierre.TotalesPorManguera[manguera].TotalVntasMonto.ToString(),
-                    cierre.TotalesPorManguera[manguera].TotalVntasVolumen.ToString(),
-                    cierre.TotalesPorManguera[manguera].TotalVntasSinControlMonto.ToString(),
-                    cierre.TotalesPorManguera[manguera].TotalVntasSinControlVolumen.ToString());
+                    cierre.TotalesPorManguera[manguera].TotalVntasMonto.ToString(CultureInfo.InvariantCulture),
+                    cierre.TotalesPorManguera[manguera].TotalVntasVolumen.ToString(CultureInfo.InvariantCulture),
+                    cierre.TotalesPorManguera[manguera].TotalVntasSinControlMonto.ToString(CultureInfo.InvariantCulture),
+                    cierre.TotalesPorManguera[manguera].TotalVntasSinControlVolumen.ToString(CultureInfo.InvariantCulture));
+
+                Log.Instance.WriteLog($"Consulta: INSERT INTO CierresPorManguera ({fields}) VALUES ({values})", LogType.t_debug);
 
                 _ = ConnectorSQLite.Instance.ExecuteNonQuery(string.Format("INSERT INTO CierresPorManguera ({0}) VALUES ({1})", fields, values));
             }

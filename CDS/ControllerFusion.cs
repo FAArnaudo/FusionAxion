@@ -55,16 +55,16 @@ namespace CDS
 
                                   cFusion.Connection(communication.GetConfiguration().IP);
 
-                                  _ = cFusion.Echo();
+                                  connection = cFusion.ConnectionStatus();
                               });
 
             // Verificación de resultado de conexión
-            if (policyResult.Outcome == 0)
+            if (policyResult.Outcome == OutcomeType.Successful && connection)
             {
                 _ = communication.ExecuteNonQuery($"UPDATE CheckConnection " +
                                                   $"SET isConnected = 1, fecha = '{DateTime.Now:dd-MM-yyyy HH:mm:ss}' " +
                                                   $"WHERE idConnection = 1");
-                connection = cFusion.ConnectionStatus();
+
             }
             else
             {
@@ -204,8 +204,8 @@ namespace CDS
 
                             string rows = string.Format("{0},{1},{2}",
                                                          tanque.ID,
-                                                         tanque.VolumenDeProducto,
-                                                         tanque.CapacidadMaxima);
+                                                         tanque.VolumenDeProducto.ToString(),
+                                                         tanque.CapacidadMaxima.ToString());
 
                             DataTable tablaTanques = ConnectorSQLite.Instance.ExecuteSelectQuery("SELECT * " +
                                                                                                  "FROM Tanques " +
@@ -327,20 +327,19 @@ namespace CDS
             int bufferLimit = 999999;
             int tries = 0;
             int stopTries = 3;
-            bool connection = false;
 
-            while (!connection && tries < stopTries)
+            while (tries < stopTries)
             {
                 if (VerificarConexión())
                 {
-                    connection = true;
+                    break;
                 }
                 tries++;
             }
 
-            if (tries == stopTries)
+            if (tries >= stopTries)
             {
-                throw new Exception("Conexión fallida.");
+                throw new Exception("Conexión fallida. No se realizará el Cierre de Turno.");
             }
 
             CierreFusion cierre = ConnectorFusion.ComandoCierresDeTurno(cFusion);
@@ -354,7 +353,8 @@ namespace CDS
 
                 if (cierre.Estado.Equals("OK"))
                 {
-                    bool hasData = Convert.ToBoolean(Convert.ToInt32(ConnectorSQLite.Instance.ExecuteSelectQuery("SELECT CASE WHEN COUNT(*) > 0 THEN 1 ELSE 0 END AS HasData FROM Cierres;").Rows[0][0]));
+                    bool hasData = Convert.ToBoolean(Convert.ToInt32(ConnectorSQLite.Instance.ExecuteSelectQuery("SELECT CASE WHEN COUNT(*) > 0 THEN 1 ELSE 0 END AS HasData FROM Cierres").Rows[0][0]));
+
                     //  Comprobamos si hay datos guardados
                     if (hasData)
                     {
@@ -517,7 +517,7 @@ namespace CDS
         {
             DataTable tableDespachos = ExecuteSelectQuery($"SELECT * " +
                                                           $"FROM Despachos " +
-                                                          $"ORDER BY id ASC LIMIT 20");
+                                                          $"ORDER BY id DESC LIMIT 20");
             string debugMessage = "";
             foreach (DataRow row in tableDespachos.Rows)
             {

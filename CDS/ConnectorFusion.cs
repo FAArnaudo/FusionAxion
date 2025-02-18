@@ -258,6 +258,7 @@ namespace CDS
             else
             {
                 producto.ID_SIGES = producto.ID;
+                Log.Instance.WriteLog($"Producto no identificado: {producto.Descripcion}", LogType.t_error);
             }
         }
     }

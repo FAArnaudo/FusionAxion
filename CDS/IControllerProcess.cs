@@ -173,6 +173,10 @@ namespace CDS
                         Log.Instance.WriteLog($" Estado del hilo {mainProcess.Id}: {mainProcess.Status} - Error en el loop del controlador.\n\t  Excepción: {e.Message}\n", LogType.t_error);
                     }
                 }
+                else
+                {
+                    Log.Instance.WriteLog($"Conexión inicial fallida. No se pudo establecer comunicación con el controlador", LogType.t_error);
+                }
             }
 
             ControllerFusion.CloseConnection();

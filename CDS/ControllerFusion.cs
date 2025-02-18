@@ -202,10 +202,11 @@ namespace CDS
 
                             string campos = "id_tanque,volumen_actual,capacidad_maxima,actualizado";
 
-                            string rows = string.Format("{0},{1},{2}",
+                            string rows = string.Format("{0},{1},{2},{3}",
                                                          tanque.ID,
                                                          tanque.VolumenDeProducto.ToString(),
-                                                         tanque.CapacidadMaxima.ToString());
+                                                         tanque.CapacidadMaxima.ToString(),
+                                                         DateTime.Now.ToString("dd-MM-yyyy HH:mm:ss"));
 
                             DataTable tablaTanques = ConnectorSQLite.Instance.ExecuteSelectQuery("SELECT * " +
                                                                                                  "FROM Tanques " +

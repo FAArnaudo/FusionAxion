@@ -67,7 +67,9 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Configuration.cs" />
     <Compile Include="ControllerFusion.cs" />
+    <Compile Include="Log.cs" />
     <Compile Include="PanelFusion.xaml.cs">
       <DependentUpon>PanelFusion.xaml</DependentUpon>
       <SubType>Code</SubType>

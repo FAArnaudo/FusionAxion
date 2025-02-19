@@ -1,0 +1,15 @@
+D:\C#\FusionAxion\FusionAxion\FusionAxion\bin\Debug\FusionAxion.exe.config
+D:\C#\FusionAxion\FusionAxion\FusionAxion\bin\Debug\FusionAxion.exe
+D:\C#\FusionAxion\FusionAxion\FusionAxion\bin\Debug\FusionAxion.pdb
+D:\C#\FusionAxion\FusionAxion\FusionAxion\obj\Debug\PanelFusion.g.cs
+D:\C#\FusionAxion\FusionAxion\FusionAxion\obj\Debug\App.g.cs
+D:\C#\FusionAxion\FusionAxion\FusionAxion\obj\Debug\FusionAxion_MarkupCompile.cache
+D:\C#\FusionAxion\FusionAxion\FusionAxion\obj\Debug\FusionAxion_MarkupCompile.lref
+D:\C#\FusionAxion\FusionAxion\FusionAxion\obj\Debug\PanelFusion.baml
+D:\C#\FusionAxion\FusionAxion\FusionAxion\obj\Debug\FusionAxion.g.resources
+D:\C#\FusionAxion\FusionAxion\FusionAxion\obj\Debug\FusionAxion.Properties.Resources.resources
+D:\C#\FusionAxion\FusionAxion\FusionAxion\obj\Debug\FusionAxion.csproj.GenerateResource.cache
+D:\C#\FusionAxion\FusionAxion\FusionAxion\obj\Debug\FusionAxion.csproj.CoreCompileInputs.cache
+D:\C#\FusionAxion\FusionAxion\FusionAxion\obj\Debug\FusionAxion.exe
+D:\C#\FusionAxion\FusionAxion\FusionAxion\obj\Debug\FusionAxion.pdb
+D:\C#\FusionAxion\FusionAxion\FusionAxion\obj\Debug\FusionAxion.csproj.AssemblyReference.cache

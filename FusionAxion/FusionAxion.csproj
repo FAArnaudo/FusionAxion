@@ -102,5 +102,8 @@
   <ItemGroup>
     <Content Include="dll\FusionClass.dll" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Views\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

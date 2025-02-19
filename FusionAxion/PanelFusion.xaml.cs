@@ -45,6 +45,33 @@ namespace FusionAxion
             IniciarTimer();
         }
 
+        private void CrearBotones()
+        {
+            // Definir las filas y columnas
+            for (int i = 0; i < 2; i++)
+            {
+                GButtons.RowDefinitions.Add(new RowDefinition());
+            }
+
+            for (int j = 0; j < 6; j++)
+            {
+                GButtons.ColumnDefinitions.Add(new ColumnDefinition());
+            }
+
+            // Crear y agregar los botones
+            for (int i = 0; i < numeroDeSurtidores; i++)
+            {
+                BotonPersonalizado boton = new BotonPersonalizado($"Surtidor {i + 1}", i);
+                Grid.SetRow(boton, i / 6);
+                Grid.SetColumn(boton, i % 6);
+                _ = GButtons.Children.Add(boton);
+            }
+
+            _ = GMain.Children.Add(GButtons);
+
+            Content = GMain;
+        }
+
         private void IniciarTimer()
         {
             timer = new DispatcherTimer
@@ -65,45 +92,19 @@ namespace FusionAxion
         {
             if (surtidorActual <= GButtons.Children.Count && GButtons.Children[surtidorActual] is Button boton)
             {
-                boton.Background = new SolidColorBrush(Color.FromRgb(255, 0, 255));
+                boton.Background = (SolidColorBrush)new BrushConverter().ConvertFromString("#90EE90");
 
                 await Task.Delay(3000);
 
-                boton.Background = new SolidColorBrush(Color.FromRgb(0, 0, 255));
+                boton.Background = (SolidColorBrush)new BrushConverter().ConvertFromString("#ADD8E6");
             }
 
             surtidorActual++;
+
             if (surtidorActual >= numeroDeSurtidores)
             {
                 surtidorActual = 0;
             }
-        }
-
-        private void CrearBotones()
-        {
-            // Definir las filas y columnas
-            for (int i = 0; i < 2; i++)
-            {
-                GButtons.RowDefinitions.Add(new RowDefinition());
-            }
-
-            for (int j = 0; j < 6; j++)
-            {
-                GButtons.ColumnDefinitions.Add(new ColumnDefinition());
-            }
-
-            // Crear y agregar los botones
-            for (int i = 0; i < numeroDeSurtidores; i++)
-            {
-                BotonPersonalizado boton = new BotonPersonalizado($"Btn {i + 1}", i);
-                Grid.SetRow(boton, i / 6);
-                Grid.SetColumn(boton, i % 6);
-                _ = GButtons.Children.Add(boton);
-            }
-
-            _ = GMain.Children.Add(GButtons);
-
-            Content = GMain;
         }
 
         private void BtnCerrar_Click(object sender, RoutedEventArgs e)
@@ -147,8 +148,10 @@ namespace FusionAxion
         {
             Id = id;
             Content = texto;
+            Height = 100;
+            Width = 60;
             Margin = new Thickness(5);
-            Background = Brushes.Azure;
+            Background = (SolidColorBrush)new BrushConverter().ConvertFromString("#ADD8E6");
             Click += Boton_Click;
         }
 

@@ -10,10 +10,7 @@ namespace FusionAxion
     public class ControllerFusion
     {
         private Fusion cFusion;
-        public ControllerFusion()
-        {
-
-        }
+        public ControllerFusion() { }
 
         public bool CheckConnection()
         {

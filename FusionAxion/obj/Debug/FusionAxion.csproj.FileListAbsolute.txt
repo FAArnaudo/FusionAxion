@@ -17,6 +17,7 @@ C:\Users\Fde\Documents\C#\FusionAxion\FusionAxion\bin\Debug\FusionAxion.exe.conf
 C:\Users\Fde\Documents\C#\FusionAxion\FusionAxion\bin\Debug\FusionAxion.exe
 C:\Users\Fde\Documents\C#\FusionAxion\FusionAxion\bin\Debug\FusionAxion.pdb
 C:\Users\Fde\Documents\C#\FusionAxion\FusionAxion\bin\Debug\FusionClass.dll
+C:\Users\Fde\Documents\C#\FusionAxion\FusionAxion\obj\Debug\FusionAxion.csproj.AssemblyReference.cache
 C:\Users\Fde\Documents\C#\FusionAxion\FusionAxion\obj\Debug\PanelFusion.g.cs
 C:\Users\Fde\Documents\C#\FusionAxion\FusionAxion\obj\Debug\App.g.cs
 C:\Users\Fde\Documents\C#\FusionAxion\FusionAxion\obj\Debug\FusionAxion_Content.g.cs

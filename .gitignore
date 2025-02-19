@@ -1,0 +1,66 @@
+# Visual Studio
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Build Results
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+[Oo]ut/
+[Bb]in/
+[Oo]bj/
+
+# .NET
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+# OS generated files
+[Tt]humbs.db
+*.DS_Store
+.DS_Store
+
+# Rider
+.idea/
+*.sln.iml
+
+# NuGet
+*.nupkg
+*.snupkg
+
+# Azure
+*.publishsettings
+*.azurePubxml
+*.pubxml.user
+
+# Windows image file caches
+*.pidb
+*.svclog
+
+# Mono auto generated files
+mono_crash.*
+
+# Mac files
+*.swp
+*~.nib
+
+# Logs
+*.log
+*.tlog
+
+# Resharper
+_ReSharper*/ 
+*.DotSettings.user
+
+# Extras
+ControladorDeSurtidores/
+
+# Excepciones para Responses
+!Tests/ConfigurationTests/bin/
+!Tests/ConfigurationTests/bin/Release/
+!Tests/ConfigurationTests/bin/Release/Responses/
+!Tests/ConfigurationTests/bin/Release/Responses/**

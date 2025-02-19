@@ -66,7 +66,7 @@ namespace CDS
                                 {
                                     Manguera manguera = new Manguera
                                     {
-                                        ID = fusionHose.m_iPhysicalID
+                                        ID = fusionHose.m_iPhysicalID + 1
                                     };
 
                                     foreach (Producto producto in productos)

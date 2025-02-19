@@ -23,7 +23,8 @@ namespace FusionAxion
     public partial class PanelFusion : Window
     {
         private Grid GButtons;
-        private DispatcherTimer timer;
+        private DispatcherTimer TimerDespachos;
+        private DispatcherTimer TimerLabel;
         private readonly int numeroDeSurtidores = 12;
         private int surtidorActual = 0;
 
@@ -78,6 +79,7 @@ namespace FusionAxion
         private void Init()
         {
             CrearBotones();
+            IniciarTimer();
         }
 
         private void CrearBotones()
@@ -109,15 +111,33 @@ namespace FusionAxion
 
         private void IniciarTimer()
         {
-            timer = new DispatcherTimer
+            TimerDespachos = new DispatcherTimer
             {
                 Interval = TimeSpan.FromSeconds(5) // Ejecutar cada 5 segundos
             };
-            timer.Tick += Timer_Tick;
-            timer.Start();
+
+            TimerDespachos.Tick += TimerDespachos_Tick;
+            TimerDespachos.Start();
+
+            TimerLabel = new DispatcherTimer
+            {
+                Interval = TimeSpan.FromSeconds(5) // Ejecutar cada 5 segundos
+            };
+
+            TimerLabel.Tick += TimerLabel_Tick;
+            TimerLabel.Start();
         }
 
-        private void Timer_Tick(object sender, EventArgs e)
+        private void TimerLabel_Tick(object sender, EventArgs e)
+        {
+            string state = "Controlador OnLine";
+            string color = "#00FF00";               // Green Color
+
+            LStatus.Content = state;
+            LStatus.Background = (SolidColorBrush)new BrushConverter().ConvertFromString(color);
+        }
+
+        private void TimerDespachos_Tick(object sender, EventArgs e)
         {
             // Código que se ejecuta periódicamente
             BuscarDespacho();

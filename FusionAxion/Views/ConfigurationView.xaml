@@ -1,0 +1,152 @@
+﻿<Window x:Class="FusionAxion.Views.ConfigurationView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:FusionAxion.Views"
+        mc:Ignorable="d"
+        Title="Configuración CDS"
+        Height="359" Width="421"
+        WindowStyle="SingleBorderWindow"
+        WindowStartupLocation="CenterScreen" Background="Transparent"
+        ResizeMode="NoResize" PreviewKeyDown="Window_PreviewKeyDown">
+    <Grid Background="#D6E2E8">
+        <!--#region COLS and ROWS-->
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="10"></ColumnDefinition>
+            <ColumnDefinition Width="390"></ColumnDefinition>
+            <ColumnDefinition Width="10"></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="5"></RowDefinition>
+            <RowDefinition Height="40"></RowDefinition>
+            <RowDefinition Height="110"></RowDefinition>
+            <RowDefinition Height="130"></RowDefinition>
+            <RowDefinition Height="5"></RowDefinition>
+        </Grid.RowDefinitions>
+        <!--#endregion-->
+        <!--#region TITLE-->
+        <TextBlock Grid.Row="1" Grid.Column="1" Text="Configuración CDS"
+                   VerticalAlignment="Center" HorizontalAlignment="Center"
+                   Foreground="Black" FontSize="30" Height="40" Width="250"/>
+        <!--#endregion-->
+        <!--#region DATA-->
+        <!--#region RAZON SOCIAL-->
+        <TextBlock Grid.Row="2" Grid.Column="1" Text="Razón Social"
+                   VerticalAlignment="Top" HorizontalAlignment="Left" Margin="40,20,0,0"
+                   Foreground="Black" FontSize="14" Height="18" Width="115"></TextBlock>
+        <TextBox Grid.Row="2" Grid.Column="1" Width="121" Height="20"
+                 VerticalAlignment="Top" HorizontalAlignment="Left" Margin="40,20,0,0"
+                 Background="Transparent" BorderThickness="0,0,0,1" BorderBrush="Green"
+                 IsEnabled="False"></TextBox>
+        <TextBox Grid.Row="2" Grid.Column="1" x:Name="TextBoxRazonSocial"
+                 Width="170" Height="20"
+                 VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0,20,60,0"
+                 TextAlignment="Left" Background="Transparent" BorderBrush="#007ED6" FontSize="14"
+                 Text=""></TextBox>
+        <Button Grid.Row="2" Grid.Column="1" Name="RazonSocialInfo"
+                Width="20" Height="20"
+                VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0,20,30,0"
+                Background="#FFD1DC" BorderBrush="#007ED6"
+                Click="RazonSocialInfo_Click">
+            <TextBlock Text="?" Foreground="#007ED6" FontSize="16"
+                       VerticalAlignment="Center"></TextBlock>
+        </Button>
+        <!--#endregion-->
+        <!--#region RUTA PROY-->
+        <TextBlock Grid.Row="2" Grid.Column="1" Text="Ruta del Proyecto"
+                   VerticalAlignment="Top" HorizontalAlignment="Left" Margin="40,45,0,0"
+                   Foreground="Black" FontSize="14" Height="18" Width="115"></TextBlock>
+        <TextBox Grid.Row="2" Grid.Column="1" Width="121" Height="20"
+                 VerticalAlignment="Top" HorizontalAlignment="Left" Margin="40,45,0,0"
+                 Background="Transparent" BorderThickness="0,0,0,1" BorderBrush="Green"
+                 IsEnabled="False"></TextBox>
+        <TextBox Grid.Row="2" Grid.Column="1" x:Name="TextBoxRutaProyecto"
+                 Width="170" Height="20"
+                 VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0,45,60,0"
+                 TextAlignment="Left" Background="Transparent" BorderBrush="#007ED6" FontSize="14"
+                 Text=""></TextBox>
+        <Button Grid.Row="2" Grid.Column="1" Width="35" Name="BtnRutaPN"
+                Height="20"
+                VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0,45,30,0"
+                Background="#007ED6" BorderBrush="#007ED6"
+                Click="BtnRutaPN_Click">
+            <TextBlock Text="Buscar" Foreground="White" FontSize="10"></TextBlock>
+        </Button>
+        <!--#endregion-->
+        <!--#region IP CONTROLADOR-->
+        <TextBlock Grid.Row="2" Grid.Column="1" Text="IP Controlador"
+                   Height="18" Width="110"
+                   VerticalAlignment="Top" HorizontalAlignment="Left" Margin="40,70,0,0"
+                   Foreground="Black" FontSize="14"></TextBlock>
+        <TextBox Grid.Row="2" Grid.Column="1"
+                 Width="121" Height="20"
+                 VerticalAlignment="Top" HorizontalAlignment="Left" Margin="40,70,0,0"
+                 Background="Transparent" BorderThickness="0,0,0,1" BorderBrush="Green"
+                 IsEnabled="False"></TextBox>
+        <TextBox Grid.Row="2" Grid.Column="1" x:Name="TextBoxIpControlador"
+                 Width="170" Height="20"
+                 VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0,70,60,0"
+                 TextAlignment="Left" Background="Transparent" BorderBrush="#007ED6" FontSize="14"
+                 Text=""/>
+        <!--#endregion-->
+        <!--#region TIMER-->
+        <TextBlock Grid.Row="3" Grid.Column="1" Text="Tiempo entre Despachos"
+                   VerticalAlignment="Top" HorizontalAlignment="Left" Margin="40,25,0,0"
+                   Foreground="Black" FontSize="14" Height="18" Width="156">
+        </TextBlock>
+        <TextBox Grid.Row="3" Grid.Column="1" Width="171" Height="20"
+                 VerticalAlignment="Top" HorizontalAlignment="Left" Margin="40,25,0,0"
+                 Background="Transparent" BorderThickness="0,0,0,1" BorderBrush="Green"
+                 IsEnabled="False"></TextBox>
+        <StackPanel Grid.Row="3" Grid.Column="1"
+                    Width="80" Height="20"
+                    VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0,25,100,0"
+                    Orientation="Horizontal">
+            <Button Content="▲" Name="Up" Click="Up_Click" Width="30" />
+            <TextBox x:Name="TextBoxTimer" Width="20" IsReadOnly="True" HorizontalContentAlignment="Center"/>
+            <Button Content="▼" Name="Down" Click="Down_Click" Width="30" />
+        </StackPanel>
+        <ListBox Grid.Row="3" Grid.Column="1" x:Name="listBox"
+                 Width="30" Height="20"
+                 VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0,25,100,0"
+                 Visibility="Collapsed" SelectionChanged="ListBox_SelectionChanged">
+            <ListBoxItem Content="2" />
+            <ListBoxItem Content="4" />
+            <ListBoxItem Content="6" />
+            <ListBoxItem Content="8" />
+            <ListBoxItem Content="10"/>
+            <ListBoxItem Content="12"/>
+        </ListBox>
+        <!--#endregion-->
+        <!--#region MODO-->
+        <ComboBox Grid.Row="3" Grid.Column="1" x:Name="ComboBoxMODO"
+                  Width="80" Height="22"
+                  VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10,15,0,0"
+                  SelectedIndex="0">
+            <ComboBoxItem Content="NORMAL"/>
+            <ComboBoxItem Content="TEST"/>
+        </ComboBox>
+        <!--#endregion-->
+        <!--#region LOGGER-->
+        <ComboBox Grid.Row="3" Grid.Column="1" x:Name="ComboBoxLOG"
+                  Width="80" Height="22"
+                  VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10,65,0,0"
+                  SelectedIndex="1">
+            <ComboBoxItem Content="t_debug"/>
+            <ComboBoxItem Content="t_info"/>
+            <ComboBoxItem Content="t_error"/>
+        </ComboBox>
+        <!--#endregion-->
+        <!--#endregion-->
+        <!--#region BUTTON INIT-->
+        <Button Grid.Row="3" Grid.Column="1" Name="BtnInit"
+                Height="30" Width="160"
+                VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,40,0,0"
+                Background="#007ED6" BorderBrush="#007ED6"
+                Click="BtnInit_Click">
+            <TextBlock Text="Guardar Configuración" Foreground="White" FontSize="15"></TextBlock>
+        </Button>
+        <!--#endregion-->
+    </Grid>
+</Window>

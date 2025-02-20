@@ -34,6 +34,8 @@ namespace FusionAxion
             Loaded += PanelFusion_Loaded;
         }
 
+        #region CONFIGURACION INICIAL
+
         private void PanelFusion_Loaded(object sender, RoutedEventArgs e)
         {
             GButtons = new Grid
@@ -85,89 +87,13 @@ namespace FusionAxion
 
         private void Init()
         {
-            CrearBotones();
-            IniciarTimer();
+
         }
 
-        private void CrearBotones()
-        {
-            // Definir las filas y columnas
-            for (int i = 0; i < 2; i++)
-            {
-                GButtons.RowDefinitions.Add(new RowDefinition());
-            }
+        #endregion
 
-            for (int j = 0; j < 6; j++)
-            {
-                GButtons.ColumnDefinitions.Add(new ColumnDefinition());
-            }
 
-            // Crear y agregar los botones
-            for (int i = 0; i < numeroDeSurtidores; i++)
-            {
-                BotonPersonalizado boton = new BotonPersonalizado($"Surtidor {i + 1}", i);
-                Grid.SetRow(boton, i / 6);
-                Grid.SetColumn(boton, i % 6);
-                _ = GButtons.Children.Add(boton);
-            }
-
-            _ = GMain.Children.Add(GButtons);
-
-            Content = GMain;
-        }
-
-        private void IniciarTimer()
-        {
-            TimerDespachos = new DispatcherTimer
-            {
-                Interval = TimeSpan.FromSeconds(5) // Ejecutar cada 5 segundos
-            };
-
-            TimerDespachos.Tick += TimerDespachos_Tick;
-            TimerDespachos.Start();
-
-            TimerLabel = new DispatcherTimer
-            {
-                Interval = TimeSpan.FromSeconds(5) // Ejecutar cada 5 segundos
-            };
-
-            TimerLabel.Tick += TimerLabel_Tick;
-            TimerLabel.Start();
-        }
-
-        private void TimerLabel_Tick(object sender, EventArgs e)
-        {
-            string state = "Controlador\nOnLine";
-            string color = "#00FF00";               // Green Color
-
-            LStatus.Content = state;
-            LStatus.Background = (SolidColorBrush)new BrushConverter().ConvertFromString(color);
-        }
-
-        private void TimerDespachos_Tick(object sender, EventArgs e)
-        {
-            // Código que se ejecuta periódicamente
-            BuscarDespacho();
-        }
-
-        private async void BuscarDespacho()
-        {
-            if (surtidorActual <= GButtons.Children.Count && GButtons.Children[surtidorActual] is Button boton)
-            {
-                boton.Background = (SolidColorBrush)new BrushConverter().ConvertFromString("#90EE90");
-
-                await Task.Delay(3000);
-
-                boton.Background = (SolidColorBrush)new BrushConverter().ConvertFromString("#ADD8E6");
-            }
-
-            surtidorActual++;
-
-            if (surtidorActual >= numeroDeSurtidores)
-            {
-                surtidorActual = 0;
-            }
-        }
+        #region BUTTONS
 
         private void BtnCerrar_Click(object sender, RoutedEventArgs e)
         {
@@ -184,14 +110,6 @@ namespace FusionAxion
             }
         }
 
-        private void Window_MouseDown(object sender, MouseButtonEventArgs e)
-        {
-            if (e.LeftButton == MouseButtonState.Pressed)
-            {
-                DragMove();
-            }
-        }
-
         private void BtnMinimizar_Click(object sender, RoutedEventArgs e)
         {
             WindowState = WindowState.Minimized;
@@ -201,27 +119,15 @@ namespace FusionAxion
         {
 
         }
-    }
 
-    // Clase que representa un botón personalizado
-    public class BotonPersonalizado : Button
-    {
-        public int Id { get; private set; }
+        #endregion
 
-        public BotonPersonalizado(string texto, int id)
+        private void Window_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            Id = id;
-            Content = texto;
-            Height = 100;
-            Width = 60;
-            Margin = new Thickness(5);
-            Background = (SolidColorBrush)new BrushConverter().ConvertFromString("#ADD8E6");
-            Click += Boton_Click;
-        }
-
-        private void Boton_Click(object sender, RoutedEventArgs e)
-        {
-            _ = MessageBox.Show($"Se presionó el botón {Id + 1}");
+            if (e.LeftButton == MouseButtonState.Pressed)
+            {
+                DragMove();
+            }
         }
     }
 }

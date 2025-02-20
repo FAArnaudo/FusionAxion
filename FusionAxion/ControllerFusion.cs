@@ -29,7 +29,7 @@ namespace FusionAxion
                         cFusion = new Fusion();
                     }
 
-                    cFusion.Connection("IP");
+                    cFusion.Connection(Configuration.GetConfiguration().IP);
 
                     if (cFusion.ConnectionStatus())
                     {

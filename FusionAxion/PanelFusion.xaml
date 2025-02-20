@@ -41,20 +41,31 @@
         <!--#region GRID PANEL-->
         <StackPanel x:Name="SPPanel" Width="140" Height="320" Background="#34495E"
               HorizontalAlignment="Left" VerticalAlignment="Bottom">
-            <!--#region BUTTON-->
-            <Grid>
-                <Button Name="BtnCambiarConfig"
+            <!--#region BUTTON CAMBIAR CONFIGURACION-->
+            <Button Name="BtnCambiarConfig"
                     Width="120" Height="50"
                     HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,8,0,0"
                     Background="#34495E" BorderBrush="#5D6D7E"
                     Style="{DynamicResource ButtonStyle}" Click="BtnCambiarConfig_Click">
-                    <TextBlock Foreground="#ECF0F1" FontSize="15">
+                <TextBlock Foreground="#ECF0F1" FontSize="15">
                         Cambiar
                         <LineBreak/>
                         Configuración
-                    </TextBlock>
-                </Button>
-            </Grid>
+                </TextBlock>
+            </Button>
+            <!--#endregion-->
+            <!--#region BUTTON VERIFICAR CONEXION-->
+            <Button Name="BtnVerifyConfig"
+                    Width="120" Height="50"
+                    HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,8,0,0"
+                    Background="#34495E" BorderBrush="#5D6D7E"
+                    Style="{DynamicResource ButtonStyle}" Click="BtnVerifyConfig_Click">
+                <TextBlock Foreground="#ECF0F1" FontSize="15">
+                        Verificar
+                        <LineBreak/>
+                        Conexión
+                </TextBlock>
+            </Button>
             <!--#endregion-->
             <!--#region LABEL-->
             <Label x:Name="LStatus"

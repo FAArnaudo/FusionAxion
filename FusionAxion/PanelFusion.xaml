@@ -38,10 +38,11 @@
             <!--#endregion-->
         </Grid>
         <!--#endregion-->
-        <!--#region GRID BUTTONS-->
-        <Grid Width="140" Height="320" Background="#34495E"
+        <!--#region GRID PANEL-->
+        <StackPanel x:Name="SPPanel" Width="140" Height="320" Background="#34495E"
               HorizontalAlignment="Left" VerticalAlignment="Bottom">
-            <StackPanel>
+            <!--#region BUTTON-->
+            <Grid>
                 <Button Name="BtnCambiarConfig"
                     Width="120" Height="50"
                     HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,8,0,0"
@@ -53,8 +54,16 @@
                         Configuración
                     </TextBlock>
                 </Button>
-            </StackPanel>
-        </Grid>
+            </Grid>
+            <!--#endregion-->
+            <!--#region LABEL-->
+            <Label x:Name="LStatus"
+                   Width="120" Height="50"
+                   Background="#BDC3C7" Margin="0,8,0,0"
+                   Content="Iniciando..." Foreground="#ECF0F1" FontSize="15"
+                   HorizontalContentAlignment="Center" VerticalContentAlignment="Center"></Label>
+            <!--#endregion-->
+        </StackPanel>
         <!--#endregion-->
     </Grid>
 </Window>

@@ -72,8 +72,15 @@ namespace FusionAxion
 
         private void ConfigurationView_Closed(object sender, EventArgs e)
         {
-            Show();
-            Init();
+            if (Configuration.ExistConfiguracion())
+            {
+                Show();
+                Init();
+            }
+            else
+            {
+                Close();
+            }
         }
 
         private void Init()
@@ -130,7 +137,7 @@ namespace FusionAxion
 
         private void TimerLabel_Tick(object sender, EventArgs e)
         {
-            string state = "Controlador OnLine";
+            string state = "Controlador\nOnLine";
             string color = "#00FF00";               // Green Color
 
             LStatus.Content = state;

@@ -22,12 +22,6 @@ namespace FusionAxion
     /// </summary>
     public partial class PanelFusion : Window
     {
-        private Grid GButtons;
-        private DispatcherTimer TimerDespachos;
-        private DispatcherTimer TimerLabel;
-        private readonly int numeroDeSurtidores = 12;
-        private int surtidorActual = 0;
-
         public PanelFusion()
         {
             InitializeComponent();
@@ -38,15 +32,6 @@ namespace FusionAxion
 
         private void PanelFusion_Loaded(object sender, RoutedEventArgs e)
         {
-            GButtons = new Grid
-            {
-                Height = 320,
-                Width = 520,
-                Background = (SolidColorBrush)new BrushConverter().ConvertFromString("#ECF0F1"),
-                VerticalAlignment = VerticalAlignment.Bottom,
-                HorizontalAlignment = HorizontalAlignment.Right,
-            };
-
             if (!Configuration.ExistConfiguracion())
             {
                 OpenConfigurationWindows();
@@ -105,6 +90,7 @@ namespace FusionAxion
             // Verificar la respuesta del usuario
             if (result == MessageBoxResult.Yes)
             {
+                ControllerFusion.Instance.CloseConnection();
                 base.OnClosed(e);
                 Close();
             }
@@ -118,6 +104,27 @@ namespace FusionAxion
         private void BtnCambiarConfig_Click(object sender, RoutedEventArgs e)
         {
 
+        }
+
+        private void BtnVerifyConfig_Click(object sender, RoutedEventArgs e)
+        {
+            if (ControllerFusion.Instance.CheckConnection())
+            {
+                UpdateLabel("Controlador\nOnLine", "#00FF00");
+            }
+            else
+            {
+                UpdateLabel("Controlador\nOffLine", "#E57373");
+            }
+        }
+
+        private void UpdateLabel(string state, string color)
+        {
+            //string green = "#00FF00";
+            //string red = "#E57373";
+
+            LStatus.Content = state;
+            LStatus.Background = (SolidColorBrush)new BrushConverter().ConvertFromString(color);
         }
 
         #endregion

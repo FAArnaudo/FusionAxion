@@ -39,42 +39,51 @@
         </Grid>
         <!--#endregion-->
         <!--#region GRID PANEL-->
-        <StackPanel x:Name="SPPanel" Width="140" Height="320" Background="#34495E"
+        <Grid Width="140" Height="320" Background="#34495E"
               HorizontalAlignment="Left" VerticalAlignment="Bottom">
-            <!--#region BUTTON CAMBIAR CONFIGURACION-->
-            <Button Name="BtnCambiarConfig"
+            <StackPanel x:Name="SPPanel">
+                <!--#region BUTTON CAMBIAR CONFIGURACION-->
+                <Button Name="BtnCambiarConfig"
                     Width="120" Height="50"
                     HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,8,0,0"
                     Background="#34495E" BorderBrush="#5D6D7E"
                     Style="{DynamicResource ButtonStyle}" Click="BtnCambiarConfig_Click">
-                <TextBlock Foreground="#ECF0F1" FontSize="15">
+                    <TextBlock Foreground="#ECF0F1" FontSize="15">
                         Cambiar
                         <LineBreak/>
                         Configuración
-                </TextBlock>
-            </Button>
-            <!--#endregion-->
-            <!--#region BUTTON VERIFICAR CONEXION-->
-            <Button Name="BtnVerifyConfig"
+                    </TextBlock>
+                </Button>
+                <!--#endregion-->
+                <!--#region BUTTON VERIFICAR CONEXION-->
+                <Button Name="BtnVerifyConfig"
                     Width="120" Height="50"
                     HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,8,0,0"
                     Background="#34495E" BorderBrush="#5D6D7E"
                     Style="{DynamicResource ButtonStyle}" Click="BtnVerifyConfig_Click">
-                <TextBlock Foreground="#ECF0F1" FontSize="15">
+                    <TextBlock Foreground="#ECF0F1" FontSize="15">
                         Verificar
                         <LineBreak/>
                         Conexión
-                </TextBlock>
-            </Button>
-            <!--#endregion-->
-            <!--#region LABEL-->
-            <Label x:Name="LStatus"
+                    </TextBlock>
+                </Button>
+                <!--#endregion-->
+                <!--#region LABEL STATE-->
+                <Label x:Name="LStatus"
                    Width="120" Height="50"
                    Background="#BDC3C7" Margin="0,8,0,0"
                    Content="Iniciando..." Foreground="#ECF0F1" FontSize="15"
                    HorizontalContentAlignment="Center" VerticalContentAlignment="Center"></Label>
-            <!--#endregion-->
-        </StackPanel>
+                <!--#endregion-->
+            </StackPanel>
+        </Grid>
+        <!--#endregion-->
+        <!--#region GRID CONTENEDOR-->
+        <Grid x:Name="GContainer"
+              Height="320" Width="520"
+              VerticalAlignment="Bottom" HorizontalAlignment="Right"
+              Background="#ECF0F1">
+        </Grid>
         <!--#endregion-->
     </Grid>
 </Window>

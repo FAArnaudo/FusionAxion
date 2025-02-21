@@ -24,7 +24,6 @@ namespace FusionAxion
                     RazonSocial = streamReader.ReadLine().Trim(),
                     RutaProyNuevo = streamReader.ReadLine().Trim(),
                     IP = streamReader.ReadLine().Trim(),
-                    Protocol = streamReader.ReadLine().Trim(),
                     Timer = streamReader.ReadLine().Trim(),
                     Modo = streamReader.ReadLine().Trim(),
                     Logger = streamReader.ReadLine().Trim()
@@ -49,7 +48,6 @@ namespace FusionAxion
                     outputFile.WriteLine(data.RazonSocial.Trim());                      //1°   Razon Social
                     outputFile.WriteLine(data.RutaProyNuevo.Trim());                    //2°   Path
                     outputFile.WriteLine(data.IP.Trim());                               //3°   IP
-                    outputFile.WriteLine(data.Protocol.Trim());                         //4°   Protocol
                     outputFile.WriteLine(data.Timer.Trim());                            //5°   Timer Process
                     outputFile.WriteLine(data.Modo);                                    //6°   Mood
                     outputFile.WriteLine(data.Logger);                                  //7°   Logger
@@ -73,7 +71,6 @@ namespace FusionAxion
         private string razonSocial = "";
         private string rutaProyNuevo = "";
         private string ip = "";
-        private string protocol = "";
         private string timer = "";
         private MODO modo = MODO.NORMAL;
         private LogType logger = LogType.t_info;
@@ -112,18 +109,6 @@ namespace FusionAxion
                 if (ip != value)
                 {
                     ip = value;
-                }
-            }
-        }
-
-        public string Protocol
-        {
-            get => protocol;
-            set
-            {
-                if (protocol != value)
-                {
-                    protocol = value;
                 }
             }
         }

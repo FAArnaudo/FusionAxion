@@ -31,15 +31,18 @@ namespace FusionAxion
 
         public void CloseConnection()
         {
-            _ = ConnectorFusion.Fusion.Close();
-
+            if (ConnectorFusion.Fusion != null)
+            {
+                _ = ConnectorFusion.Fusion.Close();
+                ConnectorFusion.Fusion = null;
+            }
         }
 
         public bool CheckConnection()
         {
             bool connection = false;
 
-            if (ConnectorFusion.Fusion.ConnectionStatus())
+            if (ConnectorFusion.Fusion != null)
             {
                 connection = true;
             }

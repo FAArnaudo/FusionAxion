@@ -105,17 +105,12 @@ namespace FusionAxion.Views
                     };
                     Log.Instance.SetLogType(logger.Content.ToString());
 
-                    if (Configuration.SaveConfiguration(data))
-                    {
-                        Thread.Sleep(500);
-                        _ = MessageBox.Show($"Configuracion guardada correctamente.");
-                        Close();
-                    }
-                    else
+                    if (!Configuration.SaveConfiguration(data))
                     {
                         _ = MessageBox.Show($"La configuracion no pudo ser guardada. Intente ejecutar el programa nuevamente.");
-                        Close();
                     }
+
+                    Close();
                 }
             }
         }

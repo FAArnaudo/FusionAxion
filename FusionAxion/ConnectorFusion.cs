@@ -21,8 +21,15 @@ namespace FusionAxion
                     cFusion = new Fusion();
                     cFusion.Connection(Configuration.GetConfiguration().IP);
                 }
+
+                if (!cFusion.ConnectionStatus())
+                {
+                    cFusion = null;
+                }
+
                 return cFusion;
             }
+            set => cFusion = value;
         }
     }
 }

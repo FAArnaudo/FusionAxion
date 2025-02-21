@@ -77,7 +77,6 @@ namespace FusionAxion
 
         #endregion
 
-
         #region BUTTONS
 
         private void BtnCerrar_Click(object sender, RoutedEventArgs e)

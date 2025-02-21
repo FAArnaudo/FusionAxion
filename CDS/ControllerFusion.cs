@@ -306,6 +306,13 @@ namespace CDS
                                               $"Excepción: {e.Message}, Debug: {debugMessage}", LogType.t_error);
                     }
                 }
+
+                FusionProcess.CheckFlags();
+
+                if (FusionProcess.HacerCierre || FusionProcess.BreakProces)
+                {
+                    break;
+                }
             }
         }
 
@@ -609,6 +616,13 @@ namespace CDS
                 catch (Exception e)
                 {
                     Log.Instance.WriteLog($"\nError al obtener Descuentos. Excepción: {e.Message}, Mensaje: {debugMessage}", LogType.t_error);
+                }
+
+                FusionProcess.CheckFlags();
+
+                if (FusionProcess.HacerCierre || FusionProcess.BreakProces)
+                {
+                    break;
                 }
             }
         }

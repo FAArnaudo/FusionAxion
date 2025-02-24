@@ -9,45 +9,42 @@ namespace FusionAxion
 {
     public class ControllerFusion
     {
-        private Fusion cFusion;
-        public ControllerFusion() { }
+        private ConnectorFusion ConnectorFusion { get; set; }
+        private static ControllerFusion instance = null;
+        private ControllerFusion()
+        {
+            ConnectorFusion = new ConnectorFusion();
+        }
+
+        public static ControllerFusion Instance
+        {
+            get
+            {
+                if (instance == null)
+                {
+                    instance = new ControllerFusion();
+                }
+
+                return instance;
+            }
+        }
+
+        public void CloseConnection()
+        {
+            if (ConnectorFusion.Fusion != null)
+            {
+                _ = ConnectorFusion.Fusion.Close();
+                ConnectorFusion.Fusion = null;
+            }
+        }
 
         public bool CheckConnection()
         {
             bool connection = false;
-            int tries = 0;
 
-            try
+            if (ConnectorFusion.Fusion != null)
             {
-                while (tries <= 5)
-                {
-                    tries++;
-
-                    // Crear el pipeClient si está cerrado
-                    if (cFusion == null)
-                    {
-                        cFusion = new Fusion();
-                    }
-
-                    cFusion.Connection(Configuration.GetConfiguration().IP);
-
-                    if (cFusion.ConnectionStatus())
-                    {
-                        // Mensaje de Conexion Exitosa
-                        connection = true;
-                        break;
-                    }
-                    else
-                    {
-                        // Mensaje de Conexion Fallida intento N° x
-                        cFusion = null;
-                    }
-                }
-            }
-            catch (Exception)
-            {
-                cFusion = null;
-                // Mensaje de Conexion Fallida
+                connection = true;
             }
 
             return connection;

@@ -22,12 +22,7 @@ namespace FusionAxion
     /// </summary>
     public partial class PanelFusion : Window
     {
-        private Grid GButtons;
-        private DispatcherTimer TimerDespachos;
-        private DispatcherTimer TimerLabel;
-        private readonly int numeroDeSurtidores = 12;
-        private int surtidorActual = 0;
-
+        private bool processRunning = false;
         public PanelFusion()
         {
             InitializeComponent();
@@ -38,14 +33,7 @@ namespace FusionAxion
 
         private void PanelFusion_Loaded(object sender, RoutedEventArgs e)
         {
-            GButtons = new Grid
-            {
-                Height = 320,
-                Width = 520,
-                Background = (SolidColorBrush)new BrushConverter().ConvertFromString("#ECF0F1"),
-                VerticalAlignment = VerticalAlignment.Bottom,
-                HorizontalAlignment = HorizontalAlignment.Right,
-            };
+            UpdateLabel("Iniciando...", "#BDC3C7");
 
             if (!Configuration.ExistConfiguracion())
             {
@@ -87,7 +75,21 @@ namespace FusionAxion
 
         private void Init()
         {
+            if (processRunning)
+            {
+                ControllerFusion.Instance.CloseConnection();
+            }
 
+            if (ControllerFusion.Instance.CheckConnection())
+            {
+                UpdateLabel("Controlador\nOnLine", "#00FF00");
+                processRunning = true;
+            }
+            else
+            {
+                UpdateLabel("Controlador\nOffLine", "#E57373");
+                processRunning = false;
+            }
         }
 
         #endregion
@@ -104,6 +106,7 @@ namespace FusionAxion
             // Verificar la respuesta del usuario
             if (result == MessageBoxResult.Yes)
             {
+                ControllerFusion.Instance.CloseConnection();
                 base.OnClosed(e);
                 Close();
             }
@@ -116,7 +119,31 @@ namespace FusionAxion
 
         private void BtnCambiarConfig_Click(object sender, RoutedEventArgs e)
         {
+            OpenConfigurationWindows();
+        }
 
+        private void BtnVerifyConfig_Click(object sender, RoutedEventArgs e)
+        {
+            if (ControllerFusion.Instance.CheckConnection())
+            {
+                UpdateLabel("Controlador\nOnLine", "#00FF00");
+                processRunning = true;
+            }
+            else
+            {
+                UpdateLabel("Controlador\nOffLine", "#E57373");
+                processRunning = false;
+            }
+        }
+
+        private void UpdateLabel(string state, string color)
+        {
+            //string green = "#00FF00";
+            //string red = "#E57373";
+            //string gris = "#BDC3C7";
+
+            LStatus.Content = state;
+            LStatus.Background = (SolidColorBrush)new BrushConverter().ConvertFromString(color);
         }
 
         #endregion

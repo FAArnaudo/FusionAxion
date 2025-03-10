@@ -90,7 +90,7 @@ namespace CDS
                                 surtidor.ID,
                                 manguera.ID,
                                 manguera.Producto.ID,
-                                manguera.Producto.PrecioUnitario,
+                                manguera.Producto.PrecioUnitario.ToString(CultureInfo.InvariantCulture),
                                 manguera.Producto.Descripcion);
 
                             DataTable tablaSurtidores = ConnectorSQLite.Instance.ExecuteSelectQuery($"SELECT * " +
@@ -121,7 +121,7 @@ namespace CDS
                                                      producto.ID,
                                                      producto.ID_SIGES,
                                                      producto.Descripcion,
-                                                     producto.PrecioUnitario);
+                                                     producto.PrecioUnitario.ToString(CultureInfo.InvariantCulture));
 
                         DataTable tablaProductos = ConnectorSQLite.Instance.ExecuteSelectQuery("SELECT * " +
                                                                                                "FROM Productos " +
@@ -207,7 +207,11 @@ namespace CDS
 
                             _ = tablaTanques.Rows.Count == 0 ?
                                 ConnectorSQLite.Instance.ExecuteNonQuery(string.Format("INSERT INTO Tanques ({0}) VALUES ({1})", campos, rows)) :
-                                ConnectorSQLite.Instance.ExecuteNonQuery(string.Format("UPDATE Tanques SET volumen_actual = ({0}), capacidad_maxima = ({1}), actualizado = ('{2}') WHERE id_tanque = ({3})", tanque.VolumenDeProducto, tanque.CapacidadMaxima, DateTime.Now.ToString("dd-MM-yyyy HH:mm:ss"), tanque.ID));
+                                ConnectorSQLite.Instance.ExecuteNonQuery(string.Format("UPDATE Tanques SET volumen_actual = ({0}), capacidad_maxima = ({1}), actualizado = ('{2}') WHERE id_tanque = ({3})",
+                                                                                        tanque.VolumenDeProducto.ToString(CultureInfo.InvariantCulture),
+                                                                                        tanque.CapacidadMaxima.ToString(CultureInfo.InvariantCulture),
+                                                                                        DateTime.Now.ToString("dd-MM-yyyy HH:mm:ss"),
+                                                                                        tanque.ID));
                         }
                         Log.Instance.WriteLog($"\n", LogType.t_info);
                     }
@@ -589,8 +593,8 @@ namespace CDS
                                           externalReference, authCode, collectorId,
                                           currencyId, dateCreated, description,
                                           paymentTypeId, statementDescriptor,
-                                          transactionAmount, paymentMethodId,
-                                          status, totalGlosa, totalDiscount);
+                                          transactionAmount.ToString(CultureInfo.InvariantCulture), paymentMethodId,
+                                          status, totalGlosa, totalDiscount.ToString(CultureInfo.InvariantCulture));
 
                             if (ExecuteSelectQuery($"SELECT * FROM Descuentos WHERE external_reference = {externalReference}") != null)
                             {
@@ -601,7 +605,7 @@ namespace CDS
                                                      $"SET AUC = '{authCode}', " +
                                                          $"DCA = {0}, DCI = '{statementDescriptor}' , DCP = '{paymentMethodId}', " +
                                                          $"DPN = '{paymentTypeId}', TXTD = '{description}', cod_auto = '{cod_auto}', " +
-                                                         $"glosa_auto = '{glosa_auto}', valor_auto = {valor_auto} " +
+                                                         $"glosa_auto = '{glosa_auto}', valor_auto = {valor_auto.ToString(CultureInfo.InvariantCulture)} " +
                                                          $"WHERE id = {id}");
                         }
                     }

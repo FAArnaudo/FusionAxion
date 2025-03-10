@@ -44,11 +44,12 @@ namespace CDS
 
                     foreach (Manguera manguera in surtidor.Mangueras)
                     {
+                        string mangueraPrecioUnitario = manguera.Producto.PrecioUnitario.ToString(CultureInfo.InvariantCulture);
                         string rows = string.Format("{0},{1},{2},{3},'{4}'",
                             surtidor.ID,
                             manguera.ID,
                             manguera.Producto.ID,
-                            manguera.Producto.PrecioUnitario,
+                            mangueraPrecioUnitario,
                             manguera.Producto.Descripcion);
 
                         DataTable tablaSurtidores = ConnectorSQLite.Instance.ExecuteSelectQuery($"SELECT * " +
@@ -61,7 +62,7 @@ namespace CDS
                                                                                    "SET Producto = ('{0}'), Precio = ('{1}'), DescProd = ('{2}') " +
                                                                                    "WHERE IdSurtidor = ({3}) AND Manguera = ('{4}')",
                                                                                    manguera.Producto.ID,
-                                                                                   manguera.Producto.PrecioUnitario,
+                                                                                   mangueraPrecioUnitario,
                                                                                    manguera.Producto.Descripcion,
                                                                                    surtidor.ID,
                                                                                    manguera.ID));
@@ -73,13 +74,13 @@ namespace CDS
 
                 foreach (Producto producto in station.Productos)
                 {
+                    string precioUnitario = producto.PrecioUnitario.ToString(CultureInfo.InvariantCulture);
                     string campos = "id_producto,id_siges,producto,precio";
-
                     string rows = string.Format("{0},{1},'{2}',{3}",
                                                  producto.ID,
                                                  producto.ID_SIGES,
                                                  producto.Descripcion,
-                                                 producto.PrecioUnitario);
+                                                 precioUnitario);
 
                     DataTable tablaProductos = ConnectorSQLite.Instance.ExecuteSelectQuery("SELECT * " +
                                                                                            "FROM Productos " +
@@ -91,30 +92,30 @@ namespace CDS
                                                                                "SET producto = ('{0}'), precio = ({1}) " +
                                                                                "WHERE id_producto = ({2})",
                                                                                producto.Descripcion,
-                                                                               producto.PrecioUnitario,
+                                                                               precioUnitario,
                                                                                producto.ID));
 
                     Log.Instance.WriteLog(string.Format("PRODUCTO: ({0}) DESCRIPCION: ({1}) PRECIO: ({2})",
-                                                            producto.ID, producto.Descripcion, producto.PrecioUnitario), LogType.t_info);
+                                                            producto.ID, producto.Descripcion, precioUnitario), LogType.t_info);
                 }
                 Log.Instance.WriteLog("\n", LogType.t_info);
 
                 foreach (Tanque tanque in station.Tanques)
                 {
+                    string tanqueVolumenDeProducto = tanque.VolumenDeProducto.ToString(CultureInfo.InvariantCulture);
+                    string tanqueCapacidadMaxima = tanque.CapacidadMaxima.ToString(CultureInfo.InvariantCulture);
                     string campos = "id_tanque,volumen_actual,capacidad_maxima";
 
                     string rows = string.Format("{0},'{1}',{2}",
                                                  tanque.ID,
-                                                 tanque.VolumenDeProducto,
-                                                 tanque.CapacidadMaxima);
+                                                 tanqueVolumenDeProducto,
+                                                 tanqueCapacidadMaxima);
 
                     DataTable tablaTanques = ConnectorSQLite.Instance.ExecuteSelectQuery("SELECT * " +
                                                                                            "FROM Tanques " +
                                                                                           $"WHERE id_tanque = {tanque.ID}");
 
-                    _ = tablaTanques.Rows.Count == 0 ? ConnectorSQLite.Instance.ExecuteNonQuery(string.Format("INSERT INTO Tanques ({0}) VALUES ({1})", campos, rows)) : ConnectorSQLite.Instance.ExecuteNonQuery(string.Format("UPDATE Tanques " + "SET volumen_actual = ('{0}'), capacidad_maxima = ({1}) " + "WHERE id_tanque = ({2})", tanque.VolumenDeProducto, tanque.CapacidadMaxima, tanque.ID));
-                    Log.Instance.WriteLog(string.Format("TANQUE: ({0}) CAPACIDAD: ({1}))",
-                                                            tanque.ID, tanque.CapacidadMaxima), LogType.t_info);
+                    _ = tablaTanques.Rows.Count == 0 ? ConnectorSQLite.Instance.ExecuteNonQuery(string.Format("INSERT INTO Tanques ({0}) VALUES ({1})", campos, rows)) : ConnectorSQLite.Instance.ExecuteNonQuery(string.Format("UPDATE Tanques " + "SET volumen_actual = ('{0}'), capacidad_maxima = ({1}) " + "WHERE id_tanque = ({2})", tanqueVolumenDeProducto, tanqueCapacidadMaxima, tanque.ID));
                 }
                 Log.Instance.WriteLog("\n", LogType.t_info);
             }
@@ -138,13 +139,13 @@ namespace CDS
             {
                 foreach (Tanque tanque in tanques)
                 {
-
+                    string tanqueVolumenDeProducto = tanque.VolumenDeProducto.ToString(CultureInfo.InvariantCulture);
+                    string tanqueCapacidadMaxima = tanque.CapacidadMaxima.ToString(CultureInfo.InvariantCulture);
                     string campos = "id_tanque,volumen_actual,capacidad_maxima,actualizado";
-
                     string rows = string.Format("{0},{1},{2}",
                                                  tanque.ID,
-                                                 tanque.VolumenDeProducto,
-                                                 tanque.CapacidadMaxima);
+                                                 tanqueVolumenDeProducto,
+                                                 tanqueCapacidadMaxima);
 
                     DataTable tablaTanques = ConnectorSQLite.Instance.ExecuteSelectQuery("SELECT * " +
                                                                                          "FROM Tanques " +
@@ -152,7 +153,12 @@ namespace CDS
 
                     _ = tablaTanques.Rows.Count == 0 ?
                         ConnectorSQLite.Instance.ExecuteNonQuery(string.Format("INSERT INTO Tanques ({0}) VALUES ({1})", campos, rows)) :
-                        ConnectorSQLite.Instance.ExecuteNonQuery(string.Format("UPDATE Tanques SET volumen_actual = ({0}), capacidad_maxima = ({1}), actualizado = ('{2}') WHERE id_tanque = ({3})", tanque.VolumenDeProducto, tanque.CapacidadMaxima, DateTime.Now.ToString("dd-MM-yyyy HH:mm:ss"), tanque.ID));
+                        ConnectorSQLite.Instance.ExecuteNonQuery(string.Format("UPDATE Tanques SET volumen_actual = ({0}), capacidad_maxima = ({1}), actualizado = ('{2}') WHERE id_tanque = ({3})",
+                                                                                tanqueVolumenDeProducto,
+                                                                                tanqueCapacidadMaxima,
+                                                                                DateTime.Now.ToString("dd-MM-yyyy HH:mm:ss"), tanque.ID));
+                    Log.Instance.WriteLog(string.Format("TANQUE: ({0}) CAPACIDAD MAXIMA: ({1}) VOLUMEN ACTUAL: ({2}))",
+                                                         tanque.ID, tanqueCapacidadMaxima, tanqueVolumenDeProducto), LogType.t_info);
                 }
             }
             catch (Exception e)
@@ -262,10 +268,10 @@ namespace CDS
                 string fields = "fecha,monto_contado,volumen_contado,monto_YPFruta,volumen_YPFruta,state";
                 string values = string.Format("'{0}',{1},{2},{3},{4},'{5}'",
                     DateTime.Now.ToString("dd-MM-yyyy HH:mm:ss"),
-                    cierreDeTurno.TotalesMedioDePago[0].TotalMonto,
-                    cierreDeTurno.TotalesMedioDePago[0].TotalVolumen,
-                    cierreDeTurno.TotalesMedioDePago[3].TotalMonto,
-                    cierreDeTurno.TotalesMedioDePago[3].TotalVolumen,
+                    cierreDeTurno.TotalesMedioDePago[0].TotalMonto.ToString(CultureInfo.InvariantCulture),
+                    cierreDeTurno.TotalesMedioDePago[0].TotalVolumen.ToString(CultureInfo.InvariantCulture),
+                    cierreDeTurno.TotalesMedioDePago[3].TotalMonto.ToString(CultureInfo.InvariantCulture),
+                    cierreDeTurno.TotalesMedioDePago[3].TotalVolumen.ToString(CultureInfo.InvariantCulture),
                     cierreDeTurno.Estado);
 
                 _ = ConnectorSQLite.Instance.ExecuteNonQuery(string.Format("INSERT INTO Cierres ({0}) VALUES ({1})", fields, values));
@@ -288,8 +294,8 @@ namespace CDS
                             values = string.Format("{0},{1},{2},{3}",
                                 cierreDeTurno.ID,
                                 cierreDeTurno.TotalesPorPeriodoPorNivelPorProducto[periodo][nivel][producto].NumeroDeProducto,
-                                cierreDeTurno.TotalesPorPeriodoPorNivelPorProducto[periodo][nivel][producto].TotalMonto,
-                                cierreDeTurno.TotalesPorPeriodoPorNivelPorProducto[periodo][nivel][producto].TotalVolumen);
+                                cierreDeTurno.TotalesPorPeriodoPorNivelPorProducto[periodo][nivel][producto].TotalMonto.ToString(CultureInfo.InvariantCulture),
+                                cierreDeTurno.TotalesPorPeriodoPorNivelPorProducto[periodo][nivel][producto].TotalVolumen.ToString(CultureInfo.InvariantCulture));
 
                             _ = ConnectorSQLite.Instance.ExecuteNonQuery(string.Format("INSERT INTO CierresPorProducto ({0}) VALUES ({1})", fields, values));
                         }
@@ -305,8 +311,8 @@ namespace CDS
                         cierreDeTurno.ID,
                         cierreDeTurno.TotalesPorManguera[manguera].NumeroDeSurtidor,
                         cierreDeTurno.TotalesPorManguera[manguera].NumeroDeManguera,
-                        cierreDeTurno.TotalesPorManguera[manguera].TotalVntasMonto,
-                        cierreDeTurno.TotalesPorManguera[manguera].TotalVntasVolumen);
+                        cierreDeTurno.TotalesPorManguera[manguera].TotalVntasMonto.ToString(CultureInfo.InvariantCulture),
+                        cierreDeTurno.TotalesPorManguera[manguera].TotalVntasVolumen.ToString(CultureInfo.InvariantCulture));
 
                     _ = ConnectorSQLite.Instance.ExecuteNonQuery(string.Format("INSERT INTO CierresPorManguera ({0}) VALUES ({1})", fields, values));
                 }
@@ -337,10 +343,10 @@ namespace CDS
 
                 int modified = ConnectorSQLite.Instance.ExecuteNonQuery("UPDATE Cierres " +
                     $"SET fecha = '{DateTime.Now:dd-MM-yyyy HH:mm:ss}', " +
-                        $"monto_contado = {turnoAnterior.TotalesMedioDePago[0].TotalMonto}, " +
-                        $"volumen_contado = {turnoAnterior.TotalesMedioDePago[0].TotalVolumen}, " +
-                        $"monto_YPFruta = {turnoAnterior.TotalesMedioDePago[3].TotalMonto}, " +
-                        $"volumen_YPFruta = {turnoAnterior.TotalesMedioDePago[3].TotalVolumen}, " +
+                        $"monto_contado = {turnoAnterior.TotalesMedioDePago[0].TotalMonto.ToString(CultureInfo.InvariantCulture)}, " +
+                        $"volumen_contado = {turnoAnterior.TotalesMedioDePago[0].TotalVolumen.ToString(CultureInfo.InvariantCulture)}, " +
+                        $"monto_YPFruta = {turnoAnterior.TotalesMedioDePago[3].TotalMonto.ToString(CultureInfo.InvariantCulture)}, " +
+                        $"volumen_YPFruta = {turnoAnterior.TotalesMedioDePago[3].TotalVolumen.ToString(CultureInfo.InvariantCulture)}, " +
                         $"state = '{turnoAnterior.Estado}' " +
                     $"WHERE id = {turnoAnterior.ID}");
 
@@ -350,10 +356,10 @@ namespace CDS
 
                     string values = string.Format("'{0}',{1},{2},{3},{4},'{5}'",
                         DateTime.Now.ToString("dd-MM-yyyy HH:mm:ss"),
-                        turnoAnterior.TotalesMedioDePago[0].TotalMonto,
-                        turnoAnterior.TotalesMedioDePago[0].TotalVolumen,
-                        turnoAnterior.TotalesMedioDePago[3].TotalMonto,
-                        turnoAnterior.TotalesMedioDePago[3].TotalVolumen,
+                        turnoAnterior.TotalesMedioDePago[0].TotalMonto.ToString(CultureInfo.InvariantCulture),
+                        turnoAnterior.TotalesMedioDePago[0].TotalVolumen.ToString(CultureInfo.InvariantCulture),
+                        turnoAnterior.TotalesMedioDePago[3].TotalMonto.ToString(CultureInfo.InvariantCulture),
+                        turnoAnterior.TotalesMedioDePago[3].TotalVolumen.ToString(CultureInfo.InvariantCulture),
                         turnoAnterior.Estado);
 
                     _ = ConnectorSQLite.Instance.ExecuteNonQuery(string.Format("INSERT INTO Cierres ({0}) VALUES ({1})", fields, values));
@@ -367,8 +373,8 @@ namespace CDS
                         for (int producto = 0; producto < turnoAnterior.TotalesPorPeriodoPorNivelPorProducto[periodo][nivel].Count; producto++)
                         {
                             modified = ConnectorSQLite.Instance.ExecuteNonQuery("UPDATE CierresPorProducto " +
-                                                                    $"SET monto = {turnoAnterior.TotalesPorPeriodoPorNivelPorProducto[periodo][nivel][producto].TotalMonto}, " +
-                                                                        $"volumen = {turnoAnterior.TotalesPorPeriodoPorNivelPorProducto[periodo][nivel][producto].TotalVolumen} " +
+                                                                    $"SET monto = {turnoAnterior.TotalesPorPeriodoPorNivelPorProducto[periodo][nivel][producto].TotalMonto.ToString(CultureInfo.InvariantCulture)}, " +
+                                                                        $"volumen = {turnoAnterior.TotalesPorPeriodoPorNivelPorProducto[periodo][nivel][producto].TotalVolumen.ToString(CultureInfo.InvariantCulture)} " +
                                                                     $"WHERE id = {turnoAnterior.ID} AND producto = {turnoAnterior.TotalesPorPeriodoPorNivelPorProducto[periodo][nivel][producto].NumeroDeProducto}");
 
                             if (modified != 1)
@@ -378,8 +384,8 @@ namespace CDS
                                 string values = string.Format("{0},{1},{2},{3}",
                                 turnoAnterior.ID,
                                 turnoAnterior.TotalesPorPeriodoPorNivelPorProducto[periodo][nivel][producto].NumeroDeProducto,
-                                turnoAnterior.TotalesPorPeriodoPorNivelPorProducto[periodo][nivel][producto].TotalMonto,
-                                turnoAnterior.TotalesPorPeriodoPorNivelPorProducto[periodo][nivel][producto].TotalVolumen);
+                                turnoAnterior.TotalesPorPeriodoPorNivelPorProducto[periodo][nivel][producto].TotalMonto.ToString(CultureInfo.InvariantCulture),
+                                turnoAnterior.TotalesPorPeriodoPorNivelPorProducto[periodo][nivel][producto].TotalVolumen.ToString(CultureInfo.InvariantCulture));
 
                                 _ = ConnectorSQLite.Instance.ExecuteNonQuery(string.Format("INSERT INTO CierresPorProducto ({0}) VALUES ({1})", fields, values));
                             }
@@ -391,8 +397,8 @@ namespace CDS
                 for (int manguera = 0; manguera < turnoAnterior.TotalesPorManguera.Count; manguera++)
                 {
                     modified = ConnectorSQLite.Instance.ExecuteNonQuery("UPDATE CierresPorManguera " +
-                    $"SET monto = {turnoAnterior.TotalesPorManguera[manguera].TotalVntasMonto}, " +
-                        $"volumen = {turnoAnterior.TotalesPorManguera[manguera].TotalVntasVolumen} " +
+                    $"SET monto = {turnoAnterior.TotalesPorManguera[manguera].TotalVntasMonto.ToString(CultureInfo.InvariantCulture)}, " +
+                        $"volumen = {turnoAnterior.TotalesPorManguera[manguera].TotalVntasVolumen.ToString(CultureInfo.InvariantCulture)} " +
                     $"WHERE id = {turnoAnterior.ID} AND surtidor = {turnoAnterior.TotalesPorManguera[manguera].NumeroDeSurtidor} AND manguera = {turnoAnterior.TotalesPorManguera[manguera].NumeroDeManguera}");
 
                     if (modified != 1)
@@ -403,8 +409,8 @@ namespace CDS
                         turnoAnterior.ID,
                         turnoAnterior.TotalesPorManguera[manguera].NumeroDeSurtidor,
                         turnoAnterior.TotalesPorManguera[manguera].NumeroDeManguera,
-                        turnoAnterior.TotalesPorManguera[manguera].TotalVntasMonto,
-                        turnoAnterior.TotalesPorManguera[manguera].TotalVntasVolumen);
+                        turnoAnterior.TotalesPorManguera[manguera].TotalVntasMonto.ToString(CultureInfo.InvariantCulture),
+                        turnoAnterior.TotalesPorManguera[manguera].TotalVntasVolumen.ToString(CultureInfo.InvariantCulture));
 
                         _ = ConnectorSQLite.Instance.ExecuteNonQuery(string.Format("INSERT INTO CierresPorManguera ({0}) VALUES ({1})", fields, values));
                     }

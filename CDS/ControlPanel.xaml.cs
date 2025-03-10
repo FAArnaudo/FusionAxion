@@ -80,8 +80,6 @@ namespace CDS
                 {
                     if (PumpController.StartProcess(Configuration.GetConfiguration()))
                     {
-                        _ = MessageBox.Show("Conexión iniciada, verifique el estado del controlador.");
-
                         timer = new DispatcherTimer
                         {
                             Interval = TimeSpan.FromSeconds(5)  // El intervalo es de 5 segundos
@@ -116,8 +114,6 @@ namespace CDS
                 {
                     if (PumpController.SetNewData(Configuration.GetConfiguration()))
                     {
-                        _ = MessageBox.Show("Datos actualizados.");
-
                         Log.Instance.WriteLog("Datos actualizados.", LogType.t_info);
                     }
 

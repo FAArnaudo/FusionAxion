@@ -66,7 +66,7 @@ namespace CDS
                                 {
                                     Manguera manguera = new Manguera
                                     {
-                                        ID = fusionHose.m_iPhysicalID
+                                        ID = fusionHose.m_iPhysicalID + 1
                                     };
 
                                     foreach (Producto producto in productos)
@@ -127,11 +127,11 @@ namespace CDS
 
                 if (tieneDescuento && !string.IsNullOrEmpty(descuento))
                 {
-                    Log.Instance.WriteLog($"Descuento {tieneDescuento}. \nID: {idSale}\nDescuento: {descuento}", LogType.t_debug);
+                    Log.Instance.WriteLog($"Descuento {tieneDescuento}. \nID: {idSale}\n Descuento: {descuento}", LogType.t_debug);
                     return true;
                 }
 
-                Log.Instance.WriteLog($"Descuento {tieneDescuento}. \nID: {idSale}\nDescuento: {descuento}", LogType.t_debug);
+                Log.Instance.WriteLog($"Descuento {tieneDescuento}. \nID: {idSale}\n Descuento: {descuento}", LogType.t_debug);
             }
             catch (Exception e)
             {

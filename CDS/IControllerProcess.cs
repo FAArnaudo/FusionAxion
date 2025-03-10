@@ -117,12 +117,14 @@ namespace CDS
         public ControllerFusion ControllerFusion { get; set; }
         public Data Data { get; set; }
         private bool IsRunning { get; set; }
-        private bool HacerCierre { get; set; }
+        public static bool HacerCierre { get; set; }
+        public static bool BreakProces { get; set; }
 
         public FusionProcess()
         {
             CancellationToken = new CancellationTokenSource();
             IsRunning = false;
+            BreakProces = false;
         }
 
         public void RunProcess(Task mainProcess)
@@ -149,7 +151,7 @@ namespace CDS
                         {
                             ControllerFusion.GrabarDespachos();
 
-                            if (CancellationToken.Token.IsCancellationRequested)
+                            if (CancellationToken.Token.IsCancellationRequested || HacerCierre)
                             {
                                 continue;
                             }
@@ -191,6 +193,7 @@ namespace CDS
         public void StopProcess()
         {
             CancellationToken?.Cancel();
+            BreakProces = true;
 
             while (IsRunning)
             {
@@ -219,7 +222,7 @@ namespace CDS
             ControllerFusion = new ControllerFusion(communication);
         }
 
-        public void CheckFlags()
+        public static void CheckFlags()
         {
             DataTable flags = ConnectorSQLite.Instance.ExecuteSelectQuery($"SELECT * FROM cierreBandera");
 

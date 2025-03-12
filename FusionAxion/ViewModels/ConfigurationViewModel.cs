@@ -230,9 +230,8 @@ namespace FusionAxion.ViewModels
             {
                 if (ConfigurationModel.SaveConfiguration(data))
                 {
-
-                    IsViewVisible = false;
                     StatusMessage = "Configuración guardada correctamente.";
+                    IsViewVisible = false;
                 }
                 else
                 {

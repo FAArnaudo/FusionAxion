@@ -19,7 +19,7 @@ namespace FusionAxion
                 if (cFusion == null)
                 {
                     cFusion = new Fusion();
-                    cFusion.Connection(Configuration.GetConfiguration().IP);
+                    cFusion.Connection(ConfigurationModel.GetConfiguration().IP);
                 }
 
                 if (!cFusion.ConnectionStatus())

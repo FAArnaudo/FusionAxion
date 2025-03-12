@@ -5,6 +5,7 @@ using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
+using FusionAxion.Views;
 
 namespace FusionAxion
 {
@@ -13,5 +14,6 @@ namespace FusionAxion
     /// </summary>
     public partial class App : Application
     {
+
     }
 }

@@ -61,11 +61,18 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="ConnectorFusion.cs" />
+    <Compile Include="Model\DataConfigurationModel.cs" />
+    <Compile Include="Model\DataModel.cs" />
     <Compile Include="Structure.cs" />
+    <Compile Include="ViewModels\ButtonViewModel.cs" />
+    <Compile Include="ViewModels\ConfigurationViewModel.cs" />
+    <Compile Include="ViewModels\PanelFusionViewModel.cs" />
+    <Compile Include="ViewModels\ViewModelBase.cs" />
+    <Compile Include="ViewModels\ViewModelCommand.cs" />
     <Compile Include="Views\ConfigurationView.xaml.cs">
       <DependentUpon>ConfigurationView.xaml</DependentUpon>
     </Compile>
-    <Page Include="PanelFusion.xaml">
+    <Page Include="Views\PanelFusion.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -73,10 +80,10 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Configuration.cs" />
+    <Compile Include="Model\ConfigurationModel.cs" />
     <Compile Include="ControllerFusion.cs" />
     <Compile Include="Log.cs" />
-    <Compile Include="PanelFusion.xaml.cs">
+    <Compile Include="Views\PanelFusion.xaml.cs">
       <DependentUpon>PanelFusion.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
@@ -118,6 +125,8 @@
   <ItemGroup>
     <Content Include="dll\FusionClass.dll" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Images\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

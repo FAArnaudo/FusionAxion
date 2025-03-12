@@ -29,25 +29,35 @@ namespace FusionAxion
             }
         }
 
-        public void CloseConnection()
+        public bool CheckConnection(string IP)
         {
-            if (ConnectorFusion.Fusion != null)
+            bool isConnected = false;
+
+            ConnectorFusion.Fusion.Connection(IP);
+
+            if (ConnectorFusion.Fusion.ConnectionStatus())
             {
-                _ = ConnectorFusion.Fusion.Close();
-                ConnectorFusion.Fusion = null;
+                isConnected = true;
             }
+            else
+            {
+                _ = Disconect();
+            }
+
+            return isConnected;
         }
 
-        public bool CheckConnection()
+        public bool Disconect()
         {
-            bool connection = false;
-
-            if (ConnectorFusion.Fusion != null)
+            bool isClose = false;
+            if (ConnectorFusion.Fusion.Close())
             {
-                connection = true;
+                isClose = true;
             }
 
-            return connection;
+            ConnectorFusion.Fusion = null;
+
+            return isClose;
         }
     }
 }

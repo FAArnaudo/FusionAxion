@@ -23,9 +23,9 @@ namespace FusionAxion.ViewModels
         private readonly List<string> timerOptions;
         private int currentIndex = 0;
         private LogType logger;
+        private string statusMessage = "";
         private ObservableCollection<string> items;
         private string selectedItem = LogType.t_info.ToString();
-        private string errorMessage;
         private bool isViewVisible = true;
 
         // Properties
@@ -92,6 +92,15 @@ namespace FusionAxion.ViewModels
                 OnPropertyChanged(nameof(Logger));
             }
         }
+        public string StatusMessage
+        {
+            get => statusMessage;
+            set
+            {
+                statusMessage = value;
+                OnPropertyChanged(nameof(StatusMessage));
+            }
+        }
 
         public ObservableCollection<string> Items
         {
@@ -113,16 +122,6 @@ namespace FusionAxion.ViewModels
             }
         }
 
-        public string ErrorMessage
-        {
-            get => errorMessage;
-            set
-            {
-                errorMessage = value;
-                OnPropertyChanged(nameof(ErrorMessage));
-            }
-        }
-
         public bool IsViewVisible
         {
             get => isViewVisible;
@@ -138,6 +137,7 @@ namespace FusionAxion.ViewModels
         public ICommand UpCommand { get; }
         public ICommand DownCommand { get; }
         public ICommand SaveConfigurationCommand { get; }
+        public ICommand StatusMessageCommand { get; }
 
         // Constructor
         public ConfigurationViewModel()
@@ -226,20 +226,32 @@ namespace FusionAxion.ViewModels
 
             Log.Instance.SetLogType(Logger.ToString());
 
-            if (ConfigurationModel.SaveConfiguration(data))
+            if (ControllerFusion.Instance.CheckConnection(data.IP))
             {
-                Thread.CurrentPrincipal = new GenericPrincipal(new GenericIdentity(data.IP), null);
-                IsViewVisible = false;
+                if (ConfigurationModel.SaveConfiguration(data))
+                {
+
+                    IsViewVisible = false;
+                    StatusMessage = "Configuración guardada correctamente.";
+                }
+                else
+                {
+                    StatusMessage = "La configuracion no pudo ser guardada.\nIntente reiniciando.";
+                }
             }
             else
             {
-                _ = MessageBox.Show($"La configuracion no pudo ser guardada. Verifique los datos ingresados.");
+                StatusMessage = "*Conexión no establecida con el controlador Fusion\nVerifique la dirección IP.";
             }
         }
 
         private void ShowData()
         {
-            if (ConfigurationModel.ExistConfiguracion())
+            if (!ConfigurationModel.ExistConfiguracion())
+            {
+                UpdateTextBox();
+            }
+            else
             {
                 DataModel data = ConfigurationModel.GetConfiguration();
 
@@ -249,10 +261,7 @@ namespace FusionAxion.ViewModels
                 Timer = data.Timer;
                 Logger = data.Logger;
             }
-            else
-            {
-                UpdateTextBox();
-            }
+            StatusMessage = "";
         }
     }
 

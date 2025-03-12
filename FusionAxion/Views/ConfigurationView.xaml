@@ -99,20 +99,20 @@
         <!--#endregion-->
         <!--#region TIMER-->
         <TextBlock Grid.Row="3" Grid.Column="1" Text="Tiempo entre despachos"
-                   VerticalAlignment="Top" HorizontalAlignment="Left" Margin="40,25,0,0"
+                   VerticalAlignment="Top" HorizontalAlignment="Left" Margin="40,20,0,0"
                    Foreground="Black" FontSize="14" Height="18" Width="156">
         </TextBlock>
         <TextBlock Grid.Row="3" Grid.Column="1" Text="segundos"
-                   VerticalAlignment="Top" HorizontalAlignment="Left" Margin="300,25,0,0"
+                   VerticalAlignment="Top" HorizontalAlignment="Left" Margin="300,20,0,0"
                    Foreground="Black" FontSize="14" Height="18" Width="60">
         </TextBlock>
         <TextBox Grid.Row="3" Grid.Column="1" Width="320" Height="20"
-                 VerticalAlignment="Top" HorizontalAlignment="Left" Margin="40,25,0,0"
+                 VerticalAlignment="Top" HorizontalAlignment="Left" Margin="40,20,0,0"
                  Background="Transparent" BorderThickness="0,0,0,1" BorderBrush="Green"
                  IsEnabled="False"></TextBox>
         <StackPanel Grid.Row="3" Grid.Column="1"
                     Width="80" Height="20"
-                    VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0,25,100,0"
+                    VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0,20,100,0"
                     Orientation="Horizontal">
             <Button Content="▲" Name="Up" Command="{Binding UpCommand}" Width="30" />
             <TextBox x:Name="TextBoxTimer" Width="20" IsReadOnly="True"
@@ -122,21 +122,31 @@
         </StackPanel>
         <!--#endregion-->
         <!--#region LOGGER-->
+        <ComboBox>
+            <ComboBox.Resources>
+                <BooleanToVisibilityConverter x:Key="BooleanToVisibility"></BooleanToVisibilityConverter>
+            </ComboBox.Resources>
+        </ComboBox>
         <ComboBox Grid.Row="3" Grid.Column="1" x:Name="ComboBoxLOG"
                   Width="80" Height="22"
-                  VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10,40,0,0"
-                  ItemsSource="{Binding Items}" SelectedItem="{Binding SelectedItem}" Visibility="Hidden">
+                  VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10,20,0,0"
+                  ItemsSource="{Binding Items}" SelectedItem="{Binding SelectedItem}"
+                  Visibility="Hidden">
         </ComboBox>
         <!--#endregion-->
         <!--#endregion-->
         <!--#region BUTTON INIT-->
         <Button Grid.Row="3" Grid.Column="1" Name="BtnInit"
                 Height="30" Width="160"
-                VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,40,0,0"
+                VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,20,0,0"
                 Background="#007ED6" BorderBrush="#007ED6"
                 Command="{Binding SaveConfigurationCommand}">
             <TextBlock Text="Guardar Configuración" Foreground="White" FontSize="15"></TextBlock>
         </Button>
         <!--#endregion-->
+        <TextBlock Grid.Row="3" Grid.Column="1" Name="LMessage"
+               Height="40" Width="235"
+               VerticalAlignment="Bottom" HorizontalAlignment="Center" Margin="0,90,0,0"
+               Text="{Binding StatusMessage}" Foreground="Red"></TextBlock>
     </Grid>
 </Window>

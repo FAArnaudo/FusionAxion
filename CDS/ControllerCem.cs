@@ -46,11 +46,11 @@ namespace CDS
                     {
                         string mangueraPrecioUnitario = manguera.Producto.PrecioUnitario.ToString(CultureInfo.InvariantCulture);
                         string rows = string.Format("{0},{1},{2},{3},'{4}'",
-                            surtidor.ID,
-                            manguera.ID,
-                            manguera.Producto.ID,
-                            mangueraPrecioUnitario,
-                            manguera.Producto.Descripcion);
+                                                     surtidor.ID,
+                                                     manguera.ID,
+                                                     manguera.Producto.ID,
+                                                     mangueraPrecioUnitario,
+                                                     manguera.Producto.Descripcion);
 
                         DataTable tablaSurtidores = ConnectorSQLite.Instance.ExecuteSelectQuery($"SELECT * " +
                                                                                                 $"FROM Surtidores " +
@@ -59,13 +59,14 @@ namespace CDS
                         _ = tablaSurtidores.Rows.Count == 0
                             ? ConnectorSQLite.Instance.ExecuteNonQuery(string.Format("INSERT INTO Surtidores ({0}) VALUES ({1})", campos, rows))
                             : ConnectorSQLite.Instance.ExecuteNonQuery(string.Format("UPDATE Surtidores " +
-                                                                                   "SET Producto = ('{0}'), Precio = ('{1}'), DescProd = ('{2}') " +
-                                                                                   "WHERE IdSurtidor = ({3}) AND Manguera = ('{4}')",
-                                                                                   manguera.Producto.ID,
-                                                                                   mangueraPrecioUnitario,
-                                                                                   manguera.Producto.Descripcion,
-                                                                                   surtidor.ID,
-                                                                                   manguera.ID));
+                                                                                     "SET Producto = ('{0}'), Precio = ('{1}'), DescProd = ('{2}') " +
+                                                                                     "WHERE IdSurtidor = ({3}) AND Manguera = ('{4}')",
+                                                                                      manguera.Producto.ID,
+                                                                                      mangueraPrecioUnitario,
+                                                                                      manguera.Producto.Descripcion,
+                                                                                      surtidor.ID,
+                                                                                      manguera.ID));
+
                         Log.Instance.WriteLog(string.Format("SURTIDOR: ({0}) MANGUERA: ({1}) PRODUCTO: ({2})",
                                                             surtidor.ID, manguera.ID, manguera.Producto.Descripcion), LogType.t_info);
                     }
@@ -89,14 +90,14 @@ namespace CDS
                     _ = tablaProductos.Rows.Count == 0
                         ? ConnectorSQLite.Instance.ExecuteNonQuery(string.Format("INSERT INTO Productos ({0}) VALUES ({1})", campos, rows))
                         : ConnectorSQLite.Instance.ExecuteNonQuery(string.Format("UPDATE Productos " +
-                                                                               "SET producto = ('{0}'), precio = ({1}) " +
-                                                                               "WHERE id_producto = ({2})",
-                                                                               producto.Descripcion,
-                                                                               precioUnitario,
-                                                                               producto.ID));
+                                                                                 "SET producto = ('{0}'), precio = ({1}) " +
+                                                                                 "WHERE id_producto = ({2})",
+                                                                                  producto.Descripcion,
+                                                                                  precioUnitario,
+                                                                                  producto.ID));
 
                     Log.Instance.WriteLog(string.Format("PRODUCTO: ({0}) DESCRIPCION: ({1}) PRECIO: ({2})",
-                                                            producto.ID, producto.Descripcion, precioUnitario), LogType.t_info);
+                                                         producto.ID, producto.Descripcion, precioUnitario), LogType.t_info);
                 }
                 Log.Instance.WriteLog("\n", LogType.t_info);
 
@@ -112,10 +113,17 @@ namespace CDS
                                                  tanqueCapacidadMaxima);
 
                     DataTable tablaTanques = ConnectorSQLite.Instance.ExecuteSelectQuery("SELECT * " +
-                                                                                           "FROM Tanques " +
-                                                                                          $"WHERE id_tanque = {tanque.ID}");
+                                                                                         "FROM Tanques " +
+                                                                                        $"WHERE id_tanque = {tanque.ID}");
 
-                    _ = tablaTanques.Rows.Count == 0 ? ConnectorSQLite.Instance.ExecuteNonQuery(string.Format("INSERT INTO Tanques ({0}) VALUES ({1})", campos, rows)) : ConnectorSQLite.Instance.ExecuteNonQuery(string.Format("UPDATE Tanques " + "SET volumen_actual = ('{0}'), capacidad_maxima = ({1}) " + "WHERE id_tanque = ({2})", tanqueVolumenDeProducto, tanqueCapacidadMaxima, tanque.ID));
+                    _ = tablaTanques.Rows.Count == 0
+                        ? ConnectorSQLite.Instance.ExecuteNonQuery(string.Format("INSERT INTO Tanques ({0}) VALUES ({1})", campos, rows))
+                        : ConnectorSQLite.Instance.ExecuteNonQuery(string.Format("UPDATE Tanques " +
+                                                                                 "SET volumen_actual = ('{0}'), capacidad_maxima = ({1}) " +
+                                                                                 "WHERE id_tanque = ({2})",
+                                                                                  tanqueVolumenDeProducto,
+                                                                                  tanqueCapacidadMaxima,
+                                                                                  tanque.ID));
                 }
                 Log.Instance.WriteLog("\n", LogType.t_info);
             }
@@ -157,6 +165,7 @@ namespace CDS
                                                                                 tanqueVolumenDeProducto,
                                                                                 tanqueCapacidadMaxima,
                                                                                 DateTime.Now.ToString("dd-MM-yyyy HH:mm:ss"), tanque.ID));
+
                     Log.Instance.WriteLog(string.Format("TANQUE: ({0}) CAPACIDAD MAXIMA: ({1}) VOLUMEN ACTUAL: ({2}))",
                                                          tanque.ID, tanqueCapacidadMaxima, tanqueVolumenDeProducto), LogType.t_info);
                 }
@@ -230,18 +239,18 @@ namespace CDS
 
                         string campos = "id,surtidor,manguera,producto,PPU,volumen,monto,descripcion,facturado,YPFruta,despacho_pedido,fecha";
                         string row = string.Format("{0},{1},{2},{3},{4},{5},{6},'{7}',{8},{9},{10},'{11}'",
-                                despacho.IdDespacho,
-                                despacho.IdSurtidor,
-                                despacho.IdManguera,
-                                despacho.IdProducto,
-                                despacho.PPU.ToString(CultureInfo.InvariantCulture),
-                                despacho.Volumen.ToString(CultureInfo.InvariantCulture),
-                                despacho.Monto.ToString(CultureInfo.InvariantCulture),
-                                despacho.Producto,
-                                despacho.VentaFacturada,
-                                YPFRutaContado,
-                                0,
-                                DateTime.Now.ToString("dd-MM-yyyy HH:mm:ss"));
+                                                    despacho.IdDespacho,
+                                                    despacho.IdSurtidor,
+                                                    despacho.IdManguera,
+                                                    despacho.IdProducto,
+                                                    despacho.PPU.ToString(CultureInfo.InvariantCulture),
+                                                    despacho.Volumen.ToString(CultureInfo.InvariantCulture),
+                                                    despacho.Monto.ToString(CultureInfo.InvariantCulture),
+                                                    despacho.Producto,
+                                                    despacho.VentaFacturada,
+                                                    YPFRutaContado,
+                                                    0,
+                                                    DateTime.Now.ToString("dd-MM-yyyy HH:mm:ss"));
 
                         _ = ConnectorSQLite.Instance.ExecuteNonQuery(string.Format("INSERT INTO Despachos ({0}) VALUES ({1})", campos, row));
 
@@ -455,6 +464,7 @@ namespace CDS
             if (sizeTable >= maxLimit)
             {
                 string deleteQuery = $"DELETE FROM Cierres WHERE id IN (SELECT id FROM Cierres ORDER BY id ASC LIMIT {limit})";
+
                 _ = ConnectorSQLite.Instance.ExecuteNonQuery(deleteQuery);
 
                 deleteQuery = $"DELETE FROM CierresPorManguera " +
@@ -463,10 +473,12 @@ namespace CDS
                                   $"FROM CierresPorManguera " +
                                   $"ORDER BY id ASC " +
                                   $"LIMIT {limit * Station.Instance.NumeroDeSurtidores * Station.Instance.NumeroDeProductos})";
+
                 _ = ConnectorSQLite.Instance.ExecuteNonQuery(deleteQuery);
 
                 deleteQuery = $"DELETE FROM CierresPorProducto " +
                               $"WHERE id IN (SELECT id FROM CierresPorProducto ORDER BY id ASC LIMIT {limit * Station.Instance.NumeroDeProductos})";
+
                 _ = ConnectorSQLite.Instance.ExecuteNonQuery(deleteQuery);
             }
         }
@@ -488,17 +500,11 @@ namespace CDS
     public class Protocol16 : IProtocolCommand
     {
         public byte[] ConfigureStationCommand => new byte[] { 0x65 };
-
         public byte[] TanksStockCommand => new byte[] { 0x68 };
-
         public byte[] DespachoCommand => new byte[] { 0x70 };
-
         public byte[] CierreDeTurnoCommand => new byte[] { 0x07 };
-
         public byte[] CierreAnteriorCommand => new byte[] { 0x0B };
-
         public byte[] TurnoActualCommand => new byte[] { 0x08 };
-
         public byte[] PoleoEnLineaCommand => new byte[] { 0x00 };
 
         public int GetProtocol()
@@ -510,17 +516,11 @@ namespace CDS
     public class Protocol32 : IProtocolCommand
     {
         public byte[] ConfigureStationCommand => new byte[] { 0xB5 };
-
         public byte[] TanksStockCommand => new byte[] { 0xB8 };
-
         public byte[] DespachoCommand => new byte[] { 0xC0 };
-
         public byte[] CierreDeTurnoCommand => new byte[] { 0x07 };
-
         public byte[] CierreAnteriorCommand => new byte[] { 0x0B };
-
         public byte[] TurnoActualCommand => new byte[] { 0x08 };
-
         public byte[] PoleoEnLineaCommand => new byte[] { 0x00 };
 
         public int GetProtocol()

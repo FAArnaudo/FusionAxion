@@ -38,7 +38,6 @@ namespace FusionAxion.ViewModels
                 OnPropertyChanged(nameof(RazonSocial));
             }
         }
-
         public string RutaProyNuevo
         {
             get => rutaProyNuevo;
@@ -48,7 +47,6 @@ namespace FusionAxion.ViewModels
                 OnPropertyChanged(nameof(RutaProyNuevo));
             }
         }
-
         public string IP
         {
             get => ip;
@@ -58,7 +56,6 @@ namespace FusionAxion.ViewModels
                 OnPropertyChanged(nameof(IP));
             }
         }
-
         public string Timer
         {
             get => timer;
@@ -68,7 +65,6 @@ namespace FusionAxion.ViewModels
                 OnPropertyChanged(nameof(Timer));
             }
         }
-
         public string Logger
         {
             get => logger.ToString();
@@ -101,7 +97,6 @@ namespace FusionAxion.ViewModels
                 OnPropertyChanged(nameof(StatusMessage));
             }
         }
-
         public ObservableCollection<string> Items
         {
             get => items;
@@ -111,7 +106,6 @@ namespace FusionAxion.ViewModels
                 OnPropertyChanged(nameof(Items));
             }
         }
-
         public string SelectedItem
         {
             get => selectedItem;
@@ -121,7 +115,6 @@ namespace FusionAxion.ViewModels
                 OnPropertyChanged(nameof(SelectedItem));
             }
         }
-
         public bool IsViewVisible
         {
             get => isViewVisible;

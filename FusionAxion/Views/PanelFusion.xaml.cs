@@ -26,7 +26,7 @@ namespace FusionAxion.Views
         public PanelFusion()
         {
             InitializeComponent();
-            Loaded += PanelFusion_Loaded;
+            //Loaded += PanelFusion_Loaded;
         }
 
         private void PanelFusion_Loaded(object sender, RoutedEventArgs e)
@@ -47,11 +47,6 @@ namespace FusionAxion.Views
         {
             Show();
             configurationView.Close();
-        }
-
-        private void BtnCerrar_Click(object sender, RoutedEventArgs e)
-        {
-            Application.Current.Shutdown();
         }
 
         private void BtnMinimizar_Click(object sender, RoutedEventArgs e)

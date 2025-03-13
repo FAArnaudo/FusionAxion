@@ -5,6 +5,8 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Input;
 
 namespace FusionAxion.ViewModels
 {
@@ -12,7 +14,9 @@ namespace FusionAxion.ViewModels
     {
         // Fields
         private DataModel currentData;
-        private ObservableCollection<ButtonViewModel> buttons;
+        private ObservableCollection<ButtonModel> surtidoresButton;
+        private ObservableCollection<ButtonModel> tanquesButtons;
+        private LabelModel labelConnection;
 
         // Properties
         public DataModel CurrentData
@@ -24,59 +28,120 @@ namespace FusionAxion.ViewModels
                 OnPropertyChanged(nameof(CurrentData));
             }
         }
-
-        public ObservableCollection<ButtonViewModel> Buttons
+        public ObservableCollection<ButtonModel> SurtidoresButton
         {
-            get => buttons;
+            get => surtidoresButton;
             set
             {
-                buttons = value;
-                OnPropertyChanged(nameof(Buttons));
+                surtidoresButton = value;
+                OnPropertyChanged(nameof(SurtidoresButton));
             }
         }
+        public ObservableCollection<ButtonModel> TanquesButton
+        {
+            get => tanquesButtons;
+            set
+            {
+                tanquesButtons = value;
+                OnPropertyChanged(nameof(TanquesButton));
+            }
+        }
+        public LabelModel LabelConnection
+        {
+            get
+            {
+                if (labelConnection == null)
+                {
+                    labelConnection = new LabelModel();
+                }
+                return labelConnection;
+            }
+            set
+            {
+                labelConnection = value;
+                OnPropertyChanged(nameof(LabelConnection));
+            }
+        }
+
+        // Commands
+        public ICommand CloseCommand { get; }
 
         // Constructor
         public PanelFusionViewModel()
         {
             LoadCurrentData();
-            ConfigureButtons();
+            CloseCommand = new ViewModelCommand(ExecuteCloseCommand);
+        }
+
+        private void ExecuteCloseCommand(object obj)
+        {
+            while (!ControllerFusion.Instance.Disconect()) { }
+
+            Application.Current.Shutdown();
         }
 
         private void LoadCurrentData()
         {
-            if (ConfigurationModel.ExistConfiguracion())
+            //Obtiene los parametros de configuracion.
+            CurrentData = ConfigurationModel.GetConfiguration();
+            //Verifica la conexion y actualiza el label
+            UpdateLabelConnection();
+            //Obtiene la configuracion de la estacion
+            ControllerFusion.Instance.ConfigurarEstacion();
+            //Genera los surtidores
+            GenerateSurtidoresButton(Station.Instance.NumeroDeSurtidores);
+            //Genera los tanques
+            GenerateTanquesButton(Station.Instance.NumeroDeTanques);
+        }
+
+        private void GenerateSurtidoresButton(int count)
+        {
+            SurtidoresButton = new ObservableCollection<ButtonModel>();
+
+            for (int i = 1; i <= count; i++)
             {
-                CurrentData = ConfigurationModel.GetConfiguration();
+                SurtidoresButton.Add(new ButtonModel
+                {
+                    Label = $"Surtidor {i}",
+                    Command = new ViewModelCommand(ExecuteButtonCommand),
+                });
             }
         }
 
-        private void ConfigureButtons()
+        private void GenerateTanquesButton(int count)
         {
-            Buttons = new ObservableCollection<ButtonViewModel>();
+            TanquesButton = new ObservableCollection<ButtonModel>();
 
-            int MAX_ROW = 4;
-            int MAX_COLUMNS = 8;
-            int buttonNumber = 1;
-
-            for (int row = 0; row < MAX_ROW; row++)
+            for (int i = 1; i <= count; i++)
             {
-                for (int column = 0; column < MAX_COLUMNS; column++)
+                TanquesButton.Add(new ButtonModel
                 {
-                    Buttons.Add(new ButtonViewModel
-                    {
-                        ButtonText = $"Botón {buttonNumber}",
-                        ButtonCommand = new ViewModelCommand(ExecuteButtonCommand),
-                        RowIndex = row,
-                        ColumnIndex = column
-                    });
-                    buttonNumber++;
-                }
+                    Label = $"Tanque {i}",
+                    Command = new ViewModelCommand(ExecuteButtonCommand),
+                });
+            }
+        }
+
+        private void UpdateLabelConnection()
+        {
+            if (ControllerFusion.Instance.CheckConnection(CurrentData.IP))
+            {
+                LabelConnection.Label = "Controlador\nOnLine";
+                LabelConnection.Background = "#007816";
+            }
+            else
+            {
+                LabelConnection.Label = "Controlador\nOffLine";
+                LabelConnection.Background = "#b00000";
             }
         }
 
         private void ExecuteButtonCommand(object obj)
         {
-            throw new NotImplementedException();
+            if (obj is ButtonModel button)
+            {
+                _ = MessageBox.Show($"Botón {button.Label} presionado");
+            }
         }
     }
 }

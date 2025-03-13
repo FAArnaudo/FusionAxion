@@ -13,6 +13,7 @@
     <Window.DataContext>
         <viewModel:PanelFusionViewModel></viewModel:PanelFusionViewModel>
     </Window.DataContext>
+    
     <Grid x:Name="GMain">
         <!--#region GRID TOP-->
         <Grid Width="780" Height="30" Background="#2C3E50"
@@ -22,7 +23,7 @@
                     Width="35" Height="30"
                     HorizontalAlignment="Right" VerticalAlignment="Center"
                     Background="#1B1448" BorderBrush="#007ED6"
-                    Style="{DynamicResource ButtonStyle}" Click="BtnCerrar_Click">
+                    Style="{DynamicResource ButtonStyle}" Command="{Binding CloseCommand}">
                 <TextBlock Text="X" Foreground="White" FontSize="20"></TextBlock>
             </Button>
             <Button Grid.Row="0" Grid.Column="2" Name="BtnMinimizar"
@@ -47,8 +48,12 @@
         <Grid Width="140" Height="500" Background="#34495E"
               HorizontalAlignment="Left" VerticalAlignment="Bottom">
             <StackPanel x:Name="SPPanel">
+                <!--#region TEXT BLOCK IP-->
                 <TextBlock Width="120" Height="25" Foreground="#ECF0F1"
-                           Text="{Binding CurrentData.IP}"></TextBlock>
+                           HorizontalAlignment="Center" Margin="0,8,0,0"
+                           Text="{Binding CurrentData.IP}"
+                           FontSize="18" TextAlignment="Center"></TextBlock>
+                <!--#endregion-->
                 <!--#region BUTTON CAMBIAR CONFIGURACION-->
                 <Button Name="BtnCambiarConfig"
                     Width="120" Height="50"
@@ -78,8 +83,8 @@
                 <!--#region LABEL STATE-->
                 <Label x:Name="LStatus"
                    Width="120" Height="50"
-                   Background="#BDC3C7" Margin="0,8,0,0"
-                   Content="Iniciando..." Foreground="#ECF0F1" FontSize="15"
+                   Background="{Binding LabelConnection.Background}" Margin="0,8,0,0"
+                   Content="{Binding LabelConnection.Label}" Foreground="#ECF0F1" FontSize="15"
                    HorizontalContentAlignment="Center" VerticalContentAlignment="Center"></Label>
                 <!--#endregion-->
             </StackPanel>
@@ -90,28 +95,44 @@
               Height="500" Width="640"
               VerticalAlignment="Bottom" HorizontalAlignment="Right"
               Background="#ECF0F1">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="80"></ColumnDefinition>
-                <ColumnDefinition Width="80"></ColumnDefinition>
-                <ColumnDefinition Width="80"></ColumnDefinition>
-                <ColumnDefinition Width="80"></ColumnDefinition>
-                <ColumnDefinition Width="80"></ColumnDefinition>
-                <ColumnDefinition Width="80"></ColumnDefinition>
-                <ColumnDefinition Width="80"></ColumnDefinition>
-                <ColumnDefinition Width="80"></ColumnDefinition>
-            </Grid.ColumnDefinitions>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="100"></RowDefinition>
-                <RowDefinition Height="100"></RowDefinition>
-                <RowDefinition Height="100"></RowDefinition>
-                <RowDefinition Height="100"></RowDefinition>
-                <RowDefinition Height="100"></RowDefinition>
-            </Grid.RowDefinitions>
-            <ItemsControl ItemsSource="{Binding Buttons}">
+            <ItemsControl ItemsSource="{Binding SurtidoresButton}"
+                          Height="400"
+                          VerticalAlignment="Top">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <UniformGrid Rows="4" Columns="8"/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <Button Content="{Binding ButtonText}" Command="{Binding ButtonCommand}" Margin="5"
-                                Grid.Row="{Binding RowIndex}" Grid.Column="{Binding ColumnIndex}" />
+                        <Button Content="{Binding Label}"
+                                Command="{Binding Command}"
+                                CommandParameter="{Binding}"
+                                Height="{Binding Height}" Width="{Binding Width}"
+                                Background="{Binding Background}" Foreground="White"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"/>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+            <!-- Fila Adicional -->
+            <ItemsControl ItemsSource="{Binding TanquesButton}"
+                          Height="100"
+                          VerticalAlignment="Bottom">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <UniformGrid Rows="1" Columns="8"/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Button Content="{Binding Label}"
+                                Command="{Binding Command}"
+                                CommandParameter="{Binding}"
+                                Height="{Binding Height}" Width="{Binding Width}"
+                                Background="{Binding Background}" Foreground="White"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"/>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>

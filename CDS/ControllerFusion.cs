@@ -492,6 +492,7 @@ namespace CDS
             return double.TryParse(value, NumberStyles.Any, culture, out double result) ? result : result;
         }
     }
+
     public interface ICommunication
     {
 

@@ -13,7 +13,7 @@ namespace FusionAxion.Model
         // Properties
         public string Label { get; set; } = "";
         public int Height { get; set; } = 90;
-        public int Width { get; set; } = 60;
+        public int Width { get; set; } = 70;
         public string Background { get; set; } = "#123456";
         public ICommand Command { get; set; }
 

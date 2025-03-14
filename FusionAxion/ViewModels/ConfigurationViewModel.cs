@@ -22,7 +22,7 @@ namespace FusionAxion.ViewModels
         private string timer;
         private readonly List<string> timerOptions;
         private int currentIndex = 0;
-        private LogType logger;
+        private string logger = LogType.t_info.ToString();
         private string statusMessage = "";
         private ObservableCollection<string> items;
         private string selectedItem = LogType.t_info.ToString();
@@ -67,24 +67,10 @@ namespace FusionAxion.ViewModels
         }
         public string Logger
         {
-            get => logger.ToString();
+            get => logger;
             set
             {
-                switch (value.ToString())
-                {
-                    case "t_debug":
-                        logger = LogType.t_debug;
-                        break;
-                    case "t_info":
-                        logger = LogType.t_info;
-                        break;
-                    case "t_error":
-                        logger = LogType.t_error;
-                        break;
-                    default:
-                        logger = LogType.t_info;
-                        break;
-                }
+                logger = value;
                 OnPropertyChanged(nameof(Logger));
             }
         }
@@ -104,15 +90,6 @@ namespace FusionAxion.ViewModels
             {
                 items = value;
                 OnPropertyChanged(nameof(Items));
-            }
-        }
-        public string SelectedItem
-        {
-            get => selectedItem;
-            set
-            {
-                selectedItem = value;
-                OnPropertyChanged(nameof(SelectedItem));
             }
         }
         public bool IsViewVisible
@@ -136,12 +113,7 @@ namespace FusionAxion.ViewModels
         public ConfigurationViewModel()
         {
             timerOptions = new List<string> { "2", "4", "6", "8", "10", "12" };
-            Items = new ObservableCollection<string>
-            {
-                "t_debug",
-                "t_info",
-                "t_error"
-            };
+            Items = new ObservableCollection<string> { "t_debug", "t_info", "t_error" };
 
             BuscarCommand = new ViewModelCommand(ExecuteBuscarCommand);
             UpCommand = new ViewModelCommand(ExecuteUpCommand);
@@ -217,7 +189,7 @@ namespace FusionAxion.ViewModels
                 Logger = Logger
             };
 
-            Log.Instance.SetLogType(Logger.ToString());
+            Log.Instance.SetLogType(Logger);
 
             if (ControllerFusion.Instance.CheckConnection(data.IP))
             {

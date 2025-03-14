@@ -22,31 +22,9 @@ namespace FusionAxion.Views
     /// </summary>
     public partial class PanelFusion : Window
     {
-        private ConfigurationView configurationView;
         public PanelFusion()
         {
             InitializeComponent();
-            //Loaded += PanelFusion_Loaded;
-        }
-
-        private void PanelFusion_Loaded(object sender, RoutedEventArgs e)
-        {
-            if (!ConfigurationModel.ExistConfiguracion())
-            {
-                configurationView = new ConfigurationView
-                {
-                    Owner = this
-                };
-                configurationView.Show();
-                configurationView.IsVisibleChanged += ConfigurationView_IsVisibleChanged;
-                Hide();
-            }
-        }
-
-        private void ConfigurationView_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
-        {
-            Show();
-            configurationView.Close();
         }
 
         private void BtnMinimizar_Click(object sender, RoutedEventArgs e)

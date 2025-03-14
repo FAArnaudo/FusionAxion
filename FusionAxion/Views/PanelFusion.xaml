@@ -95,6 +95,7 @@
               Height="500" Width="640"
               VerticalAlignment="Bottom" HorizontalAlignment="Right"
               Background="#ECF0F1">
+            <!--#region SURTIDORES-->
             <ItemsControl ItemsSource="{Binding SurtidoresButton}"
                           Height="400"
                           VerticalAlignment="Top">
@@ -115,7 +116,8 @@
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
-            <!-- Fila Adicional -->
+            <!--#endregion-->
+            <!--#region TANQUES-->
             <ItemsControl ItemsSource="{Binding TanquesButton}"
                           Height="100"
                           VerticalAlignment="Bottom">
@@ -136,6 +138,7 @@
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
+            <!--#endregion-->
         </Grid>
         <!--#endregion-->
     </Grid>

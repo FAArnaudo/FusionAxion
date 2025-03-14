@@ -130,8 +130,8 @@
         <ComboBox Grid.Row="3" Grid.Column="1" x:Name="ComboBoxLOG"
                   Width="80" Height="22"
                   VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10,20,0,0"
-                  ItemsSource="{Binding Items}" SelectedItem="{Binding SelectedItem}"
-                  Visibility="Hidden">
+                  ItemsSource="{Binding Items}" SelectedItem="{Binding Logger, Mode=TwoWay}" 
+                  Visibility="Hidden" >
         </ComboBox>
         <!--#endregion-->
         <!--#endregion-->

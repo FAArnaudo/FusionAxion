@@ -1,4 +1,5 @@
 ﻿using FusionAxion.Model;
+using FusionAxion.Views;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -17,6 +18,7 @@ namespace FusionAxion.ViewModels
         private ObservableCollection<ButtonModel> surtidoresButton;
         private ObservableCollection<ButtonModel> tanquesButtons;
         private LabelModel labelConnection;
+        private ConfigurationView configurationView;
 
         // Properties
         public DataModel CurrentData

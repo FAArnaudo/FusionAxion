@@ -29,6 +29,21 @@ namespace FusionAxion
             set => cFusion = value;
         }
 
+        public Fusion GetObjectFusion()
+        {
+            if (cFusion == null)
+            {
+                cFusion = new Fusion();
+            }
+
+            return cFusion;
+        }
+
+        public void ResetFusionObject()
+        {
+            cFusion = null;
+        }
+
         public void ComandoConfiguracionDeLaEstacion()
         {
             Station estacion = Station.Instance;

@@ -56,7 +56,7 @@ namespace FusionAxion
                 isClose = true;
             }
 
-            ConnectorFusion.Fusion = null;
+            ConnectorFusion.ResetFusionObject();
 
             return isClose;
         }

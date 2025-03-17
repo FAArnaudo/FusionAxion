@@ -19,6 +19,7 @@ namespace FusionAxion.ViewModels
         private ObservableCollection<ButtonModel> tanquesButtons;
         private LabelModel labelConnection;
         private ConfigurationView configurationView;
+        private bool isViewVisible = true;
 
         // Properties
         public DataModel CurrentData
@@ -64,15 +65,43 @@ namespace FusionAxion.ViewModels
                 OnPropertyChanged(nameof(LabelConnection));
             }
         }
+        public bool IsViewVisible
+        {
+            get => isViewVisible;
+            set
+            {
+                isViewVisible = value;
+                OnPropertyChanged(nameof(IsViewVisible));
+            }
+        }
 
         // Commands
         public ICommand CloseCommand { get; }
+        public ICommand CambiarConfigCommand { get; }
 
         // Constructor
         public PanelFusionViewModel()
         {
             LoadCurrentData();
             CloseCommand = new ViewModelCommand(ExecuteCloseCommand);
+            CambiarConfigCommand = new ViewModelCommand(ExecuteCambiarConfigCommand);
+        }
+
+        private void ExecuteCambiarConfigCommand(object obj)
+        {
+            configurationView = new ConfigurationView
+            {
+                Owner = configurationView
+            };
+            configurationView.Show();
+            configurationView.IsVisibleChanged += ConfigurationView_IsVisibleChanged;
+            IsViewVisible = false;
+        }
+
+        private void ConfigurationView_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            IsViewVisible = true;
+            configurationView.Close();
         }
 
         private void ExecuteCloseCommand(object obj)

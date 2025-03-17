@@ -122,16 +122,11 @@
         </StackPanel>
         <!--#endregion-->
         <!--#region LOGGER-->
-        <ComboBox>
-            <ComboBox.Resources>
-                <BooleanToVisibilityConverter x:Key="BooleanToVisibility"></BooleanToVisibilityConverter>
-            </ComboBox.Resources>
-        </ComboBox>
         <ComboBox Grid.Row="3" Grid.Column="1" x:Name="ComboBoxLOG"
                   Width="80" Height="22"
                   VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10,20,0,0"
                   ItemsSource="{Binding Items}" SelectedItem="{Binding Logger, Mode=TwoWay}" 
-                  Visibility="Hidden" >
+                  Visibility="Hidden">
         </ComboBox>
         <!--#endregion-->
         <!--#endregion-->
@@ -145,8 +140,8 @@
         </Button>
         <!--#endregion-->
         <TextBlock Grid.Row="3" Grid.Column="1" Name="LMessage"
-               Height="40" Width="235"
-               VerticalAlignment="Bottom" HorizontalAlignment="Center" Margin="0,90,0,0"
-               Text="{Binding StatusMessage}" Foreground="Red"></TextBlock>
+                   Height="40" Width="235"
+                   VerticalAlignment="Bottom" HorizontalAlignment="Center" Margin="0,90,0,0"
+                   Text="{Binding StatusMessage}" Foreground="Red"></TextBlock>
     </Grid>
 </Window>

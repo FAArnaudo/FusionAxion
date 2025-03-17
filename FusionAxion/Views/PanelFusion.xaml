@@ -13,7 +13,15 @@
     <Window.DataContext>
         <viewModel:PanelFusionViewModel></viewModel:PanelFusionViewModel>
     </Window.DataContext>
-    
+
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibility"></BooleanToVisibilityConverter>
+    </Window.Resources>
+
+    <Window.Visibility>
+        <Binding Path="IsViewVisible" Mode="TwoWay" Converter="{StaticResource BooleanToVisibility}"></Binding>
+    </Window.Visibility>
+
     <Grid x:Name="GMain">
         <!--#region GRID TOP-->
         <Grid Width="780" Height="30" Background="#2C3E50"
@@ -56,10 +64,11 @@
                 <!--#endregion-->
                 <!--#region BUTTON CAMBIAR CONFIGURACION-->
                 <Button Name="BtnCambiarConfig"
-                    Width="120" Height="50"
-                    HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,8,0,0"
-                    Background="#34495E" BorderBrush="#5D6D7E"
-                    Style="{DynamicResource ButtonStyle}">
+                        Width="120" Height="50"
+                        HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,8,0,0"
+                        Background="#34495E" BorderBrush="#5D6D7E"
+                        Style="{DynamicResource ButtonStyle}"
+                        Command="{Binding}">
                     <TextBlock Foreground="#ECF0F1" FontSize="15">
                         Cambiar
                         <LineBreak/>

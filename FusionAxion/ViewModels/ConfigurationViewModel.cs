@@ -25,7 +25,6 @@ namespace FusionAxion.ViewModels
         private string logger = LogType.t_info.ToString();
         private string statusMessage = "";
         private ObservableCollection<string> items;
-        private string selectedItem = LogType.t_info.ToString();
         private bool isViewVisible = true;
 
         // Properties

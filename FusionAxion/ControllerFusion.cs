@@ -30,11 +30,28 @@ namespace FusionAxion
             }
         }
 
-        public bool CheckConnection(string IP)
+        public void Connect(string IP)
+        {
+            ConnectorFusion.Fusion.Connection(IP);
+        }
+
+        public bool Disconect()
+        {
+            bool isClose = false;
+
+            if (ConnectorFusion.Fusion.Close())
+            {
+                isClose = true;
+
+                ConnectorFusion.ResetFusionObject();
+            }
+
+            return isClose;
+        }
+
+        public bool CheckConnection()
         {
             bool isConnected = false;
-
-            ConnectorFusion.Fusion.Connection(IP);
 
             if (ConnectorFusion.Fusion.ConnectionStatus())
             {
@@ -46,19 +63,6 @@ namespace FusionAxion
             }
 
             return isConnected;
-        }
-
-        public bool Disconect()
-        {
-            bool isClose = false;
-            if (ConnectorFusion.Fusion.Close())
-            {
-                isClose = true;
-            }
-
-            ConnectorFusion.ResetFusionObject();
-
-            return isClose;
         }
 
         public void ConfigurarEstacion()
@@ -154,10 +158,10 @@ namespace FusionAxion
 
                     Log.Instance.WriteLog(string.Format("TANQUE: ({0}))", tanque.ID), LogType.t_info);
                 }
-                Log.Instance.WriteLog("\n", LogType.t_info);
             }
             catch (Exception e)
             {
+                Log.Instance.WriteLog($"Error en el metodo ConfigurarEstacion.\n\tExcepcion: {e.Message}.\n", LogType.t_error);
                 throw new Exception($"Error en el metodo ConfigurarEstacion.\n\tExcepcion: {e.Message}");
             }
         }

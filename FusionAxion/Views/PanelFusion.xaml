@@ -7,7 +7,7 @@
         xmlns:viewModel="clr-namespace:FusionAxion.ViewModels"
         mc:Ignorable="d"
         WindowStyle="None"
-        Title="Controlador de Surtidores" Height="530" Width="780"
+        Title="Controlador de Surtidores" Height="478" Width="780"
         ResizeMode="CanMinimize" MouseDown="Window_MouseDown">
 
     <Window.DataContext>
@@ -53,7 +53,7 @@
         </Grid>
         <!--#endregion-->
         <!--#region GRID PANEL-->
-        <Grid Width="140" Height="500" Background="#34495E"
+        <Grid Width="140" Height="448" Background="#34495E"
               HorizontalAlignment="Left" VerticalAlignment="Bottom">
             <StackPanel x:Name="SPPanel">
                 <!--#region TEXT BLOCK IP-->
@@ -68,11 +68,59 @@
                         HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,8,0,0"
                         Background="#34495E" BorderBrush="#5D6D7E"
                         Style="{DynamicResource ButtonStyle}"
-                        Command="{Binding}">
+                        Command="{Binding CambiarConfigCommand}">
                     <TextBlock Foreground="#ECF0F1" FontSize="15">
                         Cambiar
                         <LineBreak/>
                         Configuración
+                    </TextBlock>
+                </Button>
+                <!--#endregion-->
+                <!--#region BUTTON DESPACHOS-->
+                <Button Name="Despachos"
+                        Width="120" Height="50"
+                        HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,8,0,0"
+                        Background="#34495E" BorderBrush="#5D6D7E"
+                        Style="{DynamicResource ButtonStyle}"
+                        Command="{Binding}">
+                    <TextBlock Foreground="#ECF0F1" FontSize="15">
+                        Despachos
+                    </TextBlock>
+                </Button>
+                <!--#endregion-->
+                <!--#region BUTTON SURTIDORES-->
+                <Button Name="Surtidores"
+                        Width="120" Height="50"
+                        HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,8,0,0"
+                        Background="#34495E" BorderBrush="#5D6D7E"
+                        Style="{DynamicResource ButtonStyle}"
+                        Command="{Binding}">
+                    <TextBlock Foreground="#ECF0F1" FontSize="15">
+                        Surtidores
+                    </TextBlock>
+                </Button>
+                <!--#endregion-->
+                <!--#region BUTTON TANQUES-->
+                <Button Name="Tanques"
+                        Width="120" Height="50"
+                        HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,8,0,0"
+                        Background="#34495E" BorderBrush="#5D6D7E"
+                        Style="{DynamicResource ButtonStyle}"
+                        Command="{Binding}">
+                    <TextBlock Foreground="#ECF0F1" FontSize="15">
+                        Tanques
+                    </TextBlock>
+                </Button>
+                <!--#endregion-->
+                <!--#region BUTTON PRODUCTOS-->
+                <Button Name="Productos"
+                        Width="120" Height="50"
+                        HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,8,0,0"
+                        Background="#34495E" BorderBrush="#5D6D7E"
+                        Style="{DynamicResource ButtonStyle}"
+                        Command="{Binding}">
+                    <TextBlock Foreground="#ECF0F1" FontSize="15">
+                        Productos
                     </TextBlock>
                 </Button>
                 <!--#endregion-->
@@ -91,7 +139,7 @@
                 <!--#endregion-->
                 <!--#region LABEL STATE-->
                 <Label x:Name="LStatus"
-                   Width="120" Height="50"
+                   Width="{Binding LabelConnection.Width}" Height="{Binding LabelConnection.Height}"
                    Background="{Binding LabelConnection.Background}" Margin="0,8,0,0"
                    Content="{Binding LabelConnection.Label}" Foreground="#ECF0F1" FontSize="15"
                    HorizontalContentAlignment="Center" VerticalContentAlignment="Center"></Label>
@@ -101,13 +149,12 @@
         <!--#endregion-->
         <!--#region GRID CONTENEDOR-->
         <Grid x:Name="GContainer"
-              Height="500" Width="640"
-              VerticalAlignment="Bottom" HorizontalAlignment="Right"
-              Background="#ECF0F1">
+              Height="448" Width="640"
+              VerticalAlignment="Bottom" HorizontalAlignment="Right">
             <!--#region SURTIDORES-->
             <ItemsControl ItemsSource="{Binding SurtidoresButton}"
-                          Height="400"
-                          VerticalAlignment="Top">
+                          Height="450"
+                          VerticalAlignment="Bottom" Background="#91a6ab">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
                         <UniformGrid Rows="4" Columns="8"/>
@@ -117,29 +164,7 @@
                     <DataTemplate>
                         <Button Content="{Binding Label}"
                                 Command="{Binding Command}"
-                                CommandParameter="{Binding}"
-                                Height="{Binding Height}" Width="{Binding Width}"
-                                Background="{Binding Background}" Foreground="White"
-                                HorizontalAlignment="Center"
-                                VerticalAlignment="Center"/>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
-            <!--#endregion-->
-            <!--#region TANQUES-->
-            <ItemsControl ItemsSource="{Binding TanquesButton}"
-                          Height="100"
-                          VerticalAlignment="Bottom">
-                <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <UniformGrid Rows="1" Columns="8"/>
-                    </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <Button Content="{Binding Label}"
-                                Command="{Binding Command}"
-                                CommandParameter="{Binding}"
+                                CommandParameter="{Binding }"
                                 Height="{Binding Height}" Width="{Binding Width}"
                                 Background="{Binding Background}" Foreground="White"
                                 HorizontalAlignment="Center"

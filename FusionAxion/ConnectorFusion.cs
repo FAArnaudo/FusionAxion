@@ -24,19 +24,9 @@ namespace FusionAxion
                 {
                     cFusion = new Fusion();
                 }
+
                 return cFusion;
             }
-            set => cFusion = value;
-        }
-
-        public Fusion GetObjectFusion()
-        {
-            if (cFusion == null)
-            {
-                cFusion = new Fusion();
-            }
-
-            return cFusion;
         }
 
         public void ResetFusionObject()
@@ -46,6 +36,7 @@ namespace FusionAxion
 
         public void ComandoConfiguracionDeLaEstacion()
         {
+            Log.Instance.WriteLog($"", LogType.t_info);
             Station estacion = Station.Instance;
             List<Surtidor> surtidores = new List<Surtidor>();
             List<Producto> productos = new List<Producto>();
@@ -57,6 +48,7 @@ namespace FusionAxion
                 FusionForecourt fusionForecourt = Fusion.GetConfig();
 
                 estacion.NumeroDeProductos = fusionForecourt.GetGradesCount();
+                Log.Instance.WriteLog($"Numeero de productos: {fusionForecourt.GetGradesCount()}", LogType.t_info);
 
                 if (Fusion.GetFCRTProducts(products))
                 {
@@ -64,6 +56,8 @@ namespace FusionAxion
                     {
                         if (fusionProduct != null)
                         {
+                            Log.Instance.WriteLog($"Producto: {fusionProduct.m_iProductId}, ID: {fusionProduct.m_iProductNr}", LogType.t_info);
+
                             Producto producto = new Producto
                             {
                                 ID = fusionProduct.m_iProductNr,
@@ -80,6 +74,7 @@ namespace FusionAxion
                 int pumpCount = 0;
                 if (Fusion.GetPumpsCount(ref pumpCount))
                 {
+                    Log.Instance.WriteLog($"Numero de surtidores: {pumpCount}", LogType.t_info);
                     estacion.NumeroDeSurtidores = pumpCount;
                     pumpCount = 0;
                     foreach (FusionPump pump in fusionForecourt.o_Pump)
@@ -87,6 +82,7 @@ namespace FusionAxion
                         if (pump != null)
                         {
                             pumpCount++;
+                            Log.Instance.WriteLog($"Surtidor: {pumpCount}, numero de mangueras: {pump.m_iHoses}", LogType.t_info);
                             Surtidor surtidor = new Surtidor
                             {
                                 ID = pumpCount,
@@ -97,6 +93,7 @@ namespace FusionAxion
                             {
                                 if (fusionHose != null)
                                 {
+                                    Log.Instance.WriteLog($"\tManguera: {fusionHose.m_iPhysicalID + 1}, Producto: {fusionHose.m_iGradeNr}, PPU: {fusionHose.m_strPPU}, Tanque: {fusionHose.m_strTanks}", LogType.t_info);
                                     Manguera manguera = new Manguera
                                     {
                                         ID = fusionHose.m_iPhysicalID + 1
@@ -107,7 +104,11 @@ namespace FusionAxion
                                         if (producto.ID == fusionHose.m_iGradeNr && producto.PrecioUnitario == 0)
                                         {
                                             producto.PrecioUnitario = ConvertDouble(fusionHose.m_strPPU);
-                                            producto.IdTanque = Convert.ToInt32(fusionHose.m_strTanks.Substring(1, 1));
+                                            producto.IdTanque = 0;
+                                            if (!string.IsNullOrEmpty(fusionHose.m_strTanks))
+                                            {
+                                                producto.IdTanque = Convert.ToInt32(fusionHose.m_strTanks.Substring(1, 1));
+                                            }
                                             manguera.Producto = producto;
                                             break;
                                         }
@@ -129,53 +130,59 @@ namespace FusionAxion
 
                 foreach (Producto producto in estacion.Productos)
                 {
-                    Tanque tanque = new Tanque
+                    if (!producto.Descripcion.Equals("GNC"))
                     {
-                        Product = producto,
-                        ID = producto.IdTanque
-                    };
+                        Log.Instance.WriteLog($"Tanque: {producto.IdTanque}, Producto: {producto.Descripcion}", LogType.t_info);
+                        Tanque tanque = new Tanque
+                        {
+                            Product = producto,
+                            ID = producto.IdTanque
+                        };
 
-                    tanques.Add(tanque);
+                        tanques.Add(tanque);
+                    }
                 }
                 estacion.NumeroDeTanques = tanques.Count;
                 estacion.Tanques = tanques;
             }
             catch (NullReferenceException e)
             {
+                Log.Instance.WriteLog($"Error al obtener la configuración de la estación - NullReferenceException. Excepción: {e.Message}.\n", LogType.t_error);
                 throw new NullReferenceException($"Error al obtener la configuración de la estación - NullReferenceException. Excepción: {e.Message}");
             }
             catch (Exception e)
             {
+                Log.Instance.WriteLog($"Error al obtener la configuración de la estación. Excepción: {e.Message}.\n", LogType.t_error);
                 throw new Exception($"Error al obtener la configuración de la estación. Excepción: {e.Message}");
             }
         }
 
         private void GetCodigoSiges(Producto producto)
         {
-            if (producto.Descripcion.Contains("SUPER"))
+            if (producto.Descripcion.Contains("SUPER") || producto.Descripcion.Equals("SUPER_BIO"))
             {
-                producto.ID_SIGES = 1;
+                producto.ID_SIGES = 1;      // Nafta super
             }
             else if (producto.Descripcion.Equals("REGULAR") || producto.Descripcion.Equals("QUANTIUM"))
             {
-                producto.ID_SIGES = 4;
+                producto.ID_SIGES = 4;      //Nafta Premium
             }
-            else if (producto.Descripcion.Equals("ION_DIESEL"))
+            else if (producto.Descripcion.Equals("ION_DIESEL") || producto.Descripcion.Equals("QUANTIUM DIESEL"))
             {
-                producto.ID_SIGES = 6;
+                producto.ID_SIGES = 6;      // Diesel Premium
             }
-            else if (producto.Descripcion.Equals("GNC"))
+            else if (producto.Descripcion.Equals("GNC") || producto.Descripcion.Equals("GLP"))
             {
-                producto.ID_SIGES = 7;
+                producto.ID_SIGES = 7;      // GNC
             }
-            else if (producto.Descripcion.Equals("DIESEL"))
+            else if (producto.Descripcion.Equals("DIESEL") || producto.Descripcion.Equals("DIESEL_BIO"))
             {
-                producto.ID_SIGES = 8;
+                producto.ID_SIGES = 8;      // Diesel super
             }
             else
             {
                 producto.ID_SIGES = producto.ID;
-                Log.Instance.WriteLog($"Producto no identificado: {producto.Descripcion}", LogType.t_error);
+                Log.Instance.WriteLog($"Producto no identificado: {producto.Descripcion}, id: {producto.ID}", LogType.t_error);
             }
         }
 

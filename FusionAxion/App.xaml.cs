@@ -15,32 +15,31 @@ namespace FusionAxion
     public partial class App : Application
     {
         private PanelFusion panelFusion;
-        private ConfigurationView configurationView;
         protected void ApplicationStart(object sender, StartupEventArgs e)
         {
-            if (!ConfigurationModel.ExistConfiguracion())
-            {
-                configurationView = new ConfigurationView();
-                configurationView.Show();
-                configurationView.IsVisibleChanged += (s, ev) =>
-                {
-                    if (configurationView.IsVisible == false && configurationView.IsLoaded)
-                    {
-                        InitPanelFusion();
-                    }
-                };
-            }
-            else
-            {
-                InitPanelFusion();
-            }
+            //if (!ConfigurationModel.ExistConfiguracion())
+            //{
+            //    ConfigurationView configurationView = new ConfigurationView();
+            //    configurationView.Show();
+            //    configurationView.IsVisibleChanged += (s, ev) =>
+            //    {
+            //        if (configurationView.IsVisible == false && configurationView.IsLoaded)
+            //        {
+            //            InitPanelFusion();
+            //        }
+            //    };
+            //}
+            //else
+            //{
+            //    InitPanelFusion();
+            //}
+            InitPanelFusion();
         }
 
         private void InitPanelFusion()
         {
             panelFusion = new PanelFusion();
             panelFusion.Show();
-            configurationView.Close();
         }
     }
 }

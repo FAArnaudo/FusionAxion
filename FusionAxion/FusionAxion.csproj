@@ -62,7 +62,6 @@
     </ApplicationDefinition>
     <Compile Include="ConnectorFusion.cs" />
     <Compile Include="Model\ButtonModel.cs" />
-    <Compile Include="Model\DataConfigurationModel.cs" />
     <Compile Include="Model\DataModel.cs" />
     <Compile Include="Model\LabelModel.cs" />
     <Compile Include="Model\StructureModel.cs" />

@@ -163,9 +163,10 @@ namespace FusionAxion.ViewModels
         private bool CanExecuteSaveConfigurationCommand(object obj)
         {
             bool validData = false;
+
             if (!string.IsNullOrWhiteSpace(RazonSocial))
             {
-                if (!string.IsNullOrWhiteSpace(RutaProyNuevo) && RutaProyNuevo.Trim().ToLower().EndsWith(@"sistema\proy_nuevo"))
+                if (!string.IsNullOrWhiteSpace(RutaProyNuevo) && RutaProyNuevo.Trim().ToLower().Contains(@"sistema\proy_nuevo"))
                 {
                     if (!string.IsNullOrWhiteSpace(IP))
                     {
@@ -179,32 +180,48 @@ namespace FusionAxion.ViewModels
 
         private void ExecuteSaveConfigurationCommand(object obj)
         {
-            DataModel data = new DataModel
+            if (ControllerFusion.Instance.CheckConnection())
             {
-                RazonSocial = RazonSocial,
-                RutaProyNuevo = RutaProyNuevo,
-                IP = IP,
-                Timer = Timer,
-                Logger = Logger
-            };
+                Log.Instance.WriteLog($"Desconectando.\n", LogType.t_info);
+                _ = ControllerFusion.Instance.Disconect();
+            }
+
+            Thread.Sleep(500);
+
+            Log.Instance.WriteLog($"Iniciando una nueva conexión.\n", LogType.t_info);
+            ControllerFusion.Instance.Connect(IP);
 
             Log.Instance.SetLogType(Logger);
 
-            if (ControllerFusion.Instance.CheckConnection(data.IP))
+            Log.Instance.WriteLog($"Veerificando el estado de la conexión.\n", LogType.t_info);
+            if (ControllerFusion.Instance.CheckConnection())
             {
+                DataModel data = new DataModel
+                {
+                    RazonSocial = RazonSocial,
+                    RutaProyNuevo = RutaProyNuevo,
+                    IP = IP,
+                    Timer = Timer,
+                    Logger = Logger
+                };
+
+                Log.Instance.WriteLog($"Intento de guardado de los datos.\n", LogType.t_info);
                 if (ConfigurationModel.SaveConfiguration(data))
                 {
-                    StatusMessage = "Configuración guardada correctamente.";
+                    StatusMessage = "";
+                    Log.Instance.WriteLog($"Configuración guardada correctamente.\n", LogType.t_info);
                     IsViewVisible = false;
                 }
                 else
                 {
-                    StatusMessage = "La configuracion no pudo ser guardada.\nIntente reiniciando.";
+                    StatusMessage = "*La configuracion no pudo ser guardada.\nIntente nuevamente.";
+                    Log.Instance.WriteLog($"Error al guardar configuración.\n", LogType.t_error);
                 }
             }
             else
             {
                 StatusMessage = "*Conexión no establecida con el controlador Fusion\nVerifique la dirección IP.";
+                Log.Instance.WriteLog($"Error al verificar la conexión.\n", LogType.t_error);
             }
         }
 
@@ -224,6 +241,7 @@ namespace FusionAxion.ViewModels
                 Timer = data.Timer;
                 Logger = data.Logger;
             }
+
             StatusMessage = "";
         }
     }

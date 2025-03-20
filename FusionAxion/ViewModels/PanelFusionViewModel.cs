@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
@@ -20,6 +21,9 @@ namespace FusionAxion.ViewModels
         private ConfigurationView configurationView;
         private bool isViewVisible = true;
         private bool isClosed = false;
+
+        private CancellationTokenSource cts;
+        private bool pausado;
 
         // Properties
         public DataModel CurrentData
@@ -76,20 +80,20 @@ namespace FusionAxion.ViewModels
             CloseCommand = new ViewModelCommand(ExecuteCloseCommand);
             CambiarConfigCommand = new ViewModelCommand(ExecuteCambiarConfigCommand);
 
-            Log.Instance.WriteLog($"Comprobando existencia de configuracion.\n", LogType.t_info);
+            Log.Instance.WriteLog($"Comprobando existencia de configuracion.\n", LogType.t_debug);
 
             if (ConfigurationModel.ExistConfiguracion())
             {
-                Log.Instance.WriteLog($"Realizando conexión\n", LogType.t_info);
+                Log.Instance.WriteLog($"Configuracion encontrada. Realizando conexión\n", LogType.t_debug);
 
                 ControllerFusion.Instance.Connect(ConfigurationModel.GetConfiguration().IP);
-                LoadConfiguration();
+                Init();
             }
         }
 
         private void ExecuteCambiarConfigCommand(object obj)
         {
-            Log.Instance.WriteLog($"Abriendo ventana de configuración\n", LogType.t_info);
+            Log.Instance.WriteLog($"Abriendo ventana de configuración\n", LogType.t_debug);
             configurationView = new ConfigurationView();
             configurationView.Show();
             configurationView.IsVisibleChanged += ConfigurationView_IsVisibleChanged;
@@ -105,13 +109,14 @@ namespace FusionAxion.ViewModels
         private void ConfigurationView_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
             IsViewVisible = true;
+
             if (!isClosed)
             {
                 configurationView.Close();
-                Log.Instance.WriteLog($"Cargando configuración inicial.\n", LogType.t_info);
-                LoadConfiguration();
             }
+
             isClosed = false;
+            Init();
         }
 
         private void LoadConfiguration()
@@ -120,13 +125,15 @@ namespace FusionAxion.ViewModels
             CurrentData = ConfigurationModel.GetConfiguration();
 
             //Verifica la conexion y actualiza el label
-            Log.Instance.WriteLog($"Actualizando Label Status.", LogType.t_info);
+            Log.Instance.WriteLog($"Actualizando Label Status.", LogType.t_debug);
             UpdateLabelConnection();
+
             //Obtiene la configuracion de la estacion
-            Log.Instance.WriteLog($"Obteniendo configuracion de la estación.\n", LogType.t_info);
+            Log.Instance.WriteLog($"Obteniendo configuracion de la estación.\n", LogType.t_debug);
             ControllerFusion.Instance.ConfigurarEstacion();
+
             //Genera los surtidores
-            Log.Instance.WriteLog($"Generando botones para la vista.\n", LogType.t_info);
+            Log.Instance.WriteLog($"Generando botones para la vista.\n", LogType.t_debug);
             GenerateSurtidoresButton(Station.Instance.NumeroDeSurtidores);
         }
 
@@ -146,18 +153,20 @@ namespace FusionAxion.ViewModels
 
         private void UpdateLabelConnection()
         {
-            if (ControllerFusion.Instance.CheckConnection())
+            bool isConnected = ControllerFusion.Instance.CheckConnection();
+
+            if (isConnected)
             {
-                Log.Instance.WriteLog($"Conexión: True.\n", LogType.t_info);
                 LabelConnection.Label = "Controlador\nOnLine";
                 LabelConnection.Background = "#007816";
             }
             else
             {
-                Log.Instance.WriteLog($"Coexión: False.\n", LogType.t_info);
                 LabelConnection.Label = "Controlador\nOffLine";
                 LabelConnection.Background = "#b00000";
             }
+
+            Log.Instance.WriteLog($"Coexión: {isConnected}.\n", LogType.t_debug);
         }
 
         private void ExecuteButtonCommand(object obj)
@@ -173,6 +182,80 @@ namespace FusionAxion.ViewModels
             while (!ControllerFusion.Instance.Disconect()) { }
 
             Application.Current.Shutdown();
+        }
+
+        private async Task Init()
+        {
+            try
+            {
+                Log.Instance.WriteLog($"Cargando configuración.\n", LogType.t_debug);
+                LoadConfiguration();
+
+                Task surtidoresControll = IniciarRecorridoAsync();
+
+                // Espera ambas tareas (esto mantiene la aplicación en ejecución)
+                await Task.WhenAll(surtidoresControll);
+            }
+            catch (Exception e)
+            {
+                Log.Instance.WriteLog($"{e.Message}", LogType.t_error);
+            }
+        }
+
+        public async Task IniciarRecorridoAsync()
+        {
+            cts = new CancellationTokenSource();
+            pausado = false;
+
+            try
+            {
+                while (!cts.Token.IsCancellationRequested)
+                {
+                    if (pausado)
+                    {
+                        await Task.Delay(500); // Espera antes de volver a comprobar
+                        continue;
+                    }
+
+                    foreach (ButtonModel button in SurtidoresButton)
+                    {
+                        if (cts.Token.IsCancellationRequested || pausado) break;
+
+                        button.Background = "#5ad9e1";  // Cambiar color
+                        await RealizarProcesoAsync(button);
+                        button.Background = "#123456";  // Restaurar color
+                        await Task.Delay(500);          // Pequeña pausa
+                    }
+                }
+            }
+            catch (TaskCanceledException)
+            {
+                // Se canceló la tarea, salir sin error
+            }
+        }
+
+        private async Task RealizarProcesoAsync(ButtonModel button)
+        {
+            await Task.Run(() =>
+            {
+                // Aquí iría la lógica de procesamiento del botón
+                Thread.Sleep(1000); // Simulación de proceso pesado
+            });
+        }
+
+        public void PausarRecorrido()
+        {
+            pausado = true;
+        }
+
+        public void ReanudarRecorrido()
+        {
+            pausado = false;
+        }
+
+        public void DetenerRecorrido()
+        {
+            cts?.Cancel();
         }
     }
 }

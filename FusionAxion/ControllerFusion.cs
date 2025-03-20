@@ -4,17 +4,28 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace FusionAxion
 {
     public class ControllerFusion
     {
-        private ConnectorFusion ConnectorFusion { get; set; }
+        private readonly ConnectorFusion connectorFusion;
         private static ControllerFusion instance = null;
+        private static readonly SemaphoreSlim semaforo = new SemaphoreSlim(1, 1); // Control de acceso
+        private static readonly object _lock = new object();
         private ControllerFusion()
         {
-            ConnectorFusion = new ConnectorFusion();
+            connectorFusion = new ConnectorFusion();
+        }
+
+        private ConnectorFusion ConnectorFusion
+        {
+            get
+            {
+                return connectorFusion;
+            }
         }
 
         public static ControllerFusion Instance
@@ -37,12 +48,10 @@ namespace FusionAxion
 
         public bool Disconect()
         {
-            bool isClose = false;
+            bool isClose = ConnectorFusion.Fusion.Close();
 
-            if (ConnectorFusion.Fusion.Close())
+            if (isClose)
             {
-                isClose = true;
-
                 ConnectorFusion.ResetFusionObject();
             }
 
@@ -51,13 +60,9 @@ namespace FusionAxion
 
         public bool CheckConnection()
         {
-            bool isConnected = false;
+            bool isConnected = ConnectorFusion.Fusion.ConnectionStatus();
 
-            if (ConnectorFusion.Fusion.ConnectionStatus())
-            {
-                isConnected = true;
-            }
-            else
+            if (!isConnected)
             {
                 _ = Disconect();
             }

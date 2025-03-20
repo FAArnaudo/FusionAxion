@@ -5,6 +5,7 @@ namespace CDS
 {
     public class PumpController
     {
+        private WatchDog watchdog;
         public PumpController()
         {
             ControllerProcess = null;
@@ -25,6 +26,9 @@ namespace CDS
                 Data = data;
 
                 CheckController();
+
+                watchdog = new WatchDog(this, ControllerProcess);
+                watchdog.Start();
 
                 return ControllerProcess != null;
             }
@@ -73,6 +77,11 @@ namespace CDS
                 Log.Instance.WriteLog($"Error al actualizar el proceso. Excepción: {e.Message}", LogType.t_error);
                 return false;
             }
+        }
+
+        public void RestartProcess()
+        {
+            UpdateProcess(Data);
         }
 
         private void CheckController()
@@ -138,6 +147,11 @@ namespace CDS
             }
 
             ControllerProcess = null;
+        }
+        public void Stop()
+        {
+            watchdog.Stop();
+            ControllerProcess.StopProcess();
         }
 
         public Data Data { get; set; }

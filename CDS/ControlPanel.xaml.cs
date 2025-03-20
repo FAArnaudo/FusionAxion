@@ -163,6 +163,7 @@ namespace CDS
                 _ = MessageBox.Show("El sistema está por detenerse. Espere mientras se completa el proceso.", "Aviso", MessageBoxButton.OK, MessageBoxImage.Information);
 
                 PumpController.EndProcess();
+                PumpController.Stop();
                 notifyIcon.Dispose();
                 base.OnClosed(e);
 

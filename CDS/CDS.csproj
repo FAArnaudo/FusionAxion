@@ -110,6 +110,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="CemProcess.cs" />
     <Compile Include="Configuration.cs" />
     <Compile Include="ConnectorCem.cs" />
     <Compile Include="ConnectorFusion.cs" />

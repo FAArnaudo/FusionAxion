@@ -250,9 +250,13 @@ namespace CDS
                     {
                         if (tanque.ID == (i + 1))
                         {
+                            Log.Instance.WriteLog($"Tanque ID: {tanque.ID}", LogType.t_debug);
                             tanque.VolumenDeProducto = ConvertDouble(LeerCampoVariable(reply, ref posicion));
+                            Log.Instance.WriteLog($"VolumenDeProducto: {tanque.VolumenDeProducto}", LogType.t_debug);
                             tanque.VolumenDeAgua = ConvertDouble(LeerCampoVariable(reply, ref posicion));
+                            Log.Instance.WriteLog($"VolumenDeAgua: {tanque.VolumenDeAgua}", LogType.t_debug);
                             tanque.VolumenVacio = ConvertDouble(LeerCampoVariable(reply, ref posicion));
+                            Log.Instance.WriteLog($"VolumenVacio: {tanque.VolumenVacio}\n", LogType.t_debug);
                             tanque.CapacidadMaxima = tanque.VolumenDeProducto + tanque.VolumenDeAgua + tanque.VolumenVacio;
                             break;
                         }
@@ -354,7 +358,7 @@ namespace CDS
             }
             catch (Exception e)
             {
-                Log.Instance.WriteLog($"\nError al enviar el comando de informacion de surtidores.Excepcion: {e.Message}", LogType.t_error);
+                Log.Instance.WriteLog($"\nError al enviar el comando de informacion de surtidores. Excepcion: {e.Message}", LogType.t_error);
 
                 return null;
             }

@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Globalization;
+using System.IO;
 
 namespace CDS
 {
@@ -551,6 +552,8 @@ namespace CDS
                             // Parsear la cadena JSON
                             JObject json = JObject.Parse(descuento);
 
+                            SaveAnswer(json, "descuento_puma.json");
+
                             debugMessage += "Datos Principales - ";
                             // Datos principales
                             string authCode = json["AuthCode"].ToString();
@@ -648,6 +651,22 @@ namespace CDS
         public DataTable ExecuteSelectQuery(string query)
         {
             return ConnectorSQLite.Instance.ExecuteSelectQuery(query);
+        }
+
+        public static void SaveAnswer(JObject jsonObject, string nombreArchivo)
+        {
+            // Crear el directorio si no existe
+            string directorio = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Responses");
+            if (!Directory.Exists(directorio))
+            {
+                Directory.CreateDirectory(directorio);
+            }
+
+            // Definir la ruta completa del archivo
+            string rutaArchivo = Path.Combine(directorio, nombreArchivo);
+
+            // Guardar el JObject en el archivo
+            File.WriteAllText(rutaArchivo, jsonObject.ToString());
         }
     }
 

@@ -18,7 +18,6 @@ namespace CDS
         {
             pumpController = controller;
             this.process = process;
-            this.process.WorkerFailed += RestartWorker; // Se suscribe al evento de fallo
         }
 
         public void Start()
@@ -33,11 +32,12 @@ namespace CDS
 
         private void MonitorWorker()
         {
+            Thread.Sleep(60000);
             while (isRunning)
             {
                 Thread.Sleep(10000); // Verifica cada 10 segundos
 
-                if ((DateTime.Now - process.LastExecutionTime).TotalSeconds > 60)
+                if ((DateTime.Now - process.LastExecutionTime).TotalSeconds > 120)
                 {
                     Log.Instance.WriteLog("Watchdog detectó que el proceso no responde. Reiniciando...\n", LogType.t_error);
                     RestartWorker();

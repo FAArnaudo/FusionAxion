@@ -57,6 +57,8 @@ namespace CDS
                     {
                         while (!HacerCierre && !CancellationToken.Token.IsCancellationRequested)
                         {
+                            LastExecutionTime = DateTime.Now; // Actualiza el tiempo de ejecución
+
                             ControllerFusion.GrabarDespachos();
 
                             if (CancellationToken.Token.IsCancellationRequested || HacerCierre)

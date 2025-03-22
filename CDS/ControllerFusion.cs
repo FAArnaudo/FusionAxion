@@ -472,10 +472,10 @@ namespace CDS
                                         id,
                                         cierre.TotalesPorManguera[manguera].NumeroDeSurtidor,
                                         cierre.TotalesPorManguera[manguera].NumeroDeManguera,
-                                        cierre.TotalesPorManguera[manguera].TotalVntasMonto.ToString(CultureInfo.InvariantCulture),
-                                        cierre.TotalesPorManguera[manguera].TotalVntasVolumen.ToString(CultureInfo.InvariantCulture),
-                                        cierre.TotalesPorManguera[manguera].TotalVntasSinControlMonto.ToString(CultureInfo.InvariantCulture),
-                                        cierre.TotalesPorManguera[manguera].TotalVntasSinControlVolumen.ToString(CultureInfo.InvariantCulture));
+                                        cierre.TotalesPorManguera[manguera].TotalVntasMonto.ToString("F2", CultureInfo.InvariantCulture),
+                                        cierre.TotalesPorManguera[manguera].TotalVntasVolumen.ToString("F2", CultureInfo.InvariantCulture),
+                                        cierre.TotalesPorManguera[manguera].TotalVntasSinControlMonto.ToString("F2", CultureInfo.InvariantCulture),
+                                        cierre.TotalesPorManguera[manguera].TotalVntasSinControlVolumen.ToString("F2", CultureInfo.InvariantCulture));
 
                 Log.Instance.WriteLog($"Consulta: INSERT INTO CierresPorManguera ({fields}) VALUES ({values})", LogType.t_debug);
 

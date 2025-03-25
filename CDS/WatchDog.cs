@@ -14,6 +14,10 @@ namespace CDS
         private Thread watchdogThread;
         private bool isRunning;
 
+        public bool IsRunning { get => isRunning; set => isRunning = value; }
+        public int StartTime { get; set; } = 10;        // 10 segundos
+        public int ThresholdTime { get; set; } = 120;   // 120 segundos = 2 minutos
+
         public WatchDog(PumpController controller, IControllerProcess process)
         {
             pumpController = controller;
@@ -22,7 +26,7 @@ namespace CDS
 
         public void Start()
         {
-            isRunning = true;
+            IsRunning = true;
             watchdogThread = new Thread(MonitorWorker)
             {
                 IsBackground = true
@@ -30,14 +34,14 @@ namespace CDS
             watchdogThread.Start();
         }
 
+        // WD tarda 1 minuto en comenzar controla el tiempo desde que 
         private void MonitorWorker()
         {
-            Thread.Sleep(60000);
-            while (isRunning)
+            while (IsRunning)
             {
-                Thread.Sleep(10000); // Verifica cada 10 segundos
+                Thread.Sleep(1000 * StartTime);
 
-                if ((DateTime.Now - process.LastExecutionTime).TotalSeconds > 120)
+                if ((DateTime.Now - process.LastExecutionTime).TotalSeconds > ThresholdTime)
                 {
                     Log.Instance.WriteLog("Watchdog detectó que el proceso no responde. Reiniciando...\n", LogType.t_error);
                     RestartWorker();
@@ -53,8 +57,11 @@ namespace CDS
 
         public void Stop()
         {
-            isRunning = false;
-            watchdogThread?.Join();
+            if (IsRunning)
+            {
+                IsRunning = false;
+                watchdogThread?.Join();
+            }
         }
     }
 }

@@ -10,10 +10,8 @@ namespace CDS
         CancellationTokenSource CancellationToken { get; set; }
         Data Data { get; set; }
         DateTime LastExecutionTime { get; set; }
-        void RunProcess(Task mainProcess);
+        void RunProcess(Task mainProcess, WatchDog watchDog);
         void StopProcess();
-
-        event Action WorkerFailed; // Evento para notificar fallos al Watchdog
     }
 
     public class FusionProcess : IControllerProcess
@@ -33,9 +31,7 @@ namespace CDS
             BreakProces = false;
         }
 
-        public event Action WorkerFailed;
-
-        public void RunProcess(Task mainProcess)
+        public void RunProcess(Task mainProcess, WatchDog watchDog)
         {
             CreateController();
 

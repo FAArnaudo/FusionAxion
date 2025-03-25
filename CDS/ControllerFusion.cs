@@ -368,6 +368,7 @@ namespace CDS
 
                 if (cierre.Estado.Equals("OK"))
                 {
+                    // Esta consulta SQL verifica si hay datos en la tabla y devuelve 1 si hay al menos un registro o 0 si está vacía.
                     bool hasData = Convert.ToBoolean(Convert.ToInt32(ConnectorSQLite.Instance.ExecuteSelectQuery("SELECT CASE WHEN COUNT(*) > 0 THEN 1 ELSE 0 END AS HasData FROM Cierres").Rows[0][0]));
 
                     //  Comprobamos si hay datos guardados

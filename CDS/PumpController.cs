@@ -27,9 +27,6 @@ namespace CDS
 
                 CheckController();
 
-                watchdog = new WatchDog(this, ControllerProcess);
-                watchdog.Start();
-
                 return ControllerProcess != null;
             }
             catch (NullReferenceException e)
@@ -94,7 +91,8 @@ namespace CDS
                         Data = Data,
                     };
 
-                    Task = Task.Run(() => ControllerProcess.RunProcess(Task));
+                    watchdog = new WatchDog(this, ControllerProcess);
+                    Task = Task.Run(() => ControllerProcess.RunProcess(Task, watchdog));
 
                     break;
                 case "FUSION":
@@ -103,7 +101,7 @@ namespace CDS
                         Data = Data,
                     };
 
-                    Task = Task.Run(() => ControllerProcess.RunProcess(Task));
+                    Task = Task.Run(() => ControllerProcess.RunProcess(Task, watchdog));
 
                     break;
                 default:
@@ -150,8 +148,12 @@ namespace CDS
         }
         public void Stop()
         {
-            watchdog.Stop();
-            ControllerProcess.StopProcess();
+            if (watchdog != null)
+            {
+                watchdog.Stop();
+            }
+
+            EndProcess();
         }
 
         public Data Data { get; set; }

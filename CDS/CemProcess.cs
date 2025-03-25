@@ -23,14 +23,16 @@ namespace CDS
             IsRunning = false;
         }
 
-        public event Action WorkerFailed;
-
-        public void RunProcess(Task mainProcess)
+        public void RunProcess(Task mainProcess, WatchDog watchDog)
         {
-
             ControllerCem = new ControllerCem(Data.Protocol);
 
             Log.Instance.WriteLog($"Nuevo proceso principal iniciado. ID: {mainProcess.Id}, Estado: {mainProcess.Status}.\n", LogType.t_info);
+
+            if (!watchDog.IsRunning)
+            {
+                watchDog.Start();
+            }
 
             while (!CancellationToken.Token.IsCancellationRequested)
             {
@@ -54,13 +56,13 @@ namespace CDS
                     {
                         LastExecutionTime = DateTime.Now; // Actualiza el tiempo de ejecución
 
-                        Log.Instance.WriteLog($"Estado del hilo {mainProcess.Id}: {mainProcess.Status}. TimerProcess {Data.Timer}\n", LogType.t_debug);
-
                         ControllerCem.GrabarDespachos();
 
                         CheckFlags();
 
                         Thread.Sleep(1000 * Convert.ToInt32(Data.Timer));
+
+                        Log.Instance.WriteLog($"Estado del hilo {mainProcess.Id}: {mainProcess.Status}. TimerProcess {Data.Timer}. Tiempo de bucle: {DateTime.Now - LastExecutionTime}\n", LogType.t_debug);
                     }
 
                     // Hacer el cierre

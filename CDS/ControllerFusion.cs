@@ -621,8 +621,8 @@ namespace CDS
 
                             _ = ExecuteNonQuery($"UPDATE Despachos " +
                                                      $"SET AUC = '{authCode}', " +
-                                                         $"DCA = {0}, DCI = '{statementDescriptor}' , DCP = '{paymentMethodId}', " +
-                                                         $"DPN = '{paymentTypeId}', TXTD = '{description}', cod_auto = '{cod_auto}', " +
+                                                         $"DCA = {totalDiscount}, DCI = '{statementDescriptor}' , DCP = '{paymentMethodId}', " +
+                                                         $"DPN = '{paymentTypeId}', TXTD = '{totalGlosa}', cod_auto = '{cod_auto}', " +
                                                          $"glosa_auto = '{glosa_auto}', valor_auto = {valor_auto.ToString(CultureInfo.InvariantCulture)} " +
                                                          $"WHERE id = {id}");
                         }

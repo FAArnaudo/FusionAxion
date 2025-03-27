@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Globalization;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace CDS
 {
@@ -54,9 +55,26 @@ namespace CDS
                                       cFusion = new Fusion();
                                   }
 
-                                  cFusion.Connection(communication.GetConfiguration().IP);
+                                  Log.Instance.WriteLog("Instancia fusion creada", LogType.t_debug);
 
-                                  connection = cFusion.ConnectionStatus();
+                                  // Usar Task.WhenAny para establecer un tiempo límite
+                                  Task connectionTask = Task.Run(() => cFusion.Connection(communication.GetConfiguration().IP));
+                                  Task timeoutTask = Task.Delay(5000); // Timeout de 5 segundos
+
+                                  // Esperar cualquiera de las tareas (conexión o timeout)
+                                  Task.WhenAny(connectionTask, timeoutTask).Wait();
+
+                                  // Verificar si la conexión fue exitosa
+                                  if (connectionTask.IsCompleted)
+                                  {
+                                      connection = cFusion.ConnectionStatus();
+                                      Log.Instance.WriteLog($"Conexion: {connection}", LogType.t_debug);
+                                  }
+                                  else
+                                  {
+                                      // Si el timeout ocurre antes de completar la conexión
+                                      Log.Instance.WriteLog("Tiempo de espera agotado para la conexión", LogType.t_error);
+                                  }
                               });
 
             // Verificación de resultado de conexión

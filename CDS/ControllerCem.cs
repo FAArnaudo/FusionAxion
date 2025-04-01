@@ -189,6 +189,8 @@ namespace CDS
                     command[0] = (byte)(command[0] + Convert.ToByte(surtidor.ID));
                 }
 
+                Log.Instance.WriteLog($"Veridicando despacho surtidor: {surtidor.ID}", LogType.t_debug);
+
                 despacho = ConnectorCem.ComandoInformacionDeDespacho(command);
 
                 if (despacho == null)

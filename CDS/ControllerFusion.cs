@@ -22,6 +22,7 @@ namespace CDS
             ConnectorFusion = new ConnectorFusion();
             this.communication = communication;
         }
+
         private ICommunication GetDiscount()
         {
             return communication;
@@ -29,62 +30,61 @@ namespace CDS
 
         public override bool VerificarConexión()
         {
-            cFusion = null;
             bool connection = false;
             int retries = 1;
 
-            // Política de reintentos
-            PolicyResult policyResult = Policy.Handle<Exception>()
-                .WaitAndRetry(retryCount: 4,
-                              sleepDurationProvider: retryAttempt => TimeSpan.FromSeconds(Math.Pow(3, retryAttempt)),
-                              onRetry: (exception, TimeSpan, conttext) =>
-                              {
-                                  // Cerrar el pipe en caso de fallo
-                                  if (cFusion != null)
+            try
+            {
+                // Si la instancia ya existe y la conexión es válida, no hacemos nada
+                if (cFusion != null && cFusion.ConnectionStatus())
+                {
+                    Log.Instance.WriteLog("Conexión existente válida\n", LogType.t_debug);
+                    return true;
+                }
+
+                // Si la conexión no es válida, limpiamos la instancia
+                cFusion?.Close();
+                cFusion = null;
+
+                PolicyResult policyResult = Policy.Handle<Exception>()
+                    .WaitAndRetry(retryCount: 4,
+                                  sleepDurationProvider: retryAttempt => TimeSpan.FromSeconds(Math.Pow(3, retryAttempt)),
+                                  onRetry: (exception, TimeSpan, context) =>
                                   {
-                                      _ = cFusion.Close();
-                                      cFusion = null; // Limpiar el pipe para la nueva conexión
-                                  }
-                                  Log.Instance.WriteLog($"\n\t  Excepción: {exception.Message.Trim()} Intento: {retries}", LogType.t_error);
-                                  retries++;
-                              }).ExecuteAndCapture(() =>
-                              {
-                                  // Crear el pipeClient si está cerrado
-                                  if (cFusion == null)
+                                      Log.Instance.WriteLog($"Excepción: {exception.Message.Trim()} Intento: {retries}\n", LogType.t_error);
+                                      retries++;
+                                  }).ExecuteAndCapture(() =>
                                   {
+                                      // Crear nueva instancia solo si es necesario
                                       cFusion = new Fusion();
-                                  }
+                                      Log.Instance.WriteLog("Instancia fusion creada\n", LogType.t_debug);
 
-                                  Log.Instance.WriteLog("Instancia fusion creada", LogType.t_debug);
+                                      // Intentar conectar con timeout de 5 segundos
+                                      Task connectionTask = Task.Run(() => cFusion.Connection(communication.GetConfiguration().IP));
+                                      Task timeoutTask = Task.Delay(5000);
 
-                                  // Usar Task.WhenAny para establecer un tiempo límite
-                                  Task connectionTask = Task.Run(() => cFusion.Connection(communication.GetConfiguration().IP));
-                                  Task timeoutTask = Task.Delay(5000); // Timeout de 5 segundos
+                                      Task.WhenAny(connectionTask, timeoutTask).Wait();
 
-                                  // Esperar cualquiera de las tareas (conexión o timeout)
-                                  Task.WhenAny(connectionTask, timeoutTask).Wait();
+                                      if (connectionTask.IsCompleted)
+                                      {
+                                          connection = cFusion.ConnectionStatus();
+                                          Log.Instance.WriteLog($"Conexión establecida: {connection}\n", LogType.t_debug);
+                                      }
+                                      else
+                                      {
+                                          Log.Instance.WriteLog("Tiempo de espera agotado para la conexión\n", LogType.t_error);
+                                      }
+                                  });
 
-                                  // Verificar si la conexión fue exitosa
-                                  if (connectionTask.IsCompleted)
-                                  {
-                                      connection = cFusion.ConnectionStatus();
-                                      Log.Instance.WriteLog($"Conexion: {connection}", LogType.t_debug);
-                                  }
-                                  else
-                                  {
-                                      // Si el timeout ocurre antes de completar la conexión
-                                      Log.Instance.WriteLog("Tiempo de espera agotado para la conexión", LogType.t_error);
-                                  }
-                              });
-
-            // Verificación de resultado de conexión
-            _ = policyResult.Outcome == OutcomeType.Successful && connection
-                ? communication.ExecuteNonQuery($"UPDATE CheckConnection " +
-                                                  $"SET isConnected = 1, fecha = '{DateTime.Now:dd-MM-yyyy HH:mm:ss}' " +
-                                                  $"WHERE idConnection = 1")
-                : communication.ExecuteNonQuery($"UPDATE CheckConnection " +
-                                                  $"SET isConnected = 0, fecha = '{DateTime.Now:dd-MM-yyyy HH:mm:ss}' " +
-                                                  $"WHERE idConnection = 1");
+                // Registrar el estado en la base de datos
+                communication.ExecuteNonQuery($"UPDATE CheckConnection " +
+                                              $"SET isConnected = {(connection ? 1 : 0)}, fecha = '{DateTime.Now:dd-MM-yyyy HH:mm:ss}' " +
+                                              $"WHERE idConnection = 1");
+            }
+            catch (Exception ex)
+            {
+                Log.Instance.WriteLog($"Error en VerificarConexión: {ex.Message.Trim()}\n", LogType.t_error);
+            }
 
             return connection;
         }

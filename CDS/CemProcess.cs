@@ -21,6 +21,7 @@ namespace CDS
         {
             CancellationToken = new CancellationTokenSource();
             IsRunning = false;
+            HacerCierre = false;
         }
 
         public void RunProcess(Task mainProcess, WatchDog watchDog)
@@ -49,7 +50,6 @@ namespace CDS
                     ControllerCem.ConfigurarEstacion();
                     ControllerCem.ActualizarTanques();
 
-                    HacerCierre = false;
                     Log.Instance.WriteLog($"Iniciando Lecturas...\n", LogType.t_info);
 
                     while (!HacerCierre && !CancellationToken.Token.IsCancellationRequested)
@@ -68,13 +68,15 @@ namespace CDS
                     // Hacer el cierre
                     if (HacerCierre)
                     {
-                        Log.Instance.WriteLog("Iniciando: Realizando corte de turno.\n", LogType.t_info);
+                        Log.Instance.WriteLog("Iniciando: Corte de turno.\n", LogType.t_info);
                         ControllerCem.GrabarCierre();
+                        HacerCierre = false;
                     }
                 }
                 catch (Exception e)
                 {
                     Log.Instance.WriteLog($"Estado del hilo {mainProcess.Id}: {mainProcess.Status} - Error en el loop del controlador.\n\t  Excepción: {e.Message}\n", LogType.t_error);
+                    HacerCierre = false;
                 }
             }
 
@@ -94,11 +96,13 @@ namespace CDS
 
             if (actualizarTanques)
             {
+                Log.Instance.WriteLog("Iniciando: Actualización de tanques.\n", LogType.t_info);
                 ControllerCem.ActualizarTanques();
             }
 
             if (traerCierreAnterior)
             {
+                Log.Instance.WriteLog("Iniciando: Información del corte anterior.\n", LogType.t_info);
                 ControllerCem.TrtaerCierreAnterior();
             }
         }

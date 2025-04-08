@@ -274,8 +274,6 @@ namespace CDS
 
             try
             {
-                _ = ConnectorSQLite.Instance.ExecuteNonQuery("UPDATE cierreBandera SET hacerCierre = 0");
-
                 string fields = "fecha,monto_contado,volumen_contado,monto_YPFruta,volumen_YPFruta,state";
                 string values = string.Format("'{0}',{1},{2},{3},{4},'{5}'",
                     DateTime.Now.ToString("dd-MM-yyyy HH:mm:ss"),
@@ -426,6 +424,8 @@ namespace CDS
                         _ = ConnectorSQLite.Instance.ExecuteNonQuery(string.Format("INSERT INTO CierresPorManguera ({0}) VALUES ({1})", fields, values));
                     }
                 }
+
+                _ = ConnectorSQLite.Instance.ExecuteNonQuery("UPDATE cierreBandera SET hacerCierre = 0");
             }
             catch (Exception e)
             {

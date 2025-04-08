@@ -827,7 +827,7 @@ namespace CDS
                                           pipeClient.Dispose();
                                           pipeClient = null; // Limpiar el pipe para la nueva conexión
                                       }
-                                      Log.Instance.WriteLog($"\n\t  Excepción: {exception.Message.Trim()} Intento: {retries}", LogType.t_error);
+                                      Log.Instance.WriteLog($"\t  Excepción: {exception.Message.Trim()} Intento: {retries}\n", LogType.t_error);
                                       retries++;
                                   }).ExecuteAndCapture(() =>
                                   {

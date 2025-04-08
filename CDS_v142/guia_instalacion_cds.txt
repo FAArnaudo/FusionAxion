@@ -1,9 +1,0 @@
-1- Guardar comprimido en \sistema\librería. Si no esta en esta carpeta no es visible para las demás PC's.
-2- Descomprimir.
-3- Instalar los drivers (TODOS).
-4- Iniciar el CDS.exe e ingresar los datos solicitados.
-
-5- Una vez funcionando, instalar (PARA CADA PC) el driver sqliteodbc.exe.
-6- En SIGES hay que habilitar el parámetro 70 y tildar cada opción de CEM.
-
-7- Probar traer un despacho presionando un numero (e.g. el 1).

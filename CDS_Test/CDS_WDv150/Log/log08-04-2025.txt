@@ -1,0 +1,25 @@
+13:25:58  INFO:    Nuevo proceso principal iniciado. ID: 9, Estado: Running, TimerProcess 4.
+
+13:26:02  ERROR:   Producto no identificado: Super
+13:29:51  INFO:    Nuevo proceso principal iniciado. ID: 14, Estado: Running, TimerProcess 4.
+
+13:29:54  ERROR:   Producto no identificado: Super
+13:29:56  INFO:    SURTIDOR: (1) MANGUERA: (2) PRODUCTO: (Super)
+13:29:57  INFO:    SURTIDOR: (2) MANGUERA: (2) PRODUCTO: (Super)
+13:29:57  INFO:    
+
+13:29:57  INFO:    PRODUCTO: (1) DESCRIPCION: (Super) PRECIO: (186.5)
+13:29:57  INFO:    
+
+13:29:57  INFO:    TANQUE: (1))
+13:29:57  INFO:    
+
+13:29:58  INFO:    Tanque 1, Volumen Total 20000, Volumen de Producto 0
+13:29:58  INFO:    
+
+13:29:58  INFO:    Iniciando Lecturas...
+
+13:30:14  ERROR:   
+Error al obtener Descuentos. Excepción: Cannot access child value on Newtonsoft.Json.Linq.JValue., Mensaje: ID: 121 - Datos Principales - PuntoVenta - 
+13:30:32  ERROR:   
+Error al obtener Descuentos. Excepción: Cannot access child value on Newtonsoft.Json.Linq.JValue., Mensaje: ID: 121 - Datos Principales - PuntoVenta - 

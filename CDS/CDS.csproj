@@ -221,6 +221,9 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="version.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Resource Include="Views\LogoSurtidor.ico" />
     <Resource Include="LogoSurtidor.ico" />
     <Resource Include="Images\Data.ico" />

@@ -1,0 +1,20 @@
+{
+  "AuthCode": "2471778",
+  "CollectorId": 0,
+  "CurrencyId": "USD",
+  "DateCreated": "2024-05-06T11:37:54.3451752Z",
+  "Description": null,
+  "PaymentTypeId": "ticket",
+  "Product": {
+    "Code": "10087",
+    "ProductNo": "2"
+  },
+  "PuntoVenta": null,
+  "StatementDescriptor": "CYBERSOURCE * PUMA ENERGY",
+  "TransactionAmount": "150",
+  "external_reference": null,
+  "id": "91848801230",
+  "payment_method_id": "Otrhers",
+  "raw_object": null,
+  "status": "completed"
+}

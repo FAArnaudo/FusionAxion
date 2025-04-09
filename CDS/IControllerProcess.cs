@@ -41,7 +41,7 @@ namespace CDS
             {
                 IsRunning = true;
 
-                Log.Instance.WriteLog($"Verificando conexion.", LogType.t_debug);
+                Log.Instance.WriteLog($"Verificando conexion.\n", LogType.t_debug);
 
                 if (ControllerFusion.VerificarConexión())
                 {

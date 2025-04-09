@@ -709,6 +709,8 @@ namespace CDS
                         string descuento = "";
                         debugMessage = $"ID: {id} - ";
 
+                        Log.Instance.WriteLog($"Verificando decuento del despacho ID: {id}\n", LogType.t_debug);
+
                         if (connectorFusion.AxionDiscount(cFusion, id, ref descuento))
                         {
                             string AUC = "";
@@ -762,7 +764,7 @@ namespace CDS
                 }
                 catch (Exception e)
                 {
-                    Log.Instance.WriteLog($"\nError al obtener Descuentos. Excepción: {e.Message}, Mensaje: {debugMessage}", LogType.t_error);
+                    Log.Instance.WriteLog($"Error al obtener Descuentos. Excepción: {e.Message}, Mensaje: {debugMessage}\n", LogType.t_error);
                 }
             }
         }

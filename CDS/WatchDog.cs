@@ -58,7 +58,11 @@ namespace CDS
             //pumpController.RestartProcess();
             string message = $"Watchdog detectó que el proceso no responde.\n" +
                              $"Estacion: {Configuration.GetConfiguration().RazonSocial}.\n" +
-                             $"Revisar la conexion con Posservice antes de reiniciar el CDS.";
+                             $"<p>Importante:</p>" +
+                             $"<p>- Revisar la conexion con Posservice</p>" +
+                             $"<p>- Verificar que respondan los botones del CDS</p>" +
+                             $"<p>- Si no se encuentran problemas, es posible que se reconecte solo...</p>";
+
             EnviarCorreo("federico.arnaudo@sistemasiges.com.ar", "CDS", message);
             Thread.Sleep(1000 * ThresholdReSend);
         }

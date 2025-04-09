@@ -28,7 +28,9 @@ namespace CDS
         {
             ControllerCem = new ControllerCem(Data.Protocol);
 
-            Log.Instance.WriteLog($"Nuevo proceso principal iniciado. ID: {mainProcess.Id}, Estado: {mainProcess.Status}.\n", LogType.t_info);
+            Log.Instance.WriteLog($"Nuevo proceso principal iniciado. ID: {Thread.CurrentThread.ManagedThreadId}, Estado: {Thread.CurrentThread.ThreadState}.\n", LogType.t_info);
+
+            _ = ConnectorSQLite.Instance.ExecuteNonQuery("UPDATE cierreBandera SET hacerCierre = 0");
 
             if (!watchDog.IsRunning)
             {
@@ -76,7 +78,12 @@ namespace CDS
                 catch (Exception e)
                 {
                     Log.Instance.WriteLog($"Estado del hilo {mainProcess.Id}: {mainProcess.Status} - Error en el loop del controlador.\n\t  Excepción: {e.Message}\n", LogType.t_error);
-                    HacerCierre = false;
+
+                    if (HacerCierre)
+                    {
+                        _ = ConnectorSQLite.Instance.ExecuteNonQuery("UPDATE cierreBandera SET hacerCierre = 0");
+                        HacerCierre = false;
+                    }
                 }
             }
 
@@ -114,11 +121,11 @@ namespace CDS
 
             while (IsRunning)
             {
-                Thread.Sleep(1000);
+                Thread.Sleep(20000);
                 time++;
                 Log.Instance.WriteLog($"Esperando finalizacion del proceso.\n", LogType.t_info);
 
-                if (time == 10)
+                if (time == 6)
                 {
                     IsRunning = false;
 

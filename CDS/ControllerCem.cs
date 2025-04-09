@@ -189,7 +189,7 @@ namespace CDS
                     command[0] = (byte)(command[0] + Convert.ToByte(surtidor.ID));
                 }
 
-                Log.Instance.WriteLog($"Veridicando despacho surtidor: {surtidor.ID}", LogType.t_debug);
+                Log.Instance.WriteLog($"Verificando despacho surtidor: {surtidor.ID}", LogType.t_debug);
 
                 despacho = ConnectorCem.ComandoInformacionDeDespacho(command);
 
@@ -263,13 +263,15 @@ namespace CDS
                 }
                 catch (Exception e)
                 {
-                    Log.Instance.WriteLog($"Error en el metodo GrabarDespachos.\n\tExcepcion: {e.Message}", LogType.t_error);
+                    Log.Instance.WriteLog($"Error en el metodo GrabarDespachos. Excepcion: {e.Message}\n", LogType.t_error);
                 }
             }
         }
 
         public override void GrabarCierre()
         {
+            _ = ConnectorSQLite.Instance.ExecuteNonQuery("UPDATE cierreBandera SET hacerCierre = 0");
+
             CierreCem cierreDeTurno = ConnectorCem.ComandoCierresDeTurno(ProtocolCommand.CierreDeTurnoCommand);
 
             try

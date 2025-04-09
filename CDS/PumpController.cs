@@ -146,6 +146,7 @@ namespace CDS
 
             ControllerProcess = null;
         }
+
         public void Stop()
         {
             if (watchdog != null)

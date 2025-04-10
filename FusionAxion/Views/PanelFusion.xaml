@@ -82,7 +82,7 @@
                         HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,8,0,0"
                         Background="#34495E" BorderBrush="#5D6D7E"
                         Style="{DynamicResource ButtonStyle}"
-                        Command="{Binding}">
+                        Command="{Binding VerDespachosCommand}">
                     <TextBlock Foreground="#ECF0F1" FontSize="15">
                         Despachos
                     </TextBlock>
@@ -151,10 +151,14 @@
         <Grid x:Name="GContainer"
               Height="448" Width="640"
               VerticalAlignment="Bottom" HorizontalAlignment="Right">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="67*"/>
+                <RowDefinition Height="157*"/>
+            </Grid.RowDefinitions>
             <!--#region SURTIDORES-->
             <ItemsControl ItemsSource="{Binding SurtidoresButton}"
                           Height="450"
-                          VerticalAlignment="Bottom" Background="#91a6ab">
+                          VerticalAlignment="Bottom" Background="#91a6ab" Margin="0,-2,0,0" Grid.RowSpan="2">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
                         <UniformGrid Rows="4" Columns="8"/>

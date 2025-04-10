@@ -36,7 +36,7 @@
             <RowDefinition Height="5"></RowDefinition>
             <RowDefinition Height="40"></RowDefinition>
             <RowDefinition Height="110"></RowDefinition>
-            <RowDefinition Height="130"></RowDefinition>
+            <RowDefinition Height="160"></RowDefinition>
             <RowDefinition Height="5"></RowDefinition>
         </Grid.RowDefinitions>
         <!--#endregion-->
@@ -139,9 +139,11 @@
             <TextBlock Text="Guardar Configuración" Foreground="White" FontSize="15"></TextBlock>
         </Button>
         <!--#endregion-->
-        <TextBlock Grid.Row="3" Grid.Column="1" Name="LMessage"
-                   Height="40" Width="235"
-                   VerticalAlignment="Bottom" HorizontalAlignment="Center" Margin="0,90,0,0"
-                   Text="{Binding StatusMessage}" Foreground="Red"></TextBlock>
+        <Border Grid.Row="3" Grid.Column="1" Name="LMessage"
+                Height="40" Width="235"
+                VerticalAlignment="Bottom" HorizontalAlignment="Center" Margin="0,90,0,0"
+                BorderThickness="2" BorderBrush="Azure">
+            <TextBlock Text="{Binding StatusMessage}" Foreground="Red"></TextBlock>
+        </Border>
     </Grid>
 </Window>

@@ -69,12 +69,18 @@ namespace FusionAxion.ViewModels
         // Commands
         public ICommand CloseCommand { get; }
         public ICommand CambiarConfigCommand { get; }
+        public ICommand VerDespachosCommand { get; }
+        public ICommand VerSurtidoresCommand { get; }
+        public ICommand VerTanquesCommand { get; }
 
         // Constructor
         public PanelFusionViewModel()
         {
             CloseCommand = new ViewModelCommand(ExecuteCloseCommand);
             CambiarConfigCommand = new ViewModelCommand(ExecuteCambiarConfigCommand);
+            VerDespachosCommand = new ViewModelCommand(ExecuteVerDespachosCommand);
+            VerSurtidoresCommand = new ViewModelCommand(ExecuteVerSurtidoresCommand);
+            VerTanquesCommand = new ViewModelCommand(ExecuteVerTanquesCommand);
 
             Log.Instance.WriteLog($"Comprobando existencia de configuracion.\n", LogType.t_info);
 
@@ -85,6 +91,22 @@ namespace FusionAxion.ViewModels
                 ControllerFusion.Instance.Connect(ConfigurationModel.GetConfiguration().IP);
                 LoadConfiguration();
             }
+        }
+
+        private void ExecuteVerTanquesCommand(object obj)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void ExecuteVerSurtidoresCommand(object obj)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void ExecuteVerDespachosCommand(object obj)
+        {
+            DespachosView despachosView = new DespachosView();
+            despachosView.Show();
         }
 
         private void ExecuteCambiarConfigCommand(object obj)

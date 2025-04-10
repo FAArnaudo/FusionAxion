@@ -10,7 +10,7 @@ namespace FusionAxion.Model
     {
         private string razonSocial = "";
         private string rutaProyNuevo = "";
-        private string ip = "";
+        private string ip = "192.168.0.0";
         private string timer = "";
         private LogType logger = LogType.t_info;
 

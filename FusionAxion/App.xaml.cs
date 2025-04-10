@@ -17,22 +17,22 @@ namespace FusionAxion
         private PanelFusion panelFusion;
         protected void ApplicationStart(object sender, StartupEventArgs e)
         {
-            //if (!ConfigurationModel.ExistConfiguracion())
-            //{
-            //    ConfigurationView configurationView = new ConfigurationView();
-            //    configurationView.Show();
-            //    configurationView.IsVisibleChanged += (s, ev) =>
-            //    {
-            //        if (configurationView.IsVisible == false && configurationView.IsLoaded)
-            //        {
-            //            InitPanelFusion();
-            //        }
-            //    };
-            //}
-            //else
-            //{
-            //    InitPanelFusion();
-            //}
+            if (!ConfigurationModel.ExistConfiguracion())
+            {
+                ConfigurationView configurationView = new ConfigurationView();
+                configurationView.Show();
+                configurationView.IsVisibleChanged += (s, ev) =>
+                {
+                    if (configurationView.IsVisible == false && configurationView.IsLoaded)
+                    {
+                        InitPanelFusion();
+                    }
+                };
+            }
+            else
+            {
+                InitPanelFusion();
+            }
             InitPanelFusion();
         }
 

@@ -33,7 +33,7 @@ namespace FusionAxion
             {
                 InitPanelFusion();
             }
-            InitPanelFusion();
+            //InitPanelFusion();
         }
 
         private void InitPanelFusion()

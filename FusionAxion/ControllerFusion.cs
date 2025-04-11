@@ -10,11 +10,15 @@ namespace FusionAxion
 {
     public class ControllerFusion
     {
-        private ConnectorFusion ConnectorFusion { get; set; }
+        //private Fusion fusion = null;
+        private readonly object fusionLock = new object();
         private static ControllerFusion instance = null;
+        private Fusion Fusion { get; set; }
+        private ConnectorFusion ConnectorFusion { get; set; } = null;
         private ControllerFusion()
         {
             ConnectorFusion = new ConnectorFusion();
+            Fusion = new Fusion();
         }
 
         public static ControllerFusion Instance
@@ -32,18 +36,17 @@ namespace FusionAxion
 
         public void Connect(string IP)
         {
-            ConnectorFusion.Fusion.Connection(IP);
+            Fusion.Connection(IP);
         }
 
         public bool Disconect()
         {
             bool isClose = false;
 
-            if (ConnectorFusion.Fusion.Close())
+            lock (fusionLock)
             {
-                isClose = true;
-
-                ConnectorFusion.ResetFusionObject();
+                isClose = Fusion.Close();
+                //fusion = null;
             }
 
             return isClose;
@@ -53,13 +56,9 @@ namespace FusionAxion
         {
             bool isConnected = false;
 
-            if (ConnectorFusion.Fusion.ConnectionStatus())
+            if (Fusion.ConnectionStatus())
             {
                 isConnected = true;
-            }
-            else
-            {
-                _ = Disconect();
             }
 
             return isConnected;
@@ -67,7 +66,7 @@ namespace FusionAxion
 
         public void ConfigurarEstacion()
         {
-            ConnectorFusion.ComandoConfiguracionDeLaEstacion();
+            ConnectorFusion.ComandoConfiguracionDeLaEstacion(Fusion);
 
             Station station = Station.Instance;
 

@@ -19,19 +19,20 @@ namespace FusionAxion
         {
             if (!ConfigurationModel.ExistConfiguracion())
             {
-                ConfigurationView configurationView = new ConfigurationView();
-                configurationView.Show();
-                configurationView.IsVisibleChanged += (s, ev) =>
-                {
-                    if (configurationView.IsVisible == false && configurationView.IsLoaded)
-                    {
-                        InitPanelFusion();
-                    }
-                };
+                OpenConfigView();
             }
             else
             {
-                InitPanelFusion();
+                ControllerFusion.Instance.Connect(ConfigurationModel.GetConfiguration().IP);
+
+                if (!ControllerFusion.Instance.CheckConnection())
+                {
+                    OpenConfigView();
+                }
+                else
+                {
+                    InitPanelFusion();
+                }
             }
             //InitPanelFusion();
         }
@@ -40,6 +41,19 @@ namespace FusionAxion
         {
             panelFusion = new PanelFusion();
             panelFusion.Show();
+        }
+
+        private void OpenConfigView()
+        {
+            ConfigurationView configurationView = new ConfigurationView();
+            configurationView.Show();
+            configurationView.IsVisibleChanged += (s, ev) =>
+            {
+                if (configurationView.IsVisible == false && configurationView.IsLoaded)
+                {
+                    InitPanelFusion();
+                }
+            };
         }
     }
 }

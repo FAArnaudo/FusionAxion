@@ -11,30 +11,11 @@ namespace FusionAxion
 {
     public class ConnectorFusion
     {
-        private Fusion cFusion = null;
         private static readonly CultureInfo culture = CultureInfo.InvariantCulture;
 
         public ConnectorFusion() { }
 
-        public Fusion Fusion
-        {
-            get
-            {
-                if (cFusion == null)
-                {
-                    cFusion = new Fusion();
-                }
-
-                return cFusion;
-            }
-        }
-
-        public void ResetFusionObject()
-        {
-            cFusion = null;
-        }
-
-        public void ComandoConfiguracionDeLaEstacion()
+        public void ComandoConfiguracionDeLaEstacion(Fusion Fusion)
         {
             Log.Instance.WriteLog($"", LogType.t_info);
             Station estacion = Station.Instance;

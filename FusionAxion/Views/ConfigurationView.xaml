@@ -140,8 +140,8 @@
         </Button>
         <!--#endregion-->
         <Border Grid.Row="3" Grid.Column="1" Name="LMessage"
-                Height="40" Width="235"
-                VerticalAlignment="Bottom" HorizontalAlignment="Center" Margin="0,90,0,0"
+                Height="40" Width="280"
+                VerticalAlignment="Bottom" HorizontalAlignment="Center"
                 BorderThickness="2" BorderBrush="Azure">
             <TextBlock Text="{Binding StatusMessage}" Foreground="Red"></TextBlock>
         </Border>

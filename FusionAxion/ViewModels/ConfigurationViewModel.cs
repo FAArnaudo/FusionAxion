@@ -180,48 +180,61 @@ namespace FusionAxion.ViewModels
 
         private void ExecuteSaveConfigurationCommand(object obj)
         {
-            if (ControllerFusion.Instance.CheckConnection())
+            if (!ConfigurationModel.ExistConfiguracion())
             {
-                Log.Instance.WriteLog($"Desconectando.\n", LogType.t_info);
-                _ = ControllerFusion.Instance.Disconect();
-            }
-
-            Thread.Sleep(500);
-
-            Log.Instance.WriteLog($"Iniciando una nueva conexión.\n", LogType.t_info);
-            ControllerFusion.Instance.Connect(IP);
-
-            Log.Instance.SetLogType(Logger);
-
-            Log.Instance.WriteLog($"Veerificando el estado de la conexión.\n", LogType.t_info);
-            if (ControllerFusion.Instance.CheckConnection())
-            {
-                DataModel data = new DataModel
-                {
-                    RazonSocial = RazonSocial,
-                    RutaProyNuevo = RutaProyNuevo,
-                    IP = IP,
-                    Timer = Timer,
-                    Logger = Logger
-                };
-
-                Log.Instance.WriteLog($"Intento de guardado de los datos.\n", LogType.t_info);
-                if (ConfigurationModel.SaveConfiguration(data))
-                {
-                    StatusMessage = "";
-                    Log.Instance.WriteLog($"Configuración guardada correctamente.\n", LogType.t_info);
-                    IsViewVisible = false;
-                }
-                else
-                {
-                    StatusMessage = "*La configuracion no pudo ser guardada.\nIntente nuevamente.";
-                    Log.Instance.WriteLog($"Error al guardar configuración.\n", LogType.t_error);
-                }
+                TryConnection();
             }
             else
             {
+                if (ConfigurationModel.GetConfiguration().IP != IP)
+                {
+                    TryConnection();
+                }
+                else
+                {
+                    SaveConfiguration();
+                }
+            }
+        }
+
+        private void TryConnection()
+        {
+            ControllerFusion.Instance.Connect(IP);
+
+            if (ControllerFusion.Instance.CheckConnection())
+            {
+                SaveConfiguration();
+            }
+            else
+            {
+                _ = ControllerFusion.Instance.Disconect();
                 StatusMessage = "*Conexión no establecida con el controlador Fusion\nVerifique la dirección IP.";
                 Log.Instance.WriteLog($"Error al verificar la conexión.\n", LogType.t_error);
+            }
+        }
+
+        private void SaveConfiguration()
+        {
+            DataModel data = new DataModel
+            {
+                RazonSocial = RazonSocial,
+                RutaProyNuevo = RutaProyNuevo,
+                IP = IP,
+                Timer = Timer,
+                Logger = Logger
+            };
+
+            Log.Instance.WriteLog($"Guardando los datos ingresados.\n", LogType.t_info);
+            if (ConfigurationModel.SaveConfiguration(data))
+            {
+                StatusMessage = "";
+                Log.Instance.WriteLog($"Configuración guardada correctamente.\n", LogType.t_info);
+                IsViewVisible = false;
+            }
+            else
+            {
+                StatusMessage = "*La configuracion no pudo ser guardada.\nIntente nuevamente.";
+                Log.Instance.WriteLog($"Error al guardar configuración.\n", LogType.t_error);
             }
         }
 

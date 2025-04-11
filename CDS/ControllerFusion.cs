@@ -240,7 +240,6 @@ namespace CDS
                                                                                         DateTime.Now.ToString("dd-MM-yyyy HH:mm:ss"),
                                                                                         tanque.ID));
                         }
-                        Log.Instance.WriteLog($"\n", LogType.t_info);
                     }
                     catch (Exception e)
                     {
@@ -268,7 +267,7 @@ namespace CDS
                     {
                         if (cFusion.GetLastSale(surtidor.ID, fusionSale) == 1)
                         {
-                            if (!fusionSale.GetAmount().Equals("0.00"))
+                            if (fusionSale != null && !fusionSale.GetAmount().Equals("0.00"))
                             {
 
                                 string fechaHora = fusionSale.GetDateOfTransaction().Trim() + " " + fusionSale.GetInitTimeOfTransaction().Trim();
@@ -282,7 +281,7 @@ namespace CDS
                                     Log.Instance.WriteLog($"Error de formato: {fechaFormateada}.", LogType.t_debug);
                                 }
 
-                                debugMessage += $"dechaFormateada: {fechaFormateada} - ";
+                                debugMessage += $"fechaFormateada: {fechaFormateada} - ";
 
                                 Despacho despacho = new Despacho()
                                 {
@@ -333,8 +332,9 @@ namespace CDS
                     catch (Exception e)
                     {
                         Log.Instance.WriteLog($"Error al obtener la ultima venta.\n" +
-                                              $"Surtidor: {surtidor.ID}\n" +
-                                              $"Excepción: {e.Message}, Debug: {debugMessage}", LogType.t_error);
+                                              $"Surtidor: {surtidor.ID},\n" +
+                                              $"Excepción: {e.Message},\n," +
+                                              $"Debug: {debugMessage}", LogType.t_error);
                     }
                 }
 
@@ -379,6 +379,7 @@ namespace CDS
 
             string campos;
             string rows;
+            int lastID;
 
             try
             {
@@ -394,7 +395,7 @@ namespace CDS
                     {
                         // Obtengo el ultimo id de la tabla Cierres
                         DataTable tablaCierres = ConnectorSQLite.Instance.ExecuteSelectQuery("SELECT max(id) FROM Cierres");
-                        int lastID = Convert.ToInt32(tablaCierres.Rows[0][0]);
+                        lastID = Convert.ToInt32(tablaCierres.Rows[0][0]);
 
                         DataTable ultimoCierrePorManguera = ConnectorSQLite.Instance.ExecuteSelectQuery($"SELECT * FROM CierresPorManguera WHERE id = {lastID}");
 
@@ -458,6 +459,30 @@ namespace CDS
                     rows = string.Format("'{0}','{1}'", cierre.Estado, message);
 
                     _ = communication.ExecuteNonQuery(string.Format("INSERT INTO Cierres ({0}) VALUES ({1})", campos, rows));
+
+                    // Grabar CierresPorManguera
+                    string fields = "id,surtidor,manguera,monto,volumen,monto_acumulado,volumen_acumulado";
+
+                    // Traer ID del cierre para poder referenciar los detalles
+                    DataTable tablaCierres = ConnectorSQLite.Instance.ExecuteSelectQuery("SELECT max(id) FROM Cierres");
+
+                    int id = Convert.ToInt32(tablaCierres.Rows[0][0]);
+
+                    for (int manguera = 0; manguera < cierre.TotalesPorManguera.Count; manguera++)
+                    {
+                        string values = string.Format("{0},{1},{2},{3},{4},{5},{6}",
+                                                id,
+                                                cierre.TotalesPorManguera[manguera].NumeroDeSurtidor,
+                                                cierre.TotalesPorManguera[manguera].NumeroDeManguera,
+                                                0.ToString("F2", CultureInfo.InvariantCulture),
+                                                0.ToString("F2", CultureInfo.InvariantCulture),
+                                                0.ToString("F2", CultureInfo.InvariantCulture),
+                                                0.ToString("F2", CultureInfo.InvariantCulture));
+
+                        Log.Instance.WriteLog($"Consulta: INSERT INTO CierresPorManguera ({fields}) VALUES ({values})", LogType.t_debug);
+
+                        _ = ConnectorSQLite.Instance.ExecuteNonQuery(string.Format("INSERT INTO CierresPorManguera ({0}) VALUES ({1})", fields, values));
+                    }
                 }
             }
             catch (Exception e)
@@ -709,7 +734,7 @@ namespace CDS
                         string descuento = "";
                         debugMessage = $"ID: {id} - ";
 
-                        Log.Instance.WriteLog($"Verificando decuento del despacho ID: {id}\n", LogType.t_debug);
+                        Log.Instance.WriteLog($"Verificando descuento del despacho ID: {id}\n", LogType.t_debug);
 
                         if (connectorFusion.AxionDiscount(cFusion, id, ref descuento))
                         {

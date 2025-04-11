@@ -1,6 +1,8 @@
-﻿using FusionClass;
+﻿using FusionAxion.Repositories;
+using FusionClass;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Globalization;
 using System.Linq;
 using System.Text;
@@ -46,7 +48,6 @@ namespace FusionAxion
             lock (fusionLock)
             {
                 isClose = Fusion.Close();
-                //fusion = null;
             }
 
             return isClose;
@@ -85,20 +86,20 @@ namespace FusionAxion
                             manguera.Producto.PrecioUnitario.ToString(CultureInfo.InvariantCulture),
                             manguera.Producto.Descripcion);
 
-                        //DataTable tablaSurtidores = ConnectorSQLite.Instance.ExecuteSelectQuery($"SELECT * " +
-                        //                                                                        $"FROM Surtidores " +
-                        //                                                                        $"WHERE IdSurtidor = {surtidor.ID} AND Manguera = {manguera.ID}");
+                        DataTable tablaSurtidores = ConnectorSQLite.Instance.ExecuteSelectQuery($"SELECT * " +
+                                                                                                $"FROM Surtidores " +
+                                                                                                $"WHERE IdSurtidor = {surtidor.ID} AND Manguera = {manguera.ID}");
 
-                        //_ = tablaSurtidores.Rows.Count == 0
-                        //    ? ConnectorSQLite.Instance.ExecuteNonQuery(string.Format("INSERT INTO Surtidores ({0}) VALUES ({1})", campos, rows))
-                        //    : ConnectorSQLite.Instance.ExecuteNonQuery(string.Format("UPDATE Surtidores " +
-                        //                                                           "SET Producto = ('{0}'), Precio = ('{1}'), DescProd = ('{2}') " +
-                        //                                                           "WHERE IdSurtidor = ({3}) AND Manguera = ('{4}')",
-                        //                                                            manguera.Producto.ID,
-                        //                                                            manguera.Producto.PrecioUnitario.ToString(CultureInfo.InvariantCulture),
-                        //                                                            manguera.Producto.Descripcion,
-                        //                                                            surtidor.ID,
-                        //                                                            manguera.ID));
+                        _ = tablaSurtidores.Rows.Count == 0
+                            ? ConnectorSQLite.Instance.ExecuteNonQuery(string.Format("INSERT INTO Surtidores ({0}) VALUES ({1})", campos, rows))
+                            : ConnectorSQLite.Instance.ExecuteNonQuery(string.Format("UPDATE Surtidores " +
+                                                                                   "SET Producto = ('{0}'), Precio = ('{1}'), DescProd = ('{2}') " +
+                                                                                   "WHERE IdSurtidor = ({3}) AND Manguera = ('{4}')",
+                                                                                    manguera.Producto.ID,
+                                                                                    manguera.Producto.PrecioUnitario.ToString(CultureInfo.InvariantCulture),
+                                                                                    manguera.Producto.Descripcion,
+                                                                                    surtidor.ID,
+                                                                                    manguera.ID));
                         Log.Instance.WriteLog(string.Format("SURTIDOR: ({0}) MANGUERA: ({1}) PRODUCTO: ({2})",
                                                             surtidor.ID, manguera.ID, manguera.Producto.Descripcion), LogType.t_info);
                     }
@@ -115,18 +116,18 @@ namespace FusionAxion
                                                  producto.Descripcion,
                                                  producto.PrecioUnitario.ToString(CultureInfo.InvariantCulture));
 
-                    //DataTable tablaProductos = ConnectorSQLite.Instance.ExecuteSelectQuery("SELECT * " +
-                    //                                                                       "FROM Productos " +
-                    //                                                                      $"WHERE id_producto = {producto.ID}");
+                    DataTable tablaProductos = ConnectorSQLite.Instance.ExecuteSelectQuery("SELECT * " +
+                                                                                           "FROM Productos " +
+                                                                                          $"WHERE id_producto = {producto.ID}");
 
-                    //_ = tablaProductos.Rows.Count == 0
-                    //    ? ConnectorSQLite.Instance.ExecuteNonQuery(string.Format("INSERT INTO Productos ({0}) VALUES ({1})", campos, rows))
-                    //    : ConnectorSQLite.Instance.ExecuteNonQuery(string.Format("UPDATE Productos " +
-                    //                                                             "SET producto = ('{0}'), precio = ({1}) " +
-                    //                                                             "WHERE id_producto = ({2})",
-                    //                                                              producto.Descripcion,
-                    //                                                              producto.PrecioUnitario.ToString(CultureInfo.InvariantCulture),
-                    //                                                              producto.ID));
+                    _ = tablaProductos.Rows.Count == 0
+                        ? ConnectorSQLite.Instance.ExecuteNonQuery(string.Format("INSERT INTO Productos ({0}) VALUES ({1})", campos, rows))
+                        : ConnectorSQLite.Instance.ExecuteNonQuery(string.Format("UPDATE Productos " +
+                                                                                 "SET producto = ('{0}'), precio = ({1}) " +
+                                                                                 "WHERE id_producto = ({2})",
+                                                                                  producto.Descripcion,
+                                                                                  producto.PrecioUnitario.ToString(CultureInfo.InvariantCulture),
+                                                                                  producto.ID));
 
                     Log.Instance.WriteLog(string.Format("PRODUCTO: ({0}) DESCRIPCION: ({1}) PRECIO: ({2})",
                                                             producto.ID, producto.Descripcion, producto.PrecioUnitario), LogType.t_info);
@@ -142,18 +143,18 @@ namespace FusionAxion
                                                  tanque.VolumenDeProducto.ToString(CultureInfo.InvariantCulture),
                                                  tanque.CapacidadMaxima.ToString(CultureInfo.InvariantCulture));
 
-                    //DataTable tablaTanques = ConnectorSQLite.Instance.ExecuteSelectQuery("SELECT * " +
-                    //                                                                     "FROM Tanques " +
-                    //                                                                    $"WHERE id_tanque = {tanque.ID}");
+                    DataTable tablaTanques = ConnectorSQLite.Instance.ExecuteSelectQuery("SELECT * " +
+                                                                                         "FROM Tanques " +
+                                                                                        $"WHERE id_tanque = {tanque.ID}");
 
-                    //_ = tablaTanques.Rows.Count == 0
-                    //    ? ConnectorSQLite.Instance.ExecuteNonQuery(string.Format("INSERT INTO Tanques ({0}) VALUES ({1})", campos, rows))
-                    //    : ConnectorSQLite.Instance.ExecuteNonQuery(string.Format("UPDATE Tanques " +
-                    //                                                             "SET volumen_actual = ('{0}'), capacidad_maxima = ({1}) " +
-                    //                                                             "WHERE id_tanque = ({2})",
-                    //                                                              tanque.VolumenDeProducto,
-                    //                                                              tanque.CapacidadMaxima,
-                    //                                                              tanque.ID));
+                    _ = tablaTanques.Rows.Count == 0
+                        ? ConnectorSQLite.Instance.ExecuteNonQuery(string.Format("INSERT INTO Tanques ({0}) VALUES ({1})", campos, rows))
+                        : ConnectorSQLite.Instance.ExecuteNonQuery(string.Format("UPDATE Tanques " +
+                                                                                 "SET volumen_actual = ('{0}'), capacidad_maxima = ({1}) " +
+                                                                                 "WHERE id_tanque = ({2})",
+                                                                                  tanque.VolumenDeProducto,
+                                                                                  tanque.CapacidadMaxima,
+                                                                                  tanque.ID));
 
                     Log.Instance.WriteLog(string.Format("TANQUE: ({0}))", tanque.ID), LogType.t_info);
                 }

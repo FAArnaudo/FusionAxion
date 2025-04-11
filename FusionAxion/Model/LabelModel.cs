@@ -22,7 +22,6 @@ namespace FusionAxion.Model
                 OnPropertyChanged(nameof(Label));
             }
         }
-
         public string Background
         {
             get => background;
@@ -32,8 +31,6 @@ namespace FusionAxion.Model
                 OnPropertyChanged(nameof(Background));
             }
         }
-        public int Height { get; set; } = 50;
-        public int Width { get; set; } = 120;
 
         public LabelModel() { }
     }

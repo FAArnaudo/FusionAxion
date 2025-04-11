@@ -10,6 +10,7 @@ using System.ComponentModel;
 using System.Threading;
 using System.Security.Principal;
 using FusionAxion.Model;
+using System.Text.RegularExpressions;
 
 namespace FusionAxion.ViewModels
 {
@@ -168,7 +169,9 @@ namespace FusionAxion.ViewModels
             {
                 if (!string.IsNullOrWhiteSpace(RutaProyNuevo) && RutaProyNuevo.Trim().ToLower().Contains(@"sistema\proy_nuevo"))
                 {
-                    if (!string.IsNullOrWhiteSpace(IP))
+                    string pattern = @"^(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])(\.(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])){3}$";
+
+                    if (!string.IsNullOrWhiteSpace(IP) && Regex.IsMatch(ip, pattern))
                     {
                         validData = true;
                     }

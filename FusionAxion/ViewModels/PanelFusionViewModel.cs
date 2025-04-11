@@ -1,4 +1,5 @@
 ﻿using FusionAxion.Model;
+using FusionAxion.Repositories;
 using FusionAxion.Views;
 using System;
 using System.Collections.Generic;
@@ -56,6 +57,24 @@ namespace FusionAxion.ViewModels
                 OnPropertyChanged(nameof(LabelConnection));
             }
         }
+        public string LabelBackground
+        {
+            get => LabelConnection.Background;
+            set
+            {
+                LabelConnection.Background = value;
+                OnPropertyChanged(nameof(LabelBackground));
+            }
+        }
+        public string LabelContent
+        {
+            get => LabelConnection.Label;
+            set
+            {
+                LabelConnection.Label = value;
+                OnPropertyChanged(nameof(LabelContent));
+            }
+        }
         public bool IsViewVisible
         {
             get => isViewVisible;
@@ -72,6 +91,9 @@ namespace FusionAxion.ViewModels
         public ICommand VerDespachosCommand { get; }
         public ICommand VerSurtidoresCommand { get; }
         public ICommand VerTanquesCommand { get; }
+        public ICommand VerProductosCommand { get; }
+        public ICommand VerCierresCommand { get; }
+        public ICommand VerifyConnectionCommand { get; }
 
         // Constructor
         public PanelFusionViewModel()
@@ -81,32 +103,18 @@ namespace FusionAxion.ViewModels
             VerDespachosCommand = new ViewModelCommand(ExecuteVerDespachosCommand);
             VerSurtidoresCommand = new ViewModelCommand(ExecuteVerSurtidoresCommand);
             VerTanquesCommand = new ViewModelCommand(ExecuteVerTanquesCommand);
+            VerProductosCommand = new ViewModelCommand(ExecuteVerProductosCommand);
+            VerCierresCommand = new ViewModelCommand(ExecuteVerCierresCommand);
+            VerifyConnectionCommand = new ViewModelCommand(ExecuteVerifyConnectionCommand);
 
-            Log.Instance.WriteLog($"Comprobando existencia de configuracion.\n", LogType.t_info);
-
-            if (ConfigurationModel.ExistConfiguracion())
-            {
-                Log.Instance.WriteLog($"Realizando conexión\n", LogType.t_info);
-
-                ControllerFusion.Instance.Connect(ConfigurationModel.GetConfiguration().IP);
-                LoadConfiguration();
-            }
+            LoadConfiguration();
         }
 
-        private void ExecuteVerTanquesCommand(object obj)
+        private void ExecuteCloseCommand(object obj)
         {
-            throw new NotImplementedException();
-        }
+            while (!ControllerFusion.Instance.Disconect()) { }
 
-        private void ExecuteVerSurtidoresCommand(object obj)
-        {
-            throw new NotImplementedException();
-        }
-
-        private void ExecuteVerDespachosCommand(object obj)
-        {
-            DespachosView despachosView = new DespachosView();
-            despachosView.Show();
+            Application.Current.Shutdown();
         }
 
         private void ExecuteCambiarConfigCommand(object obj)
@@ -136,17 +144,50 @@ namespace FusionAxion.ViewModels
             isClosed = false;
         }
 
+        private void ExecuteVerDespachosCommand(object obj)
+        {
+            DespachosView despachosView = new DespachosView();
+            despachosView.Show();
+        }
+
+        private void ExecuteVerSurtidoresCommand(object obj)
+        {
+            SurtidoresView surtidoresView = new SurtidoresView();
+            surtidoresView.Show();
+        }
+
+        private void ExecuteVerTanquesCommand(object obj)
+        {
+            TanquesView tanquesView = new TanquesView();
+            tanquesView.Show();
+        }
+
+        private void ExecuteVerProductosCommand(object obj)
+        {
+            ProductosView productosView = new ProductosView();
+            productosView.Show();
+        }
+
+        private void ExecuteVerCierresCommand(object obj)
+        {
+            CierresView cierresView = new CierresView();
+            cierresView.Show();
+        }
+
+        private void ExecuteVerifyConnectionCommand(object obj)
+        {
+            UpdateLabelConnection();
+        }
+
         private void LoadConfiguration()
         {
             //Obtiene los parametros de configuracion.
             CurrentData = ConfigurationModel.GetConfiguration();
 
-            //Verifica la conexion y actualiza el label
-            Log.Instance.WriteLog($"Actualizando Label Status.", LogType.t_info);
-            UpdateLabelConnection();
             //Obtiene la configuracion de la estacion
             Log.Instance.WriteLog($"Obteniendo configuracion de la estación.\n", LogType.t_info);
             ControllerFusion.Instance.ConfigurarEstacion();
+
             //Genera los surtidores
             Log.Instance.WriteLog($"Generando botones para la vista.\n", LogType.t_info);
             GenerateSurtidoresButton(Station.Instance.NumeroDeSurtidores);
@@ -166,19 +207,19 @@ namespace FusionAxion.ViewModels
             }
         }
 
-        private void UpdateLabelConnection()
+        public void UpdateLabelConnection()
         {
             if (ControllerFusion.Instance.CheckConnection())
             {
                 Log.Instance.WriteLog($"Conexión: True.\n", LogType.t_info);
-                LabelConnection.Label = "Controlador\nOnLine";
-                LabelConnection.Background = "#007816";
+                LabelContent = "OnLine";
+                LabelBackground = "#007816";
             }
             else
             {
                 Log.Instance.WriteLog($"Coexión: False.\n", LogType.t_info);
-                LabelConnection.Label = "Controlador\nOffLine";
-                LabelConnection.Background = "#b00000";
+                LabelContent = "OffLine";
+                LabelBackground = "#b00000";
             }
         }
 
@@ -188,13 +229,6 @@ namespace FusionAxion.ViewModels
             {
                 _ = MessageBox.Show($"Botón {button.Label} presionado");
             }
-        }
-
-        private void ExecuteCloseCommand(object obj)
-        {
-            while (!ControllerFusion.Instance.Disconect()) { }
-
-            Application.Current.Shutdown();
         }
     }
 }

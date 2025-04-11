@@ -27,7 +27,6 @@ namespace FusionAxion.Model
                 }
             }
         }
-
         public string RutaProyNuevo
         {
             get => rutaProyNuevo;
@@ -39,7 +38,6 @@ namespace FusionAxion.Model
                 }
             }
         }
-
         public string IP
         {
             get => ip;
@@ -51,7 +49,6 @@ namespace FusionAxion.Model
                 }
             }
         }
-
         public string Timer
         {
             get => timer;
@@ -63,7 +60,6 @@ namespace FusionAxion.Model
                 }
             }
         }
-
         public string Logger
         {
             get => logger.ToString();

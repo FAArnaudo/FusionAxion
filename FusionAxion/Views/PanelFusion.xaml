@@ -64,21 +64,19 @@
                 <!--#endregion-->
                 <!--#region BUTTON CAMBIAR CONFIGURACION-->
                 <Button Name="BtnCambiarConfig"
-                        Width="120" Height="50"
+                        Width="110" Height="45"
                         HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,8,0,0"
                         Background="#34495E" BorderBrush="#5D6D7E"
                         Style="{DynamicResource ButtonStyle}"
                         Command="{Binding CambiarConfigCommand}">
                     <TextBlock Foreground="#ECF0F1" FontSize="15">
-                        Cambiar
-                        <LineBreak/>
                         Configuración
                     </TextBlock>
                 </Button>
                 <!--#endregion-->
                 <!--#region BUTTON DESPACHOS-->
                 <Button Name="Despachos"
-                        Width="120" Height="50"
+                        Width="110" Height="45"
                         HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,8,0,0"
                         Background="#34495E" BorderBrush="#5D6D7E"
                         Style="{DynamicResource ButtonStyle}"
@@ -90,11 +88,11 @@
                 <!--#endregion-->
                 <!--#region BUTTON SURTIDORES-->
                 <Button Name="Surtidores"
-                        Width="120" Height="50"
+                        Width="110" Height="45"
                         HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,8,0,0"
                         Background="#34495E" BorderBrush="#5D6D7E"
                         Style="{DynamicResource ButtonStyle}"
-                        Command="{Binding}">
+                        Command="{Binding VerSurtidoresCommand}">
                     <TextBlock Foreground="#ECF0F1" FontSize="15">
                         Surtidores
                     </TextBlock>
@@ -102,11 +100,11 @@
                 <!--#endregion-->
                 <!--#region BUTTON TANQUES-->
                 <Button Name="Tanques"
-                        Width="120" Height="50"
+                        Width="110" Height="45"
                         HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,8,0,0"
                         Background="#34495E" BorderBrush="#5D6D7E"
                         Style="{DynamicResource ButtonStyle}"
-                        Command="{Binding}">
+                        Command="{Binding VerTanquesCommand}">
                     <TextBlock Foreground="#ECF0F1" FontSize="15">
                         Tanques
                     </TextBlock>
@@ -114,22 +112,35 @@
                 <!--#endregion-->
                 <!--#region BUTTON PRODUCTOS-->
                 <Button Name="Productos"
-                        Width="120" Height="50"
+                        Width="110" Height="45"
                         HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,8,0,0"
                         Background="#34495E" BorderBrush="#5D6D7E"
                         Style="{DynamicResource ButtonStyle}"
-                        Command="{Binding}">
+                        Command="{Binding VerProductosCommand}">
                     <TextBlock Foreground="#ECF0F1" FontSize="15">
                         Productos
                     </TextBlock>
                 </Button>
                 <!--#endregion-->
+                <!--#region BUTTON CIERRES-->
+                <Button Name="Cierres"
+                        Width="110" Height="45"
+                        HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,8,0,0"
+                        Background="#34495E" BorderBrush="#5D6D7E"
+                        Style="{DynamicResource ButtonStyle}"
+                        Command="{Binding VerCierresCommand}">
+                    <TextBlock Foreground="#ECF0F1" FontSize="15">
+                        Cierres
+                    </TextBlock>
+                </Button>
+                <!--#endregion-->
                 <!--#region BUTTON VERIFICAR CONEXION-->
                 <Button Name="BtnVerifyConfig"
-                    Width="120" Height="50"
-                    HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,8,0,0"
-                    Background="#34495E" BorderBrush="#5D6D7E"
-                    Style="{DynamicResource ButtonStyle}">
+                        Width="110" Height="45"
+                        HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,8,0,0"
+                        Background="#34495E" BorderBrush="#5D6D7E"
+                        Style="{DynamicResource ButtonStyle}"
+                        Command="{Binding VerifyConnectionCommand}">
                     <TextBlock Foreground="#ECF0F1" FontSize="15">
                         Verificar
                         <LineBreak/>
@@ -139,9 +150,9 @@
                 <!--#endregion-->
                 <!--#region LABEL STATE-->
                 <Label x:Name="LStatus"
-                   Width="{Binding LabelConnection.Width}" Height="{Binding LabelConnection.Height}"
-                   Background="{Binding LabelConnection.Background}" Margin="0,8,0,0"
-                   Content="{Binding LabelConnection.Label}" Foreground="#ECF0F1" FontSize="15"
+                   Width="110" Height="30"
+                   Background="{Binding LabelBackground}" Margin="0,8,0,0"
+                   Content="{Binding LabelContent}" Foreground="#ECF0F1" FontSize="15"
                    HorizontalContentAlignment="Center" VerticalContentAlignment="Center"></Label>
                 <!--#endregion-->
             </StackPanel>

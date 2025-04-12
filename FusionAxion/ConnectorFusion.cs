@@ -140,11 +140,13 @@ namespace FusionAxion
 
         private void GetCodigoSiges(Producto producto)
         {
-            if (producto.Descripcion.Contains("SUPER") || producto.Descripcion.Equals("SUPER_BIO"))
+            if (producto.Descripcion.Contains("SUPER") || producto.Descripcion.Equals("SUPER_BIO") ||
+                producto.Descripcion.Contains("GASOHOL REGULAR"))
             {
                 producto.ID_SIGES = 1;      // Nafta super
             }
-            else if (producto.Descripcion.Equals("REGULAR") || producto.Descripcion.Equals("QUANTIUM"))
+            else if (producto.Descripcion.Equals("REGULAR") || producto.Descripcion.Equals("QUANTIUM") ||
+                     producto.Descripcion.Equals("GASOHOL PREMIUM"))
             {
                 producto.ID_SIGES = 4;      //Nafta Premium
             }
@@ -156,9 +158,10 @@ namespace FusionAxion
             {
                 producto.ID_SIGES = 7;      // GNC
             }
-            else if (producto.Descripcion.Equals("DIESEL") || producto.Descripcion.Equals("DIESEL_BIO"))
+            else if (producto.Descripcion.Equals("DIESEL") || producto.Descripcion.Equals("DIESEL_BIO") ||
+                     producto.Descripcion.Equals("DIESEL DB5"))
             {
-                producto.ID_SIGES = 8;      // Diesel super
+                producto.ID_SIGES = 8;      // Diesel super 
             }
             else
             {

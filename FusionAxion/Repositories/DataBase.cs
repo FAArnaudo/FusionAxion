@@ -10,11 +10,14 @@ namespace FusionAxion.Repositories
 {
     public class DataBase : RepositoryBase
     {
-        public DataBase() { }
-        public void CreateDataBase()
+        public DataBase()
         {
-            string folderPath = ConfigurationModel.GetConfiguration().RutaProyNuevo + "\\CDS\\";
-            string databasePath = folderPath + "cds.db";
+            CreateDataBase();
+        }
+        private void CreateDataBase()
+        {
+            string folderPath = Path.Combine(ConfigurationModel.GetConfiguration().RutaProyNuevo, "CDS");
+            string databasePath = Path.Combine(folderPath, "cds.db"); ;
 
             // Crear la carpeta si no existe
             if (!Directory.Exists(folderPath))
@@ -155,11 +158,6 @@ namespace FusionAxion.Repositories
             catch (Exception ex)
             {
                 Log.Instance.WriteLog($"Error al crear tabla: {ex.Message}", LogType.t_error);
-            }
-            finally
-            {
-                // Cerrar la conexión al final de la operación
-                CloseConnection();
             }
         }
     }

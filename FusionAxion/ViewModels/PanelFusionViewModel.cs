@@ -107,6 +107,8 @@ namespace FusionAxion.ViewModels
             VerCierresCommand = new ViewModelCommand(ExecuteVerCierresCommand);
             VerifyConnectionCommand = new ViewModelCommand(ExecuteVerifyConnectionCommand);
 
+            DataBase dataBase = new DataBase();
+
             LoadConfiguration();
         }
 

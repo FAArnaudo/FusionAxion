@@ -14,12 +14,7 @@ namespace FusionAxion.Repositories
         private static readonly object lockObjectDB = new object();
 
         private static ConnectorSQLite instance = null;
-        private readonly DataBase dataBase;
-        private ConnectorSQLite()
-        {
-            dataBase = new DataBase();
-            dataBase.CreateDataBase();
-        }
+        private ConnectorSQLite() { }
         public static ConnectorSQLite Instance
         {
             get

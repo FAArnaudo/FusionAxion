@@ -671,7 +671,6 @@ namespace CDS
         {
             return ConnectorSQLite.Instance.ExecuteSelectQuery(query);
         }
-
         public static void SaveAnswer(JObject jsonObject, string nombreArchivo)
         {
             // Crear el directorio si no existe

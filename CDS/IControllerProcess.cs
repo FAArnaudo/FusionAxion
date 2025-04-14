@@ -9,106 +9,9 @@ namespace CDS
     {
         CancellationTokenSource CancellationToken { get; set; }
         Data Data { get; set; }
-        void RunProcess(Task mainProcess);
+        DateTime LastExecutionTime { get; set; }
+        void RunProcess(Task mainProcess, WatchDog watchDog);
         void StopProcess();
-    }
-
-    public class CemProcess : IControllerProcess
-    {
-        public CancellationTokenSource CancellationToken { get; set; }
-        public ControllerCem ControllerCem { get; set; }
-        public Data Data { get; set; }
-        private bool IsRunning { get; set; }
-        private bool HacerCierre { get; set; }
-
-        public CemProcess()
-        {
-            CancellationToken = new CancellationTokenSource();
-            IsRunning = false;
-        }
-
-        public void RunProcess(Task mainProcess)
-        {
-
-            ControllerCem = new ControllerCem(Data.Protocol);
-
-            Log.Instance.WriteLog($"Nuevo proceso principal iniciado. ID: {mainProcess.Id}, Estado: {mainProcess.Status}.\n", LogType.t_info);
-
-            while (!CancellationToken.Token.IsCancellationRequested)
-            {
-                IsRunning = true;
-
-                try
-                {
-                    while (!ControllerCem.VerificarConexión())
-                    {
-                        Thread.Sleep(1000 * Convert.ToInt32(Data.Timer));
-                        Log.Instance.WriteLog("Intentando establecer conexión.", LogType.t_debug);
-                    }
-
-                    ControllerCem.ConfigurarEstacion();
-                    ControllerCem.ActualizarTanques();
-
-                    HacerCierre = false;
-                    Log.Instance.WriteLog($"Iniciando Lecturas...\n", LogType.t_info);
-
-                    while (!HacerCierre && !CancellationToken.Token.IsCancellationRequested)
-                    {
-                        Log.Instance.WriteLog($"Estado del hilo {mainProcess.Id}: {mainProcess.Status}. TimerProcess {Data.Timer}\n", LogType.t_debug);
-
-                        ControllerCem.GrabarDespachos();
-
-                        CheckFlags();
-
-                        Thread.Sleep(1000 * Convert.ToInt32(Data.Timer));
-                    }
-
-                    // Hacer el cierre
-                    if (HacerCierre)
-                    {
-                        Log.Instance.WriteLog("Iniciando: Realizando corte de turno.\n", LogType.t_info);
-                        ControllerCem.GrabarCierre();
-                    }
-                }
-                catch (Exception e)
-                {
-                    Log.Instance.WriteLog($"Estado del hilo {mainProcess.Id}: {mainProcess.Status} - Error en el loop del controlador.\n\t  Excepción: {e.Message}\n", LogType.t_error);
-                }
-            }
-
-            Log.Instance.WriteLog($"Finalizando hilo: {mainProcess.Id}.", LogType.t_info);
-
-            IsRunning = false;
-        }
-
-        public void CheckFlags()
-        {
-            DataTable flags = ConnectorSQLite.Instance.ExecuteSelectQuery($"SELECT * FROM cierreBandera");
-
-            HacerCierre = Convert.ToBoolean(flags.Rows[0][0]);
-
-            bool actualizarTanques = Convert.ToBoolean(flags.Rows[0][1]);
-            bool traerCierreAnterior = Convert.ToBoolean(flags.Rows[0][2]);
-
-            if (actualizarTanques)
-            {
-                ControllerCem.ActualizarTanques();
-            }
-
-            if (traerCierreAnterior)
-            {
-                ControllerCem.TrtaerCierreAnterior();
-            }
-        }
-
-        public void StopProcess()
-        {
-            CancellationToken?.Cancel();
-
-            while (IsRunning) { }
-
-            Log.Instance.WriteLog($" Proceso Finalizado.\n", LogType.t_info);
-        }
     }
 
     public class FusionProcess : IControllerProcess
@@ -119,6 +22,7 @@ namespace CDS
         private bool IsRunning { get; set; }
         public static bool HacerCierre { get; set; }
         public static bool BreakProces { get; set; }
+        public DateTime LastExecutionTime { get; set; }
 
         public FusionProcess()
         {
@@ -127,7 +31,7 @@ namespace CDS
             BreakProces = false;
         }
 
-        public void RunProcess(Task mainProcess)
+        public void RunProcess(Task mainProcess, WatchDog watchDog)
         {
             CreateController();
 
@@ -136,6 +40,8 @@ namespace CDS
             while (!CancellationToken.Token.IsCancellationRequested)
             {
                 IsRunning = true;
+
+                Log.Instance.WriteLog($"Verificando conexion.\n", LogType.t_debug);
 
                 if (ControllerFusion.VerificarConexión())
                 {
@@ -149,6 +55,8 @@ namespace CDS
                     {
                         while (!HacerCierre && !CancellationToken.Token.IsCancellationRequested)
                         {
+                            LastExecutionTime = DateTime.Now; // Actualiza el tiempo de ejecución
+
                             ControllerFusion.GrabarDespachos();
 
                             if (CancellationToken.Token.IsCancellationRequested || HacerCierre)

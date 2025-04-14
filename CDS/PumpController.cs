@@ -5,6 +5,7 @@ namespace CDS
 {
     public class PumpController
     {
+        private WatchDog watchdog;
         public PumpController()
         {
             ControllerProcess = null;
@@ -75,6 +76,11 @@ namespace CDS
             }
         }
 
+        public void RestartProcess()
+        {
+            UpdateProcess(Data);
+        }
+
         private void CheckController()
         {
             switch (Data.Controller)
@@ -85,7 +91,8 @@ namespace CDS
                         Data = Data,
                     };
 
-                    Task = Task.Run(() => ControllerProcess.RunProcess(Task));
+                    watchdog = new WatchDog(this, ControllerProcess);
+                    Task = Task.Run(() => ControllerProcess.RunProcess(Task, watchdog));
 
                     break;
                 case "FUSION":
@@ -94,7 +101,7 @@ namespace CDS
                         Data = Data,
                     };
 
-                    Task = Task.Run(() => ControllerProcess.RunProcess(Task));
+                    Task = Task.Run(() => ControllerProcess.RunProcess(Task, watchdog));
 
                     break;
                 default:
@@ -138,6 +145,16 @@ namespace CDS
             }
 
             ControllerProcess = null;
+        }
+
+        public void Stop()
+        {
+            if (watchdog != null)
+            {
+                watchdog.Stop();
+            }
+
+            EndProcess();
         }
 
         public Data Data { get; set; }

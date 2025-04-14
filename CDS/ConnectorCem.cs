@@ -5,6 +5,7 @@ using System.Globalization;
 using System.IO;
 using System.IO.Pipes;
 using System.Text;
+using System.Threading;
 
 namespace CDS
 {
@@ -250,9 +251,13 @@ namespace CDS
                     {
                         if (tanque.ID == (i + 1))
                         {
+                            Log.Instance.WriteLog($"Tanque ID: {tanque.ID}", LogType.t_debug);
                             tanque.VolumenDeProducto = ConvertDouble(LeerCampoVariable(reply, ref posicion));
+                            Log.Instance.WriteLog($"VolumenDeProducto: {tanque.VolumenDeProducto}", LogType.t_debug);
                             tanque.VolumenDeAgua = ConvertDouble(LeerCampoVariable(reply, ref posicion));
+                            Log.Instance.WriteLog($"VolumenDeAgua: {tanque.VolumenDeAgua}", LogType.t_debug);
                             tanque.VolumenVacio = ConvertDouble(LeerCampoVariable(reply, ref posicion));
+                            Log.Instance.WriteLog($"VolumenVacio: {tanque.VolumenVacio}\n", LogType.t_debug);
                             tanque.CapacidadMaxima = tanque.VolumenDeProducto + tanque.VolumenDeAgua + tanque.VolumenVacio;
                             break;
                         }
@@ -354,8 +359,7 @@ namespace CDS
             }
             catch (Exception e)
             {
-                Log.Instance.WriteLog($"\nError al enviar el comando de informacion de surtidores.Excepcion: {e.Message}", LogType.t_error);
-
+                Log.Instance.WriteLog($"Error al enviar el comando de informacion de surtidores. Excepcion: {e.Message}\n", LogType.t_error);
                 return null;
             }
             return despacho;
@@ -627,7 +631,6 @@ namespace CDS
                 string rows = "ERROR";
 
                 Connections.ExecuteNonQuery(string.Format("INSERT INTO Cierres ({0}) VALUES ({1})", campos, rows));
-                Connections.ExecuteNonQuery("UPDATE cierreBandera SET hacerCierre = 0");
 
                 throw new Exception(error);
             }
@@ -823,7 +826,7 @@ namespace CDS
                                           pipeClient.Dispose();
                                           pipeClient = null; // Limpiar el pipe para la nueva conexión
                                       }
-                                      Log.Instance.WriteLog($"\n\t  Excepción: {exception.Message.Trim()} Intento: {retries}", LogType.t_error);
+                                      Log.Instance.WriteLog($"\tExcepción: {exception.Message.Trim()} Intento: {retries}, Thread: {Thread.CurrentThread.ManagedThreadId}\n", LogType.t_error);
                                       retries++;
                                   }).ExecuteAndCapture(() =>
                                   {
@@ -848,7 +851,7 @@ namespace CDS
                 {
                     _ = ConnectorSQLite.Instance.ExecuteNonQuery($"UPDATE CheckConnection SET isConnected = 0, fecha = '{DateTime.Now:dd-MM-yyyy HH:mm:ss}' WHERE idConnection = 1");
 
-                    Log.Instance.WriteLog($"  Fin de intentos...\n", LogType.t_error);
+                    Log.Instance.WriteLog($"Fin de intentos...\n", LogType.t_error);
                     ReloadData();
                 }
                 else

@@ -56,6 +56,7 @@ namespace CDS
             label = new Label();
 
             CreateCustomLabel("Iniciando...", "#20B2AA");
+            Update_version();
 
             SetupNotifyIcon();
 
@@ -163,6 +164,7 @@ namespace CDS
                 _ = MessageBox.Show("El sistema está por detenerse. Espere mientras se completa el proceso.", "Aviso", MessageBoxButton.OK, MessageBoxImage.Information);
 
                 PumpController.EndProcess();
+                PumpController.Stop();
                 notifyIcon.Dispose();
                 base.OnClosed(e);
 
@@ -256,15 +258,42 @@ namespace CDS
             }
         }
 
+        private void B_Version_Click(object sender, RoutedEventArgs e)
+        {
+            Update_version();
+        }
+
+        private void Update_version()
+        {
+            // Obtener la ruta de la carpeta base (donde está el archivo ejecutable)
+            string basePath = AppDomain.CurrentDomain.BaseDirectory;
+
+            // Definir el nombre del archivo que queremos verificar
+            string filePath = Path.Combine(basePath, "version.txt");
+
+            // Verificar si el archivo existe
+            if (File.Exists(filePath))
+            {
+                // Si existe, leer el contenido del archivo
+                string contenido = File.ReadAllText(filePath);
+
+                L_Version.Content = contenido;
+            }
+        }
+
         private void Window_PreviewKeyDown(object sender, KeyEventArgs e)
         {
-            // Combinación de teclas Ctrl + Shift + E
+            // Combinación de teclas Ctrl + E
             if (Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl))
             {
                 if (e.Key == Key.C)
                 {
                     Button buttonCierreAnterior = stackPanel.Children[3] as Button;
                     buttonCierreAnterior.IsEnabled = !buttonCierreAnterior.IsEnabled;
+                }
+                else if (e.Key == Key.V)
+                {
+                    B_Version.Visibility = B_Version.IsVisible ? Visibility.Hidden : Visibility.Visible;
                 }
             }
         }

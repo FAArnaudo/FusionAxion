@@ -189,6 +189,8 @@ namespace CDS
                     command[0] = (byte)(command[0] + Convert.ToByte(surtidor.ID));
                 }
 
+                Log.Instance.WriteLog($"Verificando despacho surtidor: {surtidor.ID}", LogType.t_debug);
+
                 despacho = ConnectorCem.ComandoInformacionDeDespacho(command);
 
                 if (despacho == null)
@@ -261,19 +263,19 @@ namespace CDS
                 }
                 catch (Exception e)
                 {
-                    Log.Instance.WriteLog($"Error en el metodo GrabarDespachos.\n\tExcepcion: {e.Message}", LogType.t_error);
+                    Log.Instance.WriteLog($"Error en el metodo GrabarDespachos. Excepcion: {e.Message}\n", LogType.t_error);
                 }
             }
         }
 
         public override void GrabarCierre()
         {
+            _ = ConnectorSQLite.Instance.ExecuteNonQuery("UPDATE cierreBandera SET hacerCierre = 0");
+
             CierreCem cierreDeTurno = ConnectorCem.ComandoCierresDeTurno(ProtocolCommand.CierreDeTurnoCommand);
 
             try
             {
-                _ = ConnectorSQLite.Instance.ExecuteNonQuery("UPDATE cierreBandera SET hacerCierre = 0");
-
                 string fields = "fecha,monto_contado,volumen_contado,monto_YPFruta,volumen_YPFruta,state";
                 string values = string.Format("'{0}',{1},{2},{3},{4},'{5}'",
                     DateTime.Now.ToString("dd-MM-yyyy HH:mm:ss"),
@@ -424,6 +426,8 @@ namespace CDS
                         _ = ConnectorSQLite.Instance.ExecuteNonQuery(string.Format("INSERT INTO CierresPorManguera ({0}) VALUES ({1})", fields, values));
                     }
                 }
+
+                _ = ConnectorSQLite.Instance.ExecuteNonQuery("UPDATE cierreBandera SET hacerCierre = 0");
             }
             catch (Exception e)
             {

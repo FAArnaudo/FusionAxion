@@ -5,6 +5,8 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Globalization;
+using System.IO;
+using System.Threading.Tasks;
 
 namespace CDS
 {
@@ -20,6 +22,7 @@ namespace CDS
             ConnectorFusion = new ConnectorFusion();
             this.communication = communication;
         }
+
         private ICommunication GetDiscount()
         {
             return communication;
@@ -27,45 +30,61 @@ namespace CDS
 
         public override bool VerificarConexión()
         {
-            cFusion = null;
             bool connection = false;
             int retries = 1;
 
-            // Política de reintentos
-            PolicyResult policyResult = Policy.Handle<Exception>()
-                .WaitAndRetry(retryCount: 4,
-                              sleepDurationProvider: retryAttempt => TimeSpan.FromSeconds(Math.Pow(3, retryAttempt)),
-                              onRetry: (exception, TimeSpan, conttext) =>
-                              {
-                                  // Cerrar el pipe en caso de fallo
-                                  if (cFusion != null)
+            try
+            {
+                // Si la instancia ya existe y la conexión es válida, no hacemos nada
+                if (cFusion != null && cFusion.ConnectionStatus())
+                {
+                    Log.Instance.WriteLog("Conexión existente válida\n", LogType.t_debug);
+                    return true;
+                }
+
+                // Si la conexión no es válida, limpiamos la instancia
+                cFusion?.Close();
+                cFusion = null;
+
+                PolicyResult policyResult = Policy.Handle<Exception>()
+                    .WaitAndRetry(retryCount: 4,
+                                  sleepDurationProvider: retryAttempt => TimeSpan.FromSeconds(Math.Pow(3, retryAttempt)),
+                                  onRetry: (exception, TimeSpan, context) =>
                                   {
-                                      _ = cFusion.Close();
-                                      cFusion = null; // Limpiar el pipe para la nueva conexión
-                                  }
-                                  Log.Instance.WriteLog($"\n\t  Excepción: {exception.Message.Trim()} Intento: {retries}", LogType.t_error);
-                                  retries++;
-                              }).ExecuteAndCapture(() =>
-                              {
-                                  // Crear el pipeClient si está cerrado
-                                  if (cFusion == null)
+                                      Log.Instance.WriteLog($"Excepción: {exception.Message.Trim()} Intento: {retries}\n", LogType.t_error);
+                                      retries++;
+                                  }).ExecuteAndCapture(() =>
                                   {
+                                      // Crear nueva instancia solo si es necesario
                                       cFusion = new Fusion();
-                                  }
+                                      Log.Instance.WriteLog("Instancia fusion creada\n", LogType.t_debug);
 
-                                  cFusion.Connection(communication.GetConfiguration().IP);
+                                      // Intentar conectar con timeout de 5 segundos
+                                      Task connectionTask = Task.Run(() => cFusion.Connection(communication.GetConfiguration().IP));
+                                      Task timeoutTask = Task.Delay(5000);
 
-                                  connection = cFusion.ConnectionStatus();
-                              });
+                                      Task.WhenAny(connectionTask, timeoutTask).Wait();
 
-            // Verificación de resultado de conexión
-            _ = policyResult.Outcome == OutcomeType.Successful && connection
-                ? communication.ExecuteNonQuery($"UPDATE CheckConnection " +
-                                                  $"SET isConnected = 1, fecha = '{DateTime.Now:dd-MM-yyyy HH:mm:ss}' " +
-                                                  $"WHERE idConnection = 1")
-                : communication.ExecuteNonQuery($"UPDATE CheckConnection " +
-                                                  $"SET isConnected = 0, fecha = '{DateTime.Now:dd-MM-yyyy HH:mm:ss}' " +
-                                                  $"WHERE idConnection = 1");
+                                      if (connectionTask.IsCompleted)
+                                      {
+                                          connection = cFusion.ConnectionStatus();
+                                          Log.Instance.WriteLog($"Conexión establecida: {connection}\n", LogType.t_debug);
+                                      }
+                                      else
+                                      {
+                                          Log.Instance.WriteLog("Tiempo de espera agotado para la conexión\n", LogType.t_error);
+                                      }
+                                  });
+
+                // Registrar el estado en la base de datos
+                communication.ExecuteNonQuery($"UPDATE CheckConnection " +
+                                              $"SET isConnected = {(connection ? 1 : 0)}, fecha = '{DateTime.Now:dd-MM-yyyy HH:mm:ss}' " +
+                                              $"WHERE idConnection = 1");
+            }
+            catch (Exception ex)
+            {
+                Log.Instance.WriteLog($"Error en VerificarConexión: {ex.Message.Trim()}\n", LogType.t_error);
+            }
 
             return connection;
         }
@@ -221,7 +240,6 @@ namespace CDS
                                                                                         DateTime.Now.ToString("dd-MM-yyyy HH:mm:ss"),
                                                                                         tanque.ID));
                         }
-                        Log.Instance.WriteLog($"\n", LogType.t_info);
                     }
                     catch (Exception e)
                     {
@@ -249,7 +267,7 @@ namespace CDS
                     {
                         if (cFusion.GetLastSale(surtidor.ID, fusionSale) == 1)
                         {
-                            if (!fusionSale.GetAmount().Equals("0.00"))
+                            if (fusionSale != null && !fusionSale.GetAmount().Equals("0.00"))
                             {
 
                                 string fechaHora = fusionSale.GetDateOfTransaction().Trim() + " " + fusionSale.GetInitTimeOfTransaction().Trim();
@@ -263,7 +281,7 @@ namespace CDS
                                     Log.Instance.WriteLog($"Error de formato: {fechaFormateada}.", LogType.t_debug);
                                 }
 
-                                debugMessage += $"dechaFormateada: {fechaFormateada} - ";
+                                debugMessage += $"fechaFormateada: {fechaFormateada} - ";
 
                                 Despacho despacho = new Despacho()
                                 {
@@ -314,8 +332,9 @@ namespace CDS
                     catch (Exception e)
                     {
                         Log.Instance.WriteLog($"Error al obtener la ultima venta.\n" +
-                                              $"Surtidor: {surtidor.ID}\n" +
-                                              $"Excepción: {e.Message}, Debug: {debugMessage}", LogType.t_error);
+                                              $"Surtidor: {surtidor.ID},\n" +
+                                              $"Excepción: {e.Message},\n," +
+                                              $"Debug: {debugMessage}", LogType.t_error);
                     }
                 }
 
@@ -360,6 +379,7 @@ namespace CDS
 
             string campos;
             string rows;
+            int lastID;
 
             try
             {
@@ -367,6 +387,7 @@ namespace CDS
 
                 if (cierre.Estado.Equals("OK"))
                 {
+                    // Esta consulta SQL verifica si hay datos en la tabla y devuelve 1 si hay al menos un registro o 0 si está vacía.
                     bool hasData = Convert.ToBoolean(Convert.ToInt32(ConnectorSQLite.Instance.ExecuteSelectQuery("SELECT CASE WHEN COUNT(*) > 0 THEN 1 ELSE 0 END AS HasData FROM Cierres").Rows[0][0]));
 
                     //  Comprobamos si hay datos guardados
@@ -374,7 +395,7 @@ namespace CDS
                     {
                         // Obtengo el ultimo id de la tabla Cierres
                         DataTable tablaCierres = ConnectorSQLite.Instance.ExecuteSelectQuery("SELECT max(id) FROM Cierres");
-                        int lastID = Convert.ToInt32(tablaCierres.Rows[0][0]);
+                        lastID = Convert.ToInt32(tablaCierres.Rows[0][0]);
 
                         DataTable ultimoCierrePorManguera = ConnectorSQLite.Instance.ExecuteSelectQuery($"SELECT * FROM CierresPorManguera WHERE id = {lastID}");
 
@@ -438,6 +459,30 @@ namespace CDS
                     rows = string.Format("'{0}','{1}'", cierre.Estado, message);
 
                     _ = communication.ExecuteNonQuery(string.Format("INSERT INTO Cierres ({0}) VALUES ({1})", campos, rows));
+
+                    // Grabar CierresPorManguera
+                    string fields = "id,surtidor,manguera,monto,volumen,monto_acumulado,volumen_acumulado";
+
+                    // Traer ID del cierre para poder referenciar los detalles
+                    DataTable tablaCierres = ConnectorSQLite.Instance.ExecuteSelectQuery("SELECT max(id) FROM Cierres");
+
+                    int id = Convert.ToInt32(tablaCierres.Rows[0][0]);
+
+                    for (int manguera = 0; manguera < cierre.TotalesPorManguera.Count; manguera++)
+                    {
+                        string values = string.Format("{0},{1},{2},{3},{4},{5},{6}",
+                                                id,
+                                                cierre.TotalesPorManguera[manguera].NumeroDeSurtidor,
+                                                cierre.TotalesPorManguera[manguera].NumeroDeManguera,
+                                                0.ToString("F2", CultureInfo.InvariantCulture),
+                                                0.ToString("F2", CultureInfo.InvariantCulture),
+                                                0.ToString("F2", CultureInfo.InvariantCulture),
+                                                0.ToString("F2", CultureInfo.InvariantCulture));
+
+                        Log.Instance.WriteLog($"Consulta: INSERT INTO CierresPorManguera ({fields}) VALUES ({values})", LogType.t_debug);
+
+                        _ = ConnectorSQLite.Instance.ExecuteNonQuery(string.Format("INSERT INTO CierresPorManguera ({0}) VALUES ({1})", fields, values));
+                    }
                 }
             }
             catch (Exception e)
@@ -471,10 +516,10 @@ namespace CDS
                                         id,
                                         cierre.TotalesPorManguera[manguera].NumeroDeSurtidor,
                                         cierre.TotalesPorManguera[manguera].NumeroDeManguera,
-                                        cierre.TotalesPorManguera[manguera].TotalVntasMonto.ToString(CultureInfo.InvariantCulture),
-                                        cierre.TotalesPorManguera[manguera].TotalVntasVolumen.ToString(CultureInfo.InvariantCulture),
-                                        cierre.TotalesPorManguera[manguera].TotalVntasSinControlMonto.ToString(CultureInfo.InvariantCulture),
-                                        cierre.TotalesPorManguera[manguera].TotalVntasSinControlVolumen.ToString(CultureInfo.InvariantCulture));
+                                        cierre.TotalesPorManguera[manguera].TotalVntasMonto.ToString("F2", CultureInfo.InvariantCulture),
+                                        cierre.TotalesPorManguera[manguera].TotalVntasVolumen.ToString("F2", CultureInfo.InvariantCulture),
+                                        cierre.TotalesPorManguera[manguera].TotalVntasSinControlMonto.ToString("F2", CultureInfo.InvariantCulture),
+                                        cierre.TotalesPorManguera[manguera].TotalVntasSinControlVolumen.ToString("F2", CultureInfo.InvariantCulture));
 
                 Log.Instance.WriteLog($"Consulta: INSERT INTO CierresPorManguera ({fields}) VALUES ({values})", LogType.t_debug);
 
@@ -551,6 +596,8 @@ namespace CDS
                             // Parsear la cadena JSON
                             JObject json = JObject.Parse(descuento);
 
+                            SaveAnswer(json, "descuento_puma.json");
+
                             debugMessage += "Datos Principales - ";
                             // Datos principales
                             string authCode = json["AuthCode"].ToString();
@@ -617,8 +664,8 @@ namespace CDS
 
                             _ = ExecuteNonQuery($"UPDATE Despachos " +
                                                      $"SET AUC = '{authCode}', " +
-                                                         $"DCA = {0}, DCI = '{statementDescriptor}' , DCP = '{paymentMethodId}', " +
-                                                         $"DPN = '{paymentTypeId}', TXTD = '{description}', cod_auto = '{cod_auto}', " +
+                                                         $"DCA = {totalDiscount}, DCI = '{statementDescriptor}' , DCP = '{paymentMethodId}', " +
+                                                         $"DPN = '{paymentTypeId}', TXTD = '{totalGlosa}', cod_auto = '{cod_auto}', " +
                                                          $"glosa_auto = '{glosa_auto}', valor_auto = {valor_auto.ToString(CultureInfo.InvariantCulture)} " +
                                                          $"WHERE id = {id}");
                         }
@@ -649,6 +696,21 @@ namespace CDS
         {
             return ConnectorSQLite.Instance.ExecuteSelectQuery(query);
         }
+        public static void SaveAnswer(JObject jsonObject, string nombreArchivo)
+        {
+            // Crear el directorio si no existe
+            string directorio = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Responses");
+            if (!Directory.Exists(directorio))
+            {
+                Directory.CreateDirectory(directorio);
+            }
+
+            // Definir la ruta completa del archivo
+            string rutaArchivo = Path.Combine(directorio, nombreArchivo);
+
+            // Guardar el JObject en el archivo
+            File.WriteAllText(rutaArchivo, jsonObject.ToString());
+        }
     }
 
     public class AxionConnector : ICommunication
@@ -670,6 +732,8 @@ namespace CDS
                         int id = Convert.ToInt32(row["id"]);
                         string descuento = "";
                         debugMessage = $"ID: {id} - ";
+
+                        Log.Instance.WriteLog($"Verificando descuento del despacho ID: {id}\n", LogType.t_debug);
 
                         if (connectorFusion.AxionDiscount(cFusion, id, ref descuento))
                         {
@@ -724,7 +788,7 @@ namespace CDS
                 }
                 catch (Exception e)
                 {
-                    Log.Instance.WriteLog($"\nError al obtener Descuentos. Excepción: {e.Message}, Mensaje: {debugMessage}", LogType.t_error);
+                    Log.Instance.WriteLog($"Error al obtener Descuentos. Excepción: {e.Message}, Mensaje: {debugMessage}\n", LogType.t_error);
                 }
             }
         }

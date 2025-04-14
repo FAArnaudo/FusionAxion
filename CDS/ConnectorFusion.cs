@@ -31,6 +31,7 @@ namespace CDS
                     {
                         if (fusionProduct != null)
                         {
+                            Log.Instance.WriteLog($"Producto: {fusionProduct.m_iProductNr}, {fusionProduct.m_iProductId}, {fusionProduct.m_strProdType}", LogType.t_debug);
                             Producto producto = new Producto
                             {
                                 ID = fusionProduct.m_iProductNr,
@@ -53,6 +54,7 @@ namespace CDS
                     {
                         if (pump != null)
                         {
+                            Log.Instance.WriteLog($"Surtidor: {pump.m_iPhysicalID}, {pump.m_strLoopID}, {pump.m_iHoses}", LogType.t_debug);
                             pumpCount++;
                             Surtidor surtidor = new Surtidor
                             {
@@ -64,6 +66,7 @@ namespace CDS
                             {
                                 if (fusionHose != null)
                                 {
+                                    Log.Instance.WriteLog($"Manguera: {fusionHose.m_iPhysicalID}, {fusionHose.m_iGradeNr}, {fusionHose.m_strPPU}, {fusionHose.m_strTanks}", LogType.t_debug);
                                     Manguera manguera = new Manguera
                                     {
                                         ID = fusionHose.m_iPhysicalID + 1
@@ -149,6 +152,11 @@ namespace CDS
                 _ = cFusion.GetSale(idSale, fusionSale);
 
                 descuento = fusionSale.GetPaymentInfo();
+
+                if (!string.IsNullOrWhiteSpace(descuento))
+                {
+                    Log.Instance.WriteLog($"Descuento obtenido:\n{descuento}\n", LogType.t_debug);
+                }
                 /*
                 // Tiene descuento
                 descuento = "AUC=055127143~CL=39444994~DCA=600.00~DCI=200000000000000000001~" +
@@ -239,11 +247,13 @@ namespace CDS
             {
                 producto.ID_SIGES = 1;
             }
-            else if (producto.Descripcion.Equals("MAX_PREMIUM") || producto.Descripcion.Equals("REGULAR") || producto.Descripcion.Equals("QUANTIUM"))
+            else if (producto.Descripcion.Equals("MAX_PREMIUM") || producto.Descripcion.Equals("REGULAR") ||
+                     producto.Descripcion.Equals("QUANTIUM") || producto.Descripcion.Equals("NAFTA PREMIUM"))
             {
                 producto.ID_SIGES = 4;
             }
-            else if(producto.Descripcion.Equals("ION_DIESEL"))
+            else if (producto.Descripcion.Equals("ION_DIESEL") || producto.Descripcion.Equals("EURO DIESEL") ||
+                     producto.Descripcion.Equals("QUANTIUM DIESEL"))
             {
                 producto.ID_SIGES = 6;
             }
@@ -251,7 +261,7 @@ namespace CDS
             {
                 producto.ID_SIGES = 7;
             }
-            else if(producto.Descripcion.Equals("PUMA_DIESEL") || producto.Descripcion.Equals("DIESEL"))
+            else if (producto.Descripcion.Equals("PUMA_DIESEL") || producto.Descripcion.Equals("DIESEL") || producto.Descripcion.Equals("DIESEL_BIO"))
             {
                 producto.ID_SIGES = 8;
             }

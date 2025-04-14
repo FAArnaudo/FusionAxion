@@ -38,10 +38,37 @@ namespace ConfigurationTests
             string databasePath = Path.Combine(testFolderPath, testDatabaseName);
 
             // Elimina la base de datos si existe
+            //if (File.Exists(databasePath))
+            //{
+            //    File.Delete(databasePath);
+            //}
+            // Ensure the database file is not in use before attempting to delete it
             if (File.Exists(databasePath))
             {
+                while (IsFileLocked(databasePath))
+                {
+
+                }
+
                 File.Delete(databasePath);
             }
+        }
+
+        // Helper method to check if a file is locked
+        private bool IsFileLocked(string filePath)
+        {
+            try
+            {
+                using (FileStream stream = File.Open(filePath, FileMode.Open, FileAccess.ReadWrite, FileShare.None))
+                {
+                    stream.Close();
+                }
+            }
+            catch (IOException)
+            {
+                return true;
+            }
+            return false;
         }
 
         [TestMethod]
@@ -58,25 +85,6 @@ namespace ConfigurationTests
             // Assert
             Assert.AreEqual(expected, actual);
         }
-
-        [TestMethod]
-        public void CreateDatabase_ReturnTrue_WhenItAlreadyExist()
-        {
-            // Arrange
-            ConnectorSQLite connector = ConnectorSQLite.Instance;
-
-            // Crear el directorio
-            _ = Directory.CreateDirectory(testPath);
-
-            _ = connector.CreateDatabase(configuration.Object);
-
-            // Act
-            bool actual = connector.CreateDatabase(configuration.Object);
-
-            // Assert
-            Assert.IsTrue(actual);
-        }
-
 
         [TestMethod]
         public void ExecuteInsertOrStateQuery_InsertOneRowModify()

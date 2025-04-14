@@ -38,10 +38,40 @@ namespace ConfigurationTests
             string databasePath = Path.Combine(testFolderPath, testDatabaseName);
 
             // Elimina la base de datos si existe
+            //if (File.Exists(databasePath))
+            //{
+            //    File.Delete(databasePath);
+            //}
+            // Ensure the database file is not in use before attempting to delete it
             if (File.Exists(databasePath))
             {
-                File.Delete(databasePath);
+                if (!IsFileLocked(databasePath))
+                {
+                    File.Delete(databasePath);
+                }
+                else
+                {
+                    // Log a warning or handle the locked file appropriately
+                    throw new IOException($"The database file '{databasePath}' is in use by another process.");
+                }
             }
+        }
+
+        // Helper method to check if a file is locked
+        private bool IsFileLocked(string filePath)
+        {
+            try
+            {
+                using (FileStream stream = File.Open(filePath, FileMode.Open, FileAccess.ReadWrite, FileShare.None))
+                {
+                    stream.Close();
+                }
+            }
+            catch (IOException)
+            {
+                return true;
+            }
+            return false;
         }
 
         [TestMethod]

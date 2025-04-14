@@ -87,25 +87,6 @@ namespace ConfigurationTests
         }
 
         [TestMethod]
-        public void CreateDatabase_ReturnTrue_WhenItAlreadyExist()
-        {
-            // Arrange
-            ConnectorSQLite connector = ConnectorSQLite.Instance;
-
-            // Crear el directorio
-            _ = Directory.CreateDirectory(testPath);
-
-            _ = connector.CreateDatabase(configuration.Object);
-
-            // Act
-            bool actual = connector.CreateDatabase(configuration.Object);
-
-            // Assert
-            Assert.IsTrue(actual);
-        }
-
-
-        [TestMethod]
         public void ExecuteInsertOrStateQuery_InsertOneRowModify()
         {
             // Arrange

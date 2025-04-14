@@ -45,15 +45,12 @@ namespace ConfigurationTests
             // Ensure the database file is not in use before attempting to delete it
             if (File.Exists(databasePath))
             {
-                if (!IsFileLocked(databasePath))
+                while (IsFileLocked(databasePath))
                 {
-                    File.Delete(databasePath);
+
                 }
-                else
-                {
-                    // Log a warning or handle the locked file appropriately
-                    throw new IOException($"The database file '{databasePath}' is in use by another process.");
-                }
+
+                File.Delete(databasePath);
             }
         }
 

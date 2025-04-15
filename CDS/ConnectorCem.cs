@@ -637,6 +637,17 @@ namespace CDS
 
             return turno;
         }
+        public void EnviarPreset(byte[] command)
+        {
+            try
+            {
+
+            }
+            catch (Exception ex)
+            {
+
+            }
+        }
 
         /// <summary>
         /// 

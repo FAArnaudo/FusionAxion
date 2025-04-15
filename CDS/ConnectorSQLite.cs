@@ -321,6 +321,30 @@ namespace CDS
                 {
                     _ = cmd.ExecuteNonQuery();
                 }
+
+                createTableQuery = "CREATE TABLE IF NOT EXISTS Preset " +
+                                   "();";
+
+                using (SQLiteCommand cmd = new SQLiteCommand(createTableQuery, connection))
+                {
+                    _ = cmd.ExecuteNonQuery();
+                }
+
+                createTableQuery = "CREATE TABLE IF NOT EXISTS AutorizacionIndividual " +
+                                   "();";
+
+                using (SQLiteCommand cmd = new SQLiteCommand(createTableQuery, connection))
+                {
+                    _ = cmd.ExecuteNonQuery();
+                }
+
+                createTableQuery = "CREATE TABLE IF NOT EXISTS EmergenciaIndividual " +
+                                   "();";
+
+                using (SQLiteCommand cmd = new SQLiteCommand(createTableQuery, connection))
+                {
+                    _ = cmd.ExecuteNonQuery();
+                }
             }
             catch (Exception ex)
             {

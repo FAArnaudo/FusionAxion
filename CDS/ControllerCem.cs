@@ -486,6 +486,13 @@ namespace CDS
                 _ = ConnectorSQLite.Instance.ExecuteNonQuery(deleteQuery);
             }
         }
+
+        private void BuscarPreset()
+        {
+            int surtidor;
+            int manguera;
+            int monto;
+        }
     }
 
     public interface IProtocolCommand
@@ -499,6 +506,9 @@ namespace CDS
         byte[] CierreDeTurnoCommand { get; }
         byte[] CierreAnteriorCommand { get; }
         byte[] TurnoActualCommand { get; }
+        byte[] EnvioPresetCommand { get; }
+        byte[] AutorizarDespachoCommand { get; }
+        byte[] EmergenciaInividualCommand { get; }
     }
 
     public class Protocol16 : IProtocolCommand
@@ -510,6 +520,9 @@ namespace CDS
         public byte[] CierreAnteriorCommand => new byte[] { 0x0B };
         public byte[] TurnoActualCommand => new byte[] { 0x08 };
         public byte[] PoleoEnLineaCommand => new byte[] { 0x00 };
+        public byte[] EnvioPresetCommand => new byte[] { 0x10 };
+        public byte[] AutorizarDespachoCommand => new byte[] { 0x70 };
+        public byte[] EmergenciaInividualCommand => new byte[] { 0x50 };
 
         public int GetProtocol()
         {
@@ -526,6 +539,9 @@ namespace CDS
         public byte[] CierreAnteriorCommand => new byte[] { 0x0B };
         public byte[] TurnoActualCommand => new byte[] { 0x08 };
         public byte[] PoleoEnLineaCommand => new byte[] { 0x00 };
+        public byte[] EnvioPresetCommand => new byte[] { 0x10 };
+        public byte[] AutorizarDespachoCommand => new byte[] { 0x40 };
+        public byte[] EmergenciaInividualCommand => new byte[] { 0x90 };
 
         public int GetProtocol()
         {

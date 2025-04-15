@@ -121,18 +121,18 @@ namespace CDS
 
             while (IsRunning)
             {
-                Thread.Sleep(20000);
-                time++;
                 Log.Instance.WriteLog($"Esperando finalizacion del proceso.\n", LogType.t_info);
 
                 if (time == 6)
                 {
                     IsRunning = false;
-
                 }
+
+                Thread.Sleep(5000);
+                time++;
             }
 
-            Log.Instance.WriteLog($" Proceso Finalizado.\n", LogType.t_info);
+            Log.Instance.WriteLog($"Proceso Finalizado.\n", LogType.t_info);
         }
     }
 }

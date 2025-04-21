@@ -536,6 +536,11 @@ namespace CDS
         {
             return double.TryParse(value, NumberStyles.Any, culture, out double result) ? result : result;
         }
+
+        public override void GrabarDespachos(Surtidor surtidor)
+        {
+            throw new NotImplementedException();
+        }
     }
 
     public interface ICommunication

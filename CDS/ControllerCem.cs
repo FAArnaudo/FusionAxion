@@ -129,7 +129,7 @@ namespace CDS
             }
             catch (Exception e)
             {
-                throw new Exception($"Error en el metodo ConfigurarEstacion.\n\tExcepcion: {e.Message}");
+                throw new Exception($"Error en el metodo ConfigurarEstacion. Excepcion: {e.Message}.\n");
             }
         }
 
@@ -172,99 +172,96 @@ namespace CDS
             }
             catch (Exception e)
             {
-                Log.Instance.WriteLog($"Error en el metodo ActualizarTanques.\n\tExcepcion: {e.Message}", LogType.t_error);
+                Log.Instance.WriteLog($"Error en el metodo ActualizarTanques. Excepcion: {e.Message}.\n", LogType.t_error);
             }
         }
 
-        public override void GrabarDespachos()
+        public override void GrabarDespachos(Surtidor surtidor)
         {
-            foreach (Surtidor surtidor in Station.Instance.Surtidores)
+            byte[] command = ProtocolCommand.DespachoCommand;
+
+            DespachoCem despacho;
+
+            if (surtidor.ID != ProtocolCommand.GetProtocol())
             {
-                byte[] command = ProtocolCommand.DespachoCommand;
+                command[0] = (byte)(command[0] + Convert.ToByte(surtidor.ID));
+            }
 
-                DespachoCem despacho;
+            Log.Instance.WriteLog($"Verificando despacho surtidor: {surtidor.ID}", LogType.t_debug);
 
-                if (surtidor.ID != ProtocolCommand.GetProtocol())
+            despacho = ConnectorCem.ComandoInformacionDeDespacho(command);
+
+            if (despacho == null || despacho.IdDespacho == 0)
+            {
+                return;
+            }
+
+            try
+            {
+                DataTable tablaDespachos = ConnectorSQLite.Instance.ExecuteSelectQuery($"SELECT * " +
+                                                                                       $"FROM Despachos " +
+                                                                                       $"WHERE id = {despacho.IdDespacho} AND surtidor = {surtidor.ID}");
+
+                if (tablaDespachos.Rows.Count == 0)
                 {
-                    command[0] = (byte)(command[0] + Convert.ToByte(surtidor.ID));
-                }
+                    bool YPFRutaContado = false;
+                    despacho.IdSurtidor = surtidor.ID;
 
-                Log.Instance.WriteLog($"Verificando despacho surtidor: {surtidor.ID}", LogType.t_debug);
+                    UpdateProductos(despacho);
 
-                despacho = ConnectorCem.ComandoInformacionDeDespacho(command);
-
-                if (despacho == null)
-                {
-                    continue;
-                }
-
-                try
-                {
-                    DataTable tablaDespachos = ConnectorSQLite.Instance.ExecuteSelectQuery($"SELECT * " +
-                                                                                           $"FROM Despachos " +
-                                                                                           $"WHERE id = {despacho.IdDespacho} AND surtidor = {surtidor.ID}");
-
-                    if (tablaDespachos.Rows.Count == 0)
+                    foreach (Manguera manguera in surtidor.Mangueras)
                     {
-                        bool YPFRutaContado = false;
-                        despacho.IdSurtidor = surtidor.ID;
-
-                        UpdateProductos(despacho);
-
-                        foreach (Manguera manguera in surtidor.Mangueras)
+                        if (manguera.Producto.Descripcion.Equals(despacho.Producto))
                         {
-                            if (manguera.Producto.Descripcion.Equals(despacho.Producto))
-                            {
-                                despacho.IdManguera = manguera.ID;
-                                break;
-                            }
+                            despacho.IdManguera = manguera.ID;
+                            break;
                         }
-
-                        if (despacho.VentaFacturada)
-                        {
-                            DataTable tablaProductos = ConnectorSQLite.Instance.ExecuteSelectQuery($"SELECT * " +
-                                                                                                   $"FROM Productos " +
-                                                                                                   $"WHERE id_producto = {despacho.IdProducto} OR numero_despacho = {despacho.IdProducto}");
-
-                            double precioUnitario = Convert.ToDouble(tablaProductos.Rows[0]["precio"]);
-
-                            if (despacho.PPU < precioUnitario)
-                            {
-                                YPFRutaContado = true;
-                            }
-
-                            if (despacho.Producto == null)
-                            {
-                                despacho.Producto = Convert.ToString(tablaProductos.Rows[0]["producto"]);
-                            }
-                        }
-
-                        string campos = "id,surtidor,manguera,producto,PPU,volumen,monto,descripcion,facturado,YPFruta,despacho_pedido,fecha";
-                        string row = string.Format("{0},{1},{2},{3},{4},{5},{6},'{7}',{8},{9},{10},'{11}'",
-                                                    despacho.IdDespacho,
-                                                    despacho.IdSurtidor,
-                                                    despacho.IdManguera,
-                                                    despacho.IdProducto,
-                                                    despacho.PPU.ToString(CultureInfo.InvariantCulture),
-                                                    despacho.Volumen.ToString(CultureInfo.InvariantCulture),
-                                                    despacho.Monto.ToString(CultureInfo.InvariantCulture),
-                                                    despacho.Producto,
-                                                    despacho.VentaFacturada,
-                                                    YPFRutaContado,
-                                                    0,
-                                                    DateTime.Now.ToString("dd-MM-yyyy HH:mm:ss"));
-
-                        _ = ConnectorSQLite.Instance.ExecuteNonQuery(string.Format("INSERT INTO Despachos ({0}) VALUES ({1})", campos, row));
-
-                        Log.Instance.WriteLog(string.Format("INSERT INTO Despachos ({0}) VALUES ({1})", campos, row), LogType.t_debug);
-
-                        Thread.Sleep(1000);
                     }
+
+                    if (despacho.VentaFacturada)
+                    {
+                        DataTable tablaProductos = ConnectorSQLite.Instance.ExecuteSelectQuery($"SELECT * " +
+                                                                                               $"FROM Productos " +
+                                                                                               $"WHERE id_producto = {despacho.IdProducto} OR numero_despacho = {despacho.IdProducto}");
+
+                        double precioUnitario = Convert.ToDouble(tablaProductos.Rows[0]["precio"]);
+
+                        if (despacho.PPU < precioUnitario)
+                        {
+                            YPFRutaContado = true;
+                        }
+
+                        if (despacho.Producto == null)
+                        {
+                            despacho.Producto = Convert.ToString(tablaProductos.Rows[0]["producto"]);
+                        }
+                    }
+
+                    string campos = "id,surtidor,manguera,producto,PPU,volumen,monto,descripcion,facturado,YPFruta,despacho_pedido,fecha";
+                    string row = string.Format("{0},{1},{2},{3},{4},{5},{6},'{7}',{8},{9},{10},'{11}'",
+                                                despacho.IdDespacho,
+                                                despacho.IdSurtidor,
+                                                despacho.IdManguera,
+                                                despacho.IdProducto,
+                                                despacho.PPU.ToString(CultureInfo.InvariantCulture),
+                                                despacho.Volumen.ToString(CultureInfo.InvariantCulture),
+                                                despacho.Monto.ToString(CultureInfo.InvariantCulture),
+                                                despacho.Producto,
+                                                despacho.VentaFacturada,
+                                                YPFRutaContado,
+                                                0,
+                                                DateTime.Now.ToString("dd-MM-yyyy HH:mm:ss"));
+
+                    _ = ConnectorSQLite.Instance.ExecuteNonQuery(string.Format("INSERT INTO Despachos ({0}) VALUES ({1})", campos, row));
+
+                    Log.Instance.WriteLog(string.Format("INSERT INTO Despachos ({0}) VALUES ({1})", campos, row), LogType.t_debug);
+
+                    Thread.Sleep(1000);
                 }
-                catch (Exception e)
-                {
-                    Log.Instance.WriteLog($"Error en el metodo GrabarDespachos. Excepcion: {e.Message}\n", LogType.t_error);
-                }
+            }
+            catch (Exception e)
+            {
+                Log.Instance.WriteLog($"Error en el metodo GrabarDespachos. Excepcion: {e.Message}.\n", LogType.t_error);
             }
         }
 
@@ -330,7 +327,7 @@ namespace CDS
             }
             catch (Exception e)
             {
-                throw new Exception($"Error en el Cierre de turno. Excepción: {e.Message}");
+                throw new Exception($"Error en el Cierre de turno. Excepción: {e.Message}.\n");
             }
 
             CheckTableSize();
@@ -431,7 +428,7 @@ namespace CDS
             }
             catch (Exception e)
             {
-                throw new Exception($"Error en el metodo TrtaerCierreAnterior. Excepción: {e.Message}");
+                throw new Exception($"Error en el metodo TrtaerCierreAnterior. Excepción: {e.Message}.\n");
             }
         }
 
@@ -461,37 +458,39 @@ namespace CDS
         {
             _ = ConnectorSQLite.Instance.ExecuteNonQuery("DELETE FROM despachos");
 
-            int sizeTable = ConnectorSQLite.Instance.ExecuteSelectQuery("SELECT * FROM Cierres").Rows.Count;
-            int maxLimit = 60;
-            int limit = maxLimit / 2;
+            int maxLimit = 100;
+            int maxToKeep = 30;
 
-            if (sizeTable >= maxLimit)
+            // Obtener todos los IDs de la tabla Cierres ordenados por ID ascendente
+            DataTable allCierres = ConnectorSQLite.Instance.ExecuteSelectQuery("SELECT id FROM Cierres ORDER BY id ASC");
+
+            int totalCierres = allCierres.Rows.Count;
+
+            if (totalCierres == maxLimit)
             {
-                string deleteQuery = $"DELETE FROM Cierres WHERE id IN (SELECT id FROM Cierres ORDER BY id ASC LIMIT {limit})";
+                int toDelete = totalCierres - maxToKeep;
 
-                _ = ConnectorSQLite.Instance.ExecuteNonQuery(deleteQuery);
+                // Obtener los IDs a eliminar (los primeros)
+                List<int> idsToDelete = new List<int>();
+                for (int i = 0; i < toDelete; i++)
+                {
+                    idsToDelete.Add(Convert.ToInt32(allCierres.Rows[i]["id"]));
+                }
 
-                deleteQuery = $"DELETE FROM CierresPorManguera " +
-                              $"WHERE id " +
-                              $"IN (SELECT id " +
-                                  $"FROM CierresPorManguera " +
-                                  $"ORDER BY id ASC " +
-                                  $"LIMIT {limit * Station.Instance.NumeroDeSurtidores * Station.Instance.NumeroDeProductos})";
+                // Convertir la lista de IDs a una cadena separada por comas
+                string idList = string.Join(",", idsToDelete);
 
-                _ = ConnectorSQLite.Instance.ExecuteNonQuery(deleteQuery);
+                // Eliminar en orden: primero los hijos, luego el padre
+                ConnectorSQLite.Instance.ExecuteNonQuery($"DELETE FROM CierresPorManguera WHERE id IN ({idList})");
+                ConnectorSQLite.Instance.ExecuteNonQuery($"DELETE FROM CierresPorProducto WHERE id IN ({idList})");
+                ConnectorSQLite.Instance.ExecuteNonQuery($"DELETE FROM Cierres WHERE id IN ({idList})");
 
-                deleteQuery = $"DELETE FROM CierresPorProducto " +
-                              $"WHERE id IN (SELECT id FROM CierresPorProducto ORDER BY id ASC LIMIT {limit * Station.Instance.NumeroDeProductos})";
-
-                _ = ConnectorSQLite.Instance.ExecuteNonQuery(deleteQuery);
             }
         }
 
-        private void BuscarPreset()
+        public override void GrabarDespachos()
         {
-            int surtidor;
-            int manguera;
-            int monto;
+            throw new NotImplementedException();
         }
     }
 

@@ -36,6 +36,7 @@ namespace CDS
         /// y guardarla en la tabla de la base de datos correspondiente.
         /// </summary>
         public abstract void GrabarDespachos();
+        public abstract void GrabarDespachos(Surtidor surtidor);
 
         /// <summary>
         /// Este método estático es el encargado de procesar la informacion del corte del ultimo turno

@@ -58,11 +58,17 @@ namespace CDS
                     {
                         LastExecutionTime = DateTime.Now; // Actualiza el tiempo de ejecución
 
-                        ControllerCem.GrabarDespachos();
+                        foreach (Surtidor surtidor in Station.Instance.Surtidores)
+                        {
+                            ControllerCem.GrabarDespachos(surtidor);
 
-                        CheckFlags();
+                            CheckFlags();
 
-                        Thread.Sleep(1000 * Convert.ToInt32(Data.Timer));
+                            if (CancellationToken.Token.IsCancellationRequested)
+                                break;
+
+                            Thread.Sleep(1000 * Convert.ToInt32(Data.Timer));
+                        }
 
                         Log.Instance.WriteLog($"Estado del hilo {mainProcess.Id}: {mainProcess.Status}. TimerProcess {Data.Timer}. Tiempo de bucle: {DateTime.Now - LastExecutionTime}\n", LogType.t_debug);
                     }
@@ -77,7 +83,7 @@ namespace CDS
                 }
                 catch (Exception e)
                 {
-                    Log.Instance.WriteLog($"Estado del hilo {mainProcess.Id}: {mainProcess.Status} - Error en el loop del controlador.\n\t  Excepción: {e.Message}\n", LogType.t_error);
+                    Log.Instance.WriteLog($"Estado del hilo {mainProcess.Id}: {mainProcess.Status} - Error en el loop del controlador. Excepción: {e.Message}\n.", LogType.t_error);
 
                     if (HacerCierre)
                     {

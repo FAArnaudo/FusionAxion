@@ -31,7 +31,7 @@ namespace CDS
             }
             catch (Exception e)
             {
-                Log.Instance.WriteLog("Error en GetConfiguration. Excepción: " + e.Message, LogType.t_error);
+                Log.Instance.WriteLog($"Error en GetConfiguration. Excepción: {e.Message}.\n", LogType.t_error);
                 return data;
             }
             return data;
@@ -57,7 +57,7 @@ namespace CDS
             }
             catch (Exception e)
             {
-                Log.Instance.WriteLog($"Error al guardar la configuración. Excepción: {e.Message}", LogType.t_error);
+                Log.Instance.WriteLog($"Error al guardar la configuración. Excepción: {e.Message}.\n", LogType.t_error);
                 return false;
             }
             return true;

@@ -46,7 +46,7 @@ namespace CDS
             }
             catch (Exception e)
             {
-                throw new Exception($"Error al obtener la conexión con el controlador CEM. Excepción: {e.Message}");
+                throw new Exception($"Error al obtener la conexión con el controlador CEM. Excepción: {e.Message}.\n");
             }
         }
 
@@ -64,7 +64,7 @@ namespace CDS
             {
                 if (reply == null || reply[confirmacion] != 0x0)
                 {
-                    throw new Exception("No se recibió mensaje de confirmación al solicitar la configuración de la estación.");
+                    throw new Exception("No se recibió mensaje de confirmación al solicitar la configuración de la estación.\n");
                 }
 
                 if (!File.Exists(Environment.CurrentDirectory + "\\Responses\\ConfiguracionDeLaEstacion.txt"))
@@ -215,7 +215,7 @@ namespace CDS
             }
             catch (Exception e)
             {
-                throw new Exception($"Error al obtener la configuración de la estación. Excepción: {e.Message}");
+                throw new Exception($"Error al obtener la configuración de la estación. Excepción: {e.Message}.\n");
             }
 
             return station;
@@ -266,7 +266,7 @@ namespace CDS
             }
             catch (Exception e)
             {
-                Log.Instance.WriteLog($"Error al enviar el comando de stock de tanques. Excepción: {e.Message}", LogType.t_error);
+                Log.Instance.WriteLog($"Error al enviar el comando de stock de tanques. Excepción: {e.Message}.\n", LogType.t_error);
 
                 return null;
             }
@@ -359,7 +359,7 @@ namespace CDS
             }
             catch (Exception e)
             {
-                Log.Instance.WriteLog($"Error al enviar el comando de informacion de surtidores. Excepcion: {e.Message}\n", LogType.t_error);
+                Log.Instance.WriteLog($"Error al enviar el comando de informacion de surtidores. Excepcion: {e.Message}.\n", LogType.t_error);
                 return null;
             }
             return despacho;
@@ -606,19 +606,19 @@ namespace CDS
                 switch (command[0])
                 {
                     case 0x07:
-                        error = $"Error al pedir intormacion del CierreDeTurno. Excepción: {e.Message}";
+                        error = $"Error al pedir intormacion del CierreDeTurno. Excepción: {e.Message}.\n";
                         name = "CierreDeTurno";
                         break;
                     case 0x0B:
-                        error = $"Error al pedir intormacion del CierreDeTurnoAnterior. Excepción: {e.Message}";
+                        error = $"Error al pedir intormacion del CierreDeTurnoAnterior. Excepción: {e.Message}.\n";
                         name = "CierreDeTurnoAnterior";
                         break;
                     case 0x08:
-                        error = $"Error al pedir intormacion del TurnoActual. Excepción: {e.Message}";
+                        error = $"Error al pedir intormacion del TurnoActual. Excepción: {e.Message}.\n";
                         name = "TurnoActual";
                         break;
                     default:
-                        error = $"Error al pedir intormacion del turno CierreDeTurno. Excepción: {e.Message}";
+                        error = $"Error al pedir intormacion del turno CierreDeTurno. Excepción: {e.Message}.\n";
                         name = "CierreDeTurno";
                         break;
                 }
@@ -637,16 +637,17 @@ namespace CDS
 
             return turno;
         }
-        public void EnviarPreset(byte[] command)
+        public void ComandoAutorizacion(byte[] command)
         {
-            try
-            {
-
-            }
-            catch (Exception ex)
-            {
-
-            }
+            throw new NotImplementedException();
+        }
+        public void ComandoEnvioPreset(byte[] command)
+        {
+            throw new NotImplementedException();
+        }
+        public void ComandoEmergenciaIndividual(byte[] command)
+        {
+            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -740,7 +741,7 @@ namespace CDS
                     }
                     else
                     {
-                        throw new FormatException($"El valor '{value}' no es un byte válido.");
+                        throw new FormatException($"El valor '{value}' no es un byte válido.\n");
                     }
                 }
             }
@@ -837,7 +838,7 @@ namespace CDS
                                           pipeClient.Dispose();
                                           pipeClient = null; // Limpiar el pipe para la nueva conexión
                                       }
-                                      Log.Instance.WriteLog($"\tExcepción: {exception.Message.Trim()} Intento: {retries}, Thread: {Thread.CurrentThread.ManagedThreadId}\n", LogType.t_error);
+                                      Log.Instance.WriteLog($"Excepción: {exception.Message.Trim()} Intento: {retries}, Thread: {Thread.CurrentThread.ManagedThreadId}.\n", LogType.t_error);
                                       retries++;
                                   }).ExecuteAndCapture(() =>
                                   {
@@ -872,7 +873,7 @@ namespace CDS
             }
             catch (Exception e)
             {
-                Log.Instance.WriteLog($"Error al enviar comando. Excepcón: {e.Message}", LogType.t_error);
+                Log.Instance.WriteLog($"Error al enviar comando. Excepcón: {e.Message}.\n", LogType.t_error);
             }
             finally
             {

@@ -112,11 +112,11 @@ namespace CDS
             }
             catch (NullReferenceException e)
             {
-                throw new NullReferenceException($"Error al obtener la configuración de la estación - NullReferenceException. Excepción: {e.Message}");
+                throw new NullReferenceException($"Error al obtener la configuración de la estación - NullReferenceException. Excepción: {e.Message}.\n");
             }
             catch (Exception e)
             {
-                throw new Exception($"Error al obtener la configuración de la estación. Excepción: {e.Message}");
+                throw new Exception($"Error al obtener la configuración de la estación. Excepción: {e.Message}.\n");
             }
         }
 
@@ -138,7 +138,7 @@ namespace CDS
             }
             catch (Exception e)
             {
-                Log.Instance.WriteLog($"Error al obtener descuentos. Excepcion {e.Message}", LogType.t_error);
+                Log.Instance.WriteLog($"Error al obtener descuentos. Excepcion {e.Message}.\n", LogType.t_error);
             }
 
             return false;
@@ -166,7 +166,7 @@ namespace CDS
             }
             catch (Exception e)
             {
-                Log.Instance.WriteLog($"Error al obtener descuentos. Excepcion {e.Message}", LogType.t_error);
+                Log.Instance.WriteLog($"Error al obtener descuentos. Excepcion {e.Message}.\n", LogType.t_error);
             }
 
             return descuento.StartsWith("AUC");
@@ -188,7 +188,7 @@ namespace CDS
             periodType = "";
 
             flag = cFusion.ShiftClose(type, ref status, ref message, ref errorCode, ref periodID, ref periodType);
-            Log.Instance.WriteLog($"Ejecucion SHiftClose: {flag}", LogType.t_debug);
+            Log.Instance.WriteLog($"Ejecucion SHiftClose: {flag}.\n", LogType.t_debug);
 
             cierreDeTurno = new CierreFusion
             {
@@ -198,7 +198,7 @@ namespace CDS
 
             if (flag && status.Equals("OK"))
             {
-                Log.Instance.WriteLog($"Estado devuelto del cierre: {status}", LogType.t_debug);
+                Log.Instance.WriteLog($"Estado devuelto del cierre: {status}.\n", LogType.t_debug);
 
                 cierreDeTurno.ID = Convert.ToInt32(periodID);
 
@@ -229,7 +229,7 @@ namespace CDS
             }
             else
             {
-                Log.Instance.WriteLog($"Type: {type}, state: {status}, Message: {message}, Error code: {errorCode}.", LogType.t_error);
+                Log.Instance.WriteLog($"Type: {type}, state: {status}, Message: {message}, Error code: {errorCode}.\n", LogType.t_error);
                 cierreDeTurno.ErrorCode = errorCode;
             }
 
@@ -268,7 +268,7 @@ namespace CDS
             else
             {
                 producto.ID_SIGES = producto.ID;
-                Log.Instance.WriteLog($"Producto no identificado: {producto.Descripcion}", LogType.t_error);
+                Log.Instance.WriteLog($"Producto no identificado: {producto.Descripcion}.\n", LogType.t_error);
             }
         }
     }

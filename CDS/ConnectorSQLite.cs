@@ -73,7 +73,7 @@ namespace CDS
                 }
                 catch (Exception ex)
                 {
-                    throw new Exception($"Error al crear la base de datos: {ex.Message}");
+                    throw new Exception($"Error al crear la base de datos: {ex.Message}.\n");
                 }
                 finally
                 {
@@ -109,12 +109,12 @@ namespace CDS
                 catch (SQLiteException e)
                 {
                     connection = null;
-                    Log.Instance.WriteLog($"Error al ejecutar ExecuteSelectQuery {query}.\nExcepción: {e.Message}", LogType.t_error);
+                    Log.Instance.WriteLog($"Error al ejecutar ExecuteSelectQuery {query}. Excepción: {e.Message}\n", LogType.t_error);
                     return null;
                 }
                 catch (Exception e)
                 {
-                    Log.Instance.WriteLog($"Error al ejecutar SELECT: {e.Message}", LogType.t_error);
+                    Log.Instance.WriteLog($"Error al ejecutar SELECT: {e.Message}.\n", LogType.t_error);
                     return null;
                 }
                 finally
@@ -148,12 +148,12 @@ namespace CDS
                 catch (SQLiteException e)
                 {
                     connection = null;
-                    Log.Instance.WriteLog($"Error al ejecutar ExecuteNonQuery {query}.\nExcepción: {e.Message}", LogType.t_error);
+                    Log.Instance.WriteLog($"Error al ejecutar ExecuteNonQuery {query}. Excepción: {e.Message}.\n", LogType.t_error);
                     return -1;
                 }
                 catch (Exception ex)
                 {
-                    Log.Instance.WriteLog($"Error al ejecutar INSERT/UPDATE/DELETE: {ex.Message}", LogType.t_error);
+                    Log.Instance.WriteLog($"Error al ejecutar INSERT/UPDATE/DELETE: {ex.Message}.\n", LogType.t_error);
                     return -1; // En caso de error, retornamos -1 (ninguna fila afectada)
                 }
                 finally
@@ -185,7 +185,7 @@ namespace CDS
                 }
                 catch (Exception ex)
                 {
-                    Log.Instance.WriteLog($"Error al ejecutar una consulta de estados: {ex.Message}", LogType.t_error);
+                    Log.Instance.WriteLog($"Error al ejecutar una consulta de estados: {ex.Message}.\n", LogType.t_error);
                     return false;
                 }
                 finally
@@ -348,7 +348,7 @@ namespace CDS
             }
             catch (Exception ex)
             {
-                Log.Instance.WriteLog($"Error al crear tabla: {ex.Message}", LogType.t_error);
+                Log.Instance.WriteLog($"Error al crear tabla: {ex.Message}.\n", LogType.t_error);
             }
             finally
             {
@@ -377,10 +377,9 @@ namespace CDS
                 catch (Exception ex)
                 {
                     Log.Instance.WriteLog($"Error al abrir la conexión: {ex.Message}", LogType.t_error);
-                    throw new Exception("No se pudo abrir la conexión a la base de datos.", ex);
+                    throw new Exception($"No se pudo abrir la conexión a la base de datos. Excepcion: {ex.Message}.\n");
                 }
             }
-
             return connection;
         }
 

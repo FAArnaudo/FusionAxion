@@ -46,7 +46,7 @@ namespace CDS
                     while (!ControllerCem.VerificarConexión())
                     {
                         Thread.Sleep(1000 * Convert.ToInt32(Data.Timer));
-                        Log.Instance.WriteLog("Intentando establecer conexión.", LogType.t_debug);
+                        Log.Instance.WriteLog("Intentando establecer conexión.\n", LogType.t_debug);
                     }
 
                     ControllerCem.ConfigurarEstacion();
@@ -93,7 +93,7 @@ namespace CDS
                 }
             }
 
-            Log.Instance.WriteLog($"Finalizando hilo: {mainProcess.Id}.", LogType.t_info);
+            Log.Instance.WriteLog($"Finalizando hilo: {mainProcess.Id}.\n", LogType.t_info);
 
             IsRunning = false;
         }

@@ -128,7 +128,7 @@ namespace ConfigurationTests
 
             _ = connections.Setup(a => a.EnviarComando(command)).Returns(new byte[] { 0x01 });
 
-            string expected = "Error al obtener la configuración de la estación. Excepción: No se recibió mensaje de confirmación al solicitar la configuración de la estación.";
+            string expected = "Error al obtener la configuración de la estación. Excepción: No se recibió mensaje de confirmación al solicitar la configuración de la estación.\n";
 
             //Act
             Exception actual = Assert.ThrowsException<Exception>(() => connectorCem.ComandoConfiguracionDeLaEstacion(command));

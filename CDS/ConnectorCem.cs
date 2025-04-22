@@ -64,7 +64,7 @@ namespace CDS
             {
                 if (reply == null || reply[confirmacion] != 0x0)
                 {
-                    throw new Exception("No se recibió mensaje de confirmación al solicitar la configuración de la estación.\n");
+                    throw new Exception("No se recibió mensaje de confirmación al solicitar la configuración de la estación.");
                 }
 
                 if (!File.Exists(Environment.CurrentDirectory + "\\Responses\\ConfiguracionDeLaEstacion.txt"))
@@ -215,7 +215,7 @@ namespace CDS
             }
             catch (Exception e)
             {
-                throw new Exception($"Error al obtener la configuración de la estación. Excepción: {e.Message}.\n");
+                throw new Exception($"Error al obtener la configuración de la estación. Excepción: {e.Message}\n");
             }
 
             return station;

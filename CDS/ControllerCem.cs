@@ -129,6 +129,7 @@ namespace CDS
             }
             catch (Exception e)
             {
+                Station.Instance.GeneralMessage = $"Error en el metodo ConfigurarEstacion. Excepcion: {e.Message}.";
                 throw new Exception($"Error en el metodo ConfigurarEstacion. Excepcion: {e.Message}.\n");
             }
         }
@@ -172,6 +173,7 @@ namespace CDS
             }
             catch (Exception e)
             {
+                Station.Instance.GeneralMessage = $"Error en el metodo ActualizarTanques. Excepcion: {e.Message}.";
                 Log.Instance.WriteLog($"Error en el metodo ActualizarTanques. Excepcion: {e.Message}.\n", LogType.t_error);
             }
         }
@@ -261,6 +263,7 @@ namespace CDS
             }
             catch (Exception e)
             {
+                Station.Instance.GeneralMessage = $"Error en el metodo GrabarDespachos. Excepcion: {e.Message}.";
                 Log.Instance.WriteLog($"Error en el metodo GrabarDespachos. Excepcion: {e.Message}.\n", LogType.t_error);
             }
         }
@@ -327,6 +330,7 @@ namespace CDS
             }
             catch (Exception e)
             {
+                Station.Instance.GeneralMessage = $"Error en el Cierre de turno. Excepción: {e.Message}.";
                 throw new Exception($"Error en el Cierre de turno. Excepción: {e.Message}.\n");
             }
 
@@ -484,7 +488,6 @@ namespace CDS
                 ConnectorSQLite.Instance.ExecuteNonQuery($"DELETE FROM CierresPorManguera WHERE id IN ({idList})");
                 ConnectorSQLite.Instance.ExecuteNonQuery($"DELETE FROM CierresPorProducto WHERE id IN ({idList})");
                 ConnectorSQLite.Instance.ExecuteNonQuery($"DELETE FROM Cierres WHERE id IN ({idList})");
-
             }
         }
 

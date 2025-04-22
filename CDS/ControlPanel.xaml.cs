@@ -269,7 +269,7 @@ namespace CDS
             string basePath = AppDomain.CurrentDomain.BaseDirectory;
 
             // Definir el nombre del archivo que queremos verificar
-            string filePath = Path.Combine(basePath, "version.txt");
+            string filePath = Path.Combine(basePath, "Folders\\version.txt");
 
             // Verificar si el archivo existe
             if (File.Exists(filePath))

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Mail;
@@ -17,9 +18,9 @@ namespace CDS
         private bool isRunning;
 
         public bool IsRunning { get => isRunning; set => isRunning = value; }
-        public int StartTime { get; set; } = 10;        // 10 segundos
-        public int ThresholdTime { get; set; } = 60 * 30; // Minutos
-        public int ThresholdReSend { get; set; } = 60 * 5; // Minutos
+        public int StartTime { get; set; } = 10;            // 10 segundos
+        public int ThresholdTime { get; set; } = 60 * 30;   // Minutos
+        public int ThresholdReSend { get; set; } = 60 * 5;  // Minutos
 
         public WatchDog(PumpController controller, IControllerProcess process)
         {
@@ -61,9 +62,16 @@ namespace CDS
                              $"<p>Importante:</p>" +
                              $"<p>- Revisar la conexion con Posservice</p>" +
                              $"<p>- Verificar que respondan los botones del CDS</p>" +
-                             $"<p>- Si no se encuentran problemas, es posible que se reconecte solo...</p>";
+                             $"<p>- Si no se encuentran problemas, es posible que se reconecte solo...</p>" +
+                             $"<p>- {Station.Instance.GeneralMessage}</p>";
 
-            EnviarCorreo("federico.arnaudo@sistemasiges.com.ar", "CDS", message);
+            string destinatario = ObtenerDestinatario();
+            if (destinatario == null)
+            {
+                destinatario = "federico.arnaudo@sistemasiges.com.ar";
+            }
+            
+            EnviarCorreo(destinatario, "CDS", message);
             Thread.Sleep(1000 * ThresholdReSend);
         }
 
@@ -105,6 +113,31 @@ namespace CDS
             catch (Exception ex)
             {
                 Log.Instance.WriteLog($"Error al enviar correo. Excepcion: {ex.Message}.\n", LogType.t_error);
+            }
+        }
+
+        public string ObtenerDestinatario()
+        {
+            try
+            {
+                string rutaArchivo = Path.Combine(Directory.GetCurrentDirectory(), "Folders\\Destinatario.txt");
+
+                if (File.Exists(rutaArchivo))
+                {
+                    using (StreamReader lector = new StreamReader(rutaArchivo))
+                    {
+                        string primeraLinea = lector.ReadLine();
+                        return string.IsNullOrWhiteSpace(primeraLinea) ? null : primeraLinea;
+                    }
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            catch
+            {
+                return null;
             }
         }
 

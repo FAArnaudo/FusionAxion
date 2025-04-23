@@ -339,6 +339,8 @@ namespace CDS
                         break;
                 }
 
+                SavePumpState(numeroDeSurtidor, statusVenta.ToString());
+
                 int posicion = codigo_producto + 1;
 
                 if (!despachando && !detenido)
@@ -796,9 +798,50 @@ namespace CDS
             return double.TryParse(value, NumberStyles.Any, culture, out double result) ? result : result;
         }
 
-        private void SavePumpState()
+        private void SavePumpState(int numero, string contenido)
         {
+            try
+            {
+                // Ruta a la carpeta "Responses" en la base del programa
+                string path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Log");
 
+                // Crear directorio si no existe
+                if (!Directory.Exists(path))
+                {
+                    Directory.CreateDirectory(path);
+                }
+
+                // Nombre del archivo del día actual
+                string fileName = $"surtidor-{numero}-{DateTime.Now:dd-MM-yyyy}.txt";
+                string filePath = Path.Combine(path, fileName);
+
+                // Borra el log del día anterior
+                string deleteFileName = $"surtidor-{numero}-{DateTime.Now.AddDays(-1):dd-MM-yyyy}.txt";
+                string deleteFilePath = Path.Combine(path, deleteFileName);
+
+                if (File.Exists(deleteFilePath))
+                {
+                    File.Delete(deleteFilePath);
+                }
+
+                // Escribe en el archivo
+                using (StreamWriter outputFile = new StreamWriter(filePath, true))
+                {
+                    outputFile.WriteLine($"{DateTime.Now:HH:mm:ss}  Surtidor{numero}    ESTADO: {contenido}");
+                }
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                Log.Instance.WriteLog($"Error de permisos. Excepción: {ex.Message}\n", LogType.t_error);
+            }
+            catch (IOException ex)
+            {
+                Log.Instance.WriteLog($"Error de entrada/salida. Excepción: {ex.Message}\n", LogType.t_error);
+            }
+            catch (Exception ex)
+            {
+                Log.Instance.WriteLog($"Error inesperado. Excepción: {ex.Message}\n", LogType.t_error);
+            }
         }
     }
 

@@ -637,14 +637,17 @@ namespace CDS
 
             return turno;
         }
+
         public void ComandoAutorizacion(byte[] command)
         {
             throw new NotImplementedException();
         }
+
         public void ComandoEnvioPreset(byte[] command)
         {
             throw new NotImplementedException();
         }
+
         public void ComandoEmergenciaIndividual(byte[] command)
         {
             throw new NotImplementedException();
@@ -791,6 +794,11 @@ namespace CDS
         private double ConvertDouble(string value)
         {
             return double.TryParse(value, NumberStyles.Any, culture, out double result) ? result : result;
+        }
+
+        private void SavePumpState()
+        {
+
         }
     }
 

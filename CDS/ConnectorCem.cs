@@ -11,7 +11,6 @@ namespace CDS
 {
     public class ConnectorCem
     {
-
         private readonly byte separador = 0x7E;
         private readonly CultureInfo culture = CultureInfo.InvariantCulture;    // Especifica la cultura que utiliza el punto como separador decimal
         public IConnections Connections { get; set; }

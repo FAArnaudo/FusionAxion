@@ -39,6 +39,8 @@ namespace CDS
         public List<Producto> Productos { get; set; }
         public List<Tanque> Tanques { get; set; }
         public List<Surtidor> Surtidores { get; set; }
+
+        public string GeneralMessage { get; set; }
     }
 
     public class NivelDePrecio

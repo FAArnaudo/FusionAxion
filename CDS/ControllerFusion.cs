@@ -338,9 +338,7 @@ namespace CDS
                     }
                 }
 
-                FusionProcess.CheckFlags();
-
-                if (FusionProcess.HacerCierre || FusionProcess.BreakProces)
+                if (FusionProcess.BreakProces)
                 {
                     break;
                 }
@@ -662,7 +660,7 @@ namespace CDS
                                           transactionAmount.ToString(CultureInfo.InvariantCulture), paymentMethodId,
                                           status, totalGlosa, totalDiscount.ToString(CultureInfo.InvariantCulture));
 
-                            if (ExecuteSelectQuery($"SELECT * FROM Descuentos WHERE external_reference = {externalReference}") != null)
+                            if (ExecuteSelectQuery($"SELECT * FROM Descuentos WHERE external_reference = '{externalReference}'") != null)
                             {
                                 _ = ExecuteNonQuery(string.Format("INSERT INTO Descuentos ({0}) VALUES ({1})", campos, rows));
                             }
@@ -678,14 +676,7 @@ namespace CDS
                 }
                 catch (Exception e)
                 {
-                    Log.Instance.WriteLog($"\nError al obtener Descuentos. Excepción: {e.Message}, Mensaje: {debugMessage}", LogType.t_error);
-                }
-
-                FusionProcess.CheckFlags();
-
-                if (FusionProcess.HacerCierre || FusionProcess.BreakProces)
-                {
-                    break;
+                    Log.Instance.WriteLog($"Error al obtener Descuentos. Excepción: {e.Message}, Mensaje: {debugMessage}.\n", LogType.t_error);
                 }
             }
         }

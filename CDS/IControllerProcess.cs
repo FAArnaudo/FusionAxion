@@ -59,14 +59,19 @@ namespace CDS
 
                             ControllerFusion.GrabarDespachos();
 
-                            if (CancellationToken.Token.IsCancellationRequested || HacerCierre)
+                            foreach (Surtidor surtidor in Station.Instance.Surtidores)
                             {
-                                continue;
+                                ControllerFusion.GrabarDespachos(surtidor);
+
+                                ControllerFusion.CheckDiscount();
+
+                                CheckFlags();
+
+                                if (CancellationToken.Token.IsCancellationRequested || HacerCierre)
+                                    break;
+
+                                Thread.Sleep(1000 * Convert.ToInt32(Data.Timer));
                             }
-
-                            ControllerFusion.CheckDiscount();
-
-                            CheckFlags();
 
                             Thread.Sleep(Convert.ToInt32(1000 * Convert.ToInt32(Data.Timer)));
                         }
@@ -76,11 +81,12 @@ namespace CDS
                         {
                             Log.Instance.WriteLog("Iniciando: Realizando corte de turno.\n", LogType.t_info);
                             ControllerFusion.GrabarCierre();
+                            HacerCierre = false;
                         }
                     }
                     catch (Exception e)
                     {
-                        Log.Instance.WriteLog($" Estado del hilo {mainProcess.Id}: {mainProcess.Status} - Error en el loop del controlador.\n\t  Excepción: {e.Message}\n", LogType.t_error);
+                        Log.Instance.WriteLog($" Estado del hilo {mainProcess.Id}: {mainProcess.Status} - Error en el loop del controlador.Excepción: {e.Message}\n", LogType.t_error);
                     }
                 }
                 else

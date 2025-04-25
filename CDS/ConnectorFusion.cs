@@ -130,11 +130,12 @@ namespace CDS
 
                 if (tieneDescuento && !string.IsNullOrEmpty(descuento))
                 {
-                    Log.Instance.WriteLog($"Descuento {tieneDescuento}. \nID: {idSale}\n Descuento: {descuento}", LogType.t_debug);
+                    Log.Instance.WriteLog($"Descuento: {descuento}\n", LogType.t_debug);
+                    Log.Instance.WriteLog($"Descuento {tieneDescuento}. \nID: {idSale}\n Descuento: {descuento}\n", LogType.t_debug);
                     return true;
                 }
 
-                Log.Instance.WriteLog($"Descuento {tieneDescuento}. \nID: {idSale}\n Descuento: {descuento}", LogType.t_debug);
+                Log.Instance.WriteLog($"Descuento {tieneDescuento}. \nID: {idSale}\n Descuento: {descuento}\n", LogType.t_debug);
             }
             catch (Exception e)
             {

@@ -255,94 +255,7 @@ namespace CDS
 
         public override void GrabarDespachos()
         {
-            string debugMessage;
-            foreach (Surtidor surtidor in Station.Instance.Surtidores)
-            {
-                debugMessage = "";
-                if (VerificarConexión())
-                {
-                    FusionSale fusionSale = new FusionSale();
-
-                    try
-                    {
-                        if (cFusion.GetLastSale(surtidor.ID, fusionSale) == 1)
-                        {
-                            if (fusionSale != null && !fusionSale.GetAmount().Equals("0.00"))
-                            {
-
-                                string fechaHora = fusionSale.GetDateOfTransaction().Trim() + " " + fusionSale.GetInitTimeOfTransaction().Trim();
-                                debugMessage += $"fechaHora: {fechaHora} - ";
-
-                                bool exito = DateTime.TryParseExact(fechaHora, "yyyyMMdd HHmmss", null, DateTimeStyles.None, out DateTime fechaFormateada);
-
-                                if (!exito)
-                                {
-                                    fechaFormateada = DateTime.Now;
-                                    Log.Instance.WriteLog($"Error de formato: {fechaFormateada}.", LogType.t_debug);
-                                }
-
-                                debugMessage += $"fechaFormateada: {fechaFormateada} - ";
-
-                                Despacho despacho = new Despacho()
-                                {
-                                    IdDespacho = fusionSale.GetSaleID(),
-                                    IdSurtidor = fusionSale.GetPumpNr(),
-                                    IdManguera = fusionSale.GetHoseNr(),
-                                    IdProducto = fusionSale.GetGradeNr(),
-                                    Monto = ConvertDouble(fusionSale.GetAmount()),
-                                    Volumen = ConvertDouble(fusionSale.GetVolume()),
-                                    PPU = ConvertDouble(fusionSale.GetPPU()),
-                                    Producto = cFusion.GetConfig().GetGradeByID(fusionSale.GetGradeNr()),
-                                };
-                                string fecha = fechaFormateada.ToString("dd-MM-yyyy HH:mm:ss");
-                                debugMessage += $"fecha: {fecha}.";
-
-                                Log.Instance.WriteLog($"Despacho obtenido\n" +
-                                                      $"ID: {despacho.IdDespacho}\n" +
-                                                      $"Monto: {despacho.Monto}\n" +
-                                                      $"Volumen: {despacho.Volumen}", LogType.t_debug);
-
-                                DataTable tablaDespachos = ConnectorSQLite.Instance.ExecuteSelectQuery($"SELECT * " +
-                                                                                                       $"FROM Despachos " +
-                                                                                                       $"WHERE id = {despacho.IdDespacho} AND surtidor = {surtidor.ID}");
-
-                                /// Procesamiento de la ultima venta
-                                if (tablaDespachos.Rows.Count == 0)
-                                {
-                                    /// Agregar a Base de Datos
-                                    bool despacho_pedido = false;
-                                    string campos = "id,surtidor,manguera,producto,PPU,volumen,monto,descripcion,despacho_pedido,fecha";
-                                    string row = string.Format("{0},{1},{2},'{3}',{4},{5},{6},'{7}',{8},'{9}'",
-                                        despacho.IdDespacho,
-                                        despacho.IdSurtidor,
-                                        despacho.IdManguera,
-                                        despacho.Producto,
-                                        despacho.PPU.ToString(CultureInfo.InvariantCulture),
-                                        despacho.Volumen.ToString(CultureInfo.InvariantCulture),
-                                        despacho.Monto.ToString(CultureInfo.InvariantCulture),
-                                        despacho.Producto,
-                                        despacho_pedido,
-                                        fecha);
-
-                                    _ = ConnectorSQLite.Instance.ExecuteNonQuery(string.Format("INSERT INTO Despachos ({0}) VALUES ({1})", campos, row));
-                                }
-                            }
-                        }
-                    }
-                    catch (Exception e)
-                    {
-                        Log.Instance.WriteLog($"Error al obtener la ultima venta.\n" +
-                                              $"Surtidor: {surtidor.ID},\n" +
-                                              $"Excepción: {e.Message},\n," +
-                                              $"Debug: {debugMessage}", LogType.t_error);
-                    }
-                }
-
-                if (FusionProcess.BreakProces)
-                {
-                    break;
-                }
-            }
+            throw new NotImplementedException();
         }
 
         public void CheckDiscount()
@@ -537,7 +450,90 @@ namespace CDS
 
         public override void GrabarDespachos(Surtidor surtidor)
         {
-            throw new NotImplementedException();
+            string debugMessage = "";
+            if (VerificarConexión())
+            {
+                FusionSale fusionSale = new FusionSale();
+
+                try
+                {
+                    if (cFusion.GetLastSale(surtidor.ID, fusionSale) == 1)
+                    {
+                        if (fusionSale != null && !fusionSale.GetAmount().Equals("0.00"))
+                        {
+
+                            string fechaHora = fusionSale.GetDateOfTransaction().Trim() + " " + fusionSale.GetInitTimeOfTransaction().Trim();
+                            debugMessage += $"fechaHora: {fechaHora} - ";
+
+                            bool exito = DateTime.TryParseExact(fechaHora, "yyyyMMdd HHmmss", null, DateTimeStyles.None, out DateTime fechaFormateada);
+
+                            if (!exito)
+                            {
+                                fechaFormateada = DateTime.Now;
+                                Log.Instance.WriteLog($"Error de formato: {fechaFormateada}.", LogType.t_debug);
+                            }
+
+                            debugMessage += $"fechaFormateada: {fechaFormateada} - ";
+
+                            Despacho despacho = new Despacho()
+                            {
+                                IdDespacho = fusionSale.GetSaleID(),
+                                IdSurtidor = fusionSale.GetPumpNr(),
+                                IdManguera = fusionSale.GetHoseNr(),
+                                IdProducto = fusionSale.GetGradeNr(),
+                                Monto = ConvertDouble(fusionSale.GetAmount()),
+                                Volumen = ConvertDouble(fusionSale.GetVolume()),
+                                PPU = ConvertDouble(fusionSale.GetPPU()),
+                                Producto = cFusion.GetConfig().GetGradeByID(fusionSale.GetGradeNr()),
+                            };
+                            string fecha = fechaFormateada.ToString("dd-MM-yyyy HH:mm:ss");
+                            debugMessage += $"fecha: {fecha}.";
+
+                            Log.Instance.WriteLog($"Despacho obtenido\n" +
+                                                  $"ID: {despacho.IdDespacho}\n" +
+                                                  $"Monto: {despacho.Monto}\n" +
+                                                  $"Volumen: {despacho.Volumen}", LogType.t_debug);
+
+                            DataTable tablaDespachos = ConnectorSQLite.Instance.ExecuteSelectQuery($"SELECT * " +
+                                                                                                   $"FROM Despachos " +
+                                                                                                   $"WHERE id = {despacho.IdDespacho} AND surtidor = {surtidor.ID}");
+
+                            /// Procesamiento de la ultima venta
+                            if (tablaDespachos.Rows.Count == 0)
+                            {
+                                /// Agregar a Base de Datos
+                                bool despacho_pedido = false;
+                                string campos = "id,surtidor,manguera,producto,PPU,volumen,monto,descripcion,despacho_pedido,fecha";
+                                string row = string.Format("{0},{1},{2},'{3}',{4},{5},{6},'{7}',{8},'{9}'",
+                                    despacho.IdDespacho,
+                                    despacho.IdSurtidor,
+                                    despacho.IdManguera,
+                                    despacho.Producto,
+                                    despacho.PPU.ToString(CultureInfo.InvariantCulture),
+                                    despacho.Volumen.ToString(CultureInfo.InvariantCulture),
+                                    despacho.Monto.ToString(CultureInfo.InvariantCulture),
+                                    despacho.Producto,
+                                    despacho_pedido,
+                                    fecha);
+
+                                _ = ConnectorSQLite.Instance.ExecuteNonQuery(string.Format("INSERT INTO Despachos ({0}) VALUES ({1})", campos, row));
+                            }
+                        }
+                    }
+                }
+                catch (Exception e)
+                {
+                    Log.Instance.WriteLog($"Error al obtener la ultima venta.\n" +
+                                          $"Surtidor: {surtidor.ID},\n" +
+                                          $"Excepción: {e.Message},\n," +
+                                          $"Debug: {debugMessage}", LogType.t_error);
+                }
+            }
+
+            if (FusionProcess.BreakProces)
+            {
+                return;
+            }
         }
     }
 

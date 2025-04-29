@@ -57,7 +57,9 @@ namespace CDS
             int tanques = 3;
             int productos = 4;
 
+            Station.Instance.GeneralMessage = "obteniendo la configuracion de la estacion";
             byte[] reply = Connections.GetConfiguration().Modo.Equals(MODO.TEST.ToString()) ? ReadAnswer("ConfiguracionDeLaEstacion") : Connections.EnviarComando(command);
+            Station.Instance.GeneralMessage = "";
 
             Station station;
             try
@@ -229,7 +231,9 @@ namespace CDS
 
             try
             {
+                Station.Instance.GeneralMessage = "Obtenioendo stock de tanques";
                 byte[] reply = Connections.GetConfiguration().Modo.Equals(MODO.TEST.ToString()) ? ReadAnswer("StockDeTanques") : Connections.EnviarComando(command);
+                Station.Instance.GeneralMessage = "";
 
                 if (reply == null || reply[confirmacion] != 0x0)
                 {

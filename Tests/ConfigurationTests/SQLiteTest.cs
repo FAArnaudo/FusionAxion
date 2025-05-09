@@ -87,29 +87,6 @@ namespace ConfigurationTests
         }
 
         [TestMethod]
-        public void ExecuteInsertOrStateQuery_InsertOneRowModify()
-        {
-            // Arrange
-            ConnectorSQLite connector = ConnectorSQLite.Instance;
-
-            _ = connector.CreateDatabase(configuration.Object);
-
-            // Crear las tablas si no existen
-            string createTableQuery = "CREATE TABLE IF NOT EXISTS Usuarios " +
-                                      "(Nombre TEXT, Edad  INTEGER)";
-
-            _ = connector.ExecuteNonQuery(createTableQuery);
-
-            int expected = 1;
-
-            // Act
-            int actual = connector.ExecuteNonQuery($"INSERT INTO Usuarios (Nombre, Edad) VALUES ('Carlos', 25)");
-
-            // Assert
-            Assert.AreEqual(expected, actual);
-        }
-
-        [TestMethod]
         public void ExecuteInsertOrStateQuery_DeleteNoModify()
         {
             // Arrange

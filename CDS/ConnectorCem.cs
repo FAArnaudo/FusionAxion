@@ -612,19 +612,19 @@ namespace CDS
                 switch (command[0])
                 {
                     case 0x07:
-                        error = $"Error al pedir intormacion del CierreDeTurno. Excepción: {e.Message}.\n";
+                        error = $"Error al pedir informacion del CierreDeTurno. Excepción: {e.Message}.\n";
                         name = "CierreDeTurno";
                         break;
                     case 0x0B:
-                        error = $"Error al pedir intormacion del CierreDeTurnoAnterior. Excepción: {e.Message}.\n";
+                        error = $"Error al pedir informacion del CierreDeTurnoAnterior. Excepción: {e.Message}.\n";
                         name = "CierreDeTurnoAnterior";
                         break;
                     case 0x08:
-                        error = $"Error al pedir intormacion del TurnoActual. Excepción: {e.Message}.\n";
+                        error = $"Error al pedir informacion del TurnoActual. Excepción: {e.Message}.\n";
                         name = "TurnoActual";
                         break;
                     default:
-                        error = $"Error al pedir intormacion del turno CierreDeTurno. Excepción: {e.Message}.\n";
+                        error = $"Error al pedir informacion del turno CierreDeTurno. Excepción: {e.Message}.\n";
                         name = "CierreDeTurno";
                         break;
                 }
@@ -897,7 +897,7 @@ namespace CDS
                                   })
                     .ExecuteAndCapture(() =>
                     {
-                        using (var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10))) // tiempo máximo total
+                        using (var cts = new CancellationTokenSource(TimeSpan.FromSeconds(5 * 60))) // tiempo máximo total
                         {
                             var task = Task.Run(() =>
                             {

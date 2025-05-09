@@ -321,6 +321,35 @@ namespace CDS
                 {
                     _ = cmd.ExecuteNonQuery();
                 }
+
+                createTableQuery = "CREATE TABLE IF NOT EXISTS Autorizaciones (" +
+                                   "id_autorizacion INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                                   "surtidor INTEGER NOT NULL, " +
+                                   "manguera INTEGER, " +
+                                   "monto_reset REAL, " +
+                                   "estado TEXT NOT NULL DEFAULT 'Pendiente', " +
+                                   "fecha_solicitud DATETIME DEFAULT CURRENT_TIMESTAMP, " +
+                                   "autorizado INTEGER, " +
+                                   "cancelada_por_POS INTEGER NOT NULL DEFAULT 0, " +
+                                   "cancelada_por_sistema INTEGER NOT NULL DEFAULT 0, " +
+                                   "fecha_procesamiento DATETIME, " +
+                                   "fecha_cancelacion_POS DATETIME, " +
+                                   "fecha_cancelacion DATETIME, " +
+                                   "observaciones TEXT); " +
+
+                                   "CREATE INDEX IF NOT EXISTS idx_autorizaciones_estado " +
+                                   "ON Autorizaciones (Estado); " +
+
+                                   "CREATE INDEX IF NOT EXISTS idx_autorizaciones_cancelaciones " +
+                                   "ON Autorizaciones (CanceladaPorPOS, CanceladaPorSistema); " +
+
+                                   "CREATE INDEX IF NOT EXISTS idx_autorizaciones_surtidor " +
+                                   "ON Autorizaciones (Surtidor);";
+
+                using (SQLiteCommand cmd = new SQLiteCommand(createTableQuery, connection))
+                {
+                    _ = cmd.ExecuteNonQuery();
+                }
             }
             catch (Exception ex)
             {

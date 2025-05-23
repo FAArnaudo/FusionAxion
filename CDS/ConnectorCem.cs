@@ -6,6 +6,7 @@ using System.IO;
 using System.IO.Pipes;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace CDS
 {
@@ -56,7 +57,9 @@ namespace CDS
             int tanques = 3;
             int productos = 4;
 
+            Station.Instance.GeneralMessage = "obteniendo la configuracion de la estacion";
             byte[] reply = Connections.GetConfiguration().Modo.Equals(MODO.TEST.ToString()) ? ReadAnswer("ConfiguracionDeLaEstacion") : Connections.EnviarComando(command);
+            Station.Instance.GeneralMessage = "";
 
             Station station;
             try
@@ -228,7 +231,9 @@ namespace CDS
 
             try
             {
+                Station.Instance.GeneralMessage = "Obtenioendo stock de tanques";
                 byte[] reply = Connections.GetConfiguration().Modo.Equals(MODO.TEST.ToString()) ? ReadAnswer("StockDeTanques") : Connections.EnviarComando(command);
+                Station.Instance.GeneralMessage = "";
 
                 if (reply == null || reply[confirmacion] != 0x0)
                 {
@@ -607,19 +612,19 @@ namespace CDS
                 switch (command[0])
                 {
                     case 0x07:
-                        error = $"Error al pedir intormacion del CierreDeTurno. Excepción: {e.Message}.\n";
+                        error = $"Error al pedir informacion del CierreDeTurno. Excepción: {e.Message}.\n";
                         name = "CierreDeTurno";
                         break;
                     case 0x0B:
-                        error = $"Error al pedir intormacion del CierreDeTurnoAnterior. Excepción: {e.Message}.\n";
+                        error = $"Error al pedir informacion del CierreDeTurnoAnterior. Excepción: {e.Message}.\n";
                         name = "CierreDeTurnoAnterior";
                         break;
                     case 0x08:
-                        error = $"Error al pedir intormacion del TurnoActual. Excepción: {e.Message}.\n";
+                        error = $"Error al pedir informacion del TurnoActual. Excepción: {e.Message}.\n";
                         name = "TurnoActual";
                         break;
                     default:
-                        error = $"Error al pedir intormacion del turno CierreDeTurno. Excepción: {e.Message}.\n";
+                        error = $"Error al pedir informacion del turno CierreDeTurno. Excepción: {e.Message}.\n";
                         name = "CierreDeTurno";
                         break;
                 }
@@ -880,54 +885,71 @@ namespace CDS
                 PolicyResult policyResult = Policy.Handle<Exception>()
                     .WaitAndRetry(retryCount: 4,
                                   sleepDurationProvider: retryAttempt => TimeSpan.FromSeconds(Math.Pow(3, retryAttempt)),
-                                  onRetry: (exception, TimeSpan, conttext) =>
+                                  onRetry: (exception, _, context) =>
                                   {
-                                      // Cerrar el pipe en caso de fallo
                                       if (pipeClient != null)
                                       {
                                           pipeClient.Dispose();
-                                          pipeClient = null; // Limpiar el pipe para la nueva conexión
+                                          pipeClient = null;
                                       }
                                       Log.Instance.WriteLog($"Excepción: {exception.Message.Trim()} Intento: {retries}, Thread: {Thread.CurrentThread.ManagedThreadId}.\n", LogType.t_error);
                                       retries++;
-                                  }).ExecuteAndCapture(() =>
-                                  {
-                                      // Crear el pipeClient si está cerrado
-                                      if (pipeClient == null)
-                                      {
-                                          pipeClient = new NamedPipeClientStream(IpController, pipeName);
-                                      }
+                                  })
+                    .ExecuteAndCapture(() =>
+                    {
+                        using (var cts = new CancellationTokenSource(TimeSpan.FromSeconds(5 * 60))) // tiempo máximo total
+                        {
+                            var task = Task.Run(() =>
+                            {
+                                if (pipeClient == null)
+                                {
+                                    pipeClient = new NamedPipeClientStream(IpController, pipeName);
+                                }
 
-                                      // Conectar con tiempo de espera
-                                      pipeClient.Connect(5000);
+                                // Intentar conectar con timeout de 5s
+                                pipeClient.Connect(5000);
 
-                                      // Enviar el comando
-                                      pipeClient.Write(comando, 0, comando.Length);
+                                // Enviar comando
+                                pipeClient.Write(comando, 0, comando.Length);
 
-                                      // Leer respuesta
-                                      buffer = new byte[pipeClient.OutBufferSize];
-                                      _ = pipeClient.Read(buffer, 0, buffer.Length);
-                                  });
-                // Verificación de resultado de conexión
-                if (policyResult.Outcome != 0)
+                                // Leer respuesta
+                                buffer = new byte[pipeClient.OutBufferSize];
+                                int bytesRead = pipeClient.Read(buffer, 0, buffer.Length);
+
+                                if (bytesRead == 0)
+                                {
+                                    throw new IOException("No se recibió respuesta del servidor.");
+                                }
+
+                            }, cts.Token);
+
+                            task.Wait(cts.Token); // lanza OperationCanceledException si se pasa el tiempo
+                        }
+                    });
+                
+                if (policyResult.Outcome != OutcomeType.Successful)
                 {
-                    _ = ConnectorSQLite.Instance.ExecuteNonQuery($"UPDATE CheckConnection SET isConnected = 0, fecha = '{DateTime.Now:dd-MM-yyyy HH:mm:ss}' WHERE idConnection = 1");
-
+                    _ = ConnectorSQLite.Instance.ExecuteNonQuery(
+                        $"UPDATE CheckConnection SET isConnected = 0, fecha = '{DateTime.Now:dd-MM-yyyy HH:mm:ss}' WHERE idConnection = 1");
                     Log.Instance.WriteLog($"Fin de intentos...\n", LogType.t_error);
                     ReloadData();
                 }
                 else
                 {
-                    _ = ConnectorSQLite.Instance.ExecuteNonQuery($"UPDATE CheckConnection SET isConnected = 1, fecha = '{DateTime.Now:dd-MM-yyyy HH:mm:ss}' WHERE idConnection = 1");
+                    _ = ConnectorSQLite.Instance.ExecuteNonQuery(
+                        $"UPDATE CheckConnection SET isConnected = 1, fecha = '{DateTime.Now:dd-MM-yyyy HH:mm:ss}' WHERE idConnection = 1");
                 }
+            }
+            catch (OperationCanceledException)
+            {
+                Log.Instance.WriteLog("Timeout general al enviar o recibir datos por el pipe.\n", LogType.t_error);
             }
             catch (Exception e)
             {
-                Log.Instance.WriteLog($"Error al enviar comando. Excepcón: {e.Message}.\n", LogType.t_error);
+                Log.Instance.WriteLog($"Error al enviar comando. Excepción: {e.Message}.\n", LogType.t_error);
             }
             finally
             {
-                // Asegurarse de cerrar el pipe al final
                 if (pipeClient != null)
                 {
                     pipeClient.Dispose();

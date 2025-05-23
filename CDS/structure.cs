@@ -53,6 +53,7 @@ namespace CDS
         public int Nivel { get; set; }
         public List<Surtidor> SurtidoresPorNivelDePrecio { get; set; }
     }
+
     public class Surtidor
     {
         public Surtidor()
@@ -74,6 +75,7 @@ namespace CDS
         public int NivelDeSurtidor { get; set; }
         public List<Manguera> Mangueras { get; set; }
     }
+
     public class Manguera
     {
         public Manguera()
@@ -85,6 +87,7 @@ namespace CDS
         public int ID { get; set; }
         public Producto Producto { get; set; }
     }
+
     public class Tanque
     {
         public Tanque()
@@ -103,6 +106,7 @@ namespace CDS
         public double VolumenDeAgua { get; set; }
         public double VolumenVacio { get; set; }
     }
+
     public class Producto
     {
         public Producto()
@@ -113,15 +117,25 @@ namespace CDS
         }
 
         public string Descripcion { get; set; }
+        /// <summary>
+        /// ID almacena el valor por defecto que trae la configuracion de la estacion.
+        /// </summary>
         public int ID { get; set; }
+        /// <summary>
+        /// ID SIGES es el valor que coincide con el orden de prodictos que maneja YPF
+        /// </summary>
         public int ID_SIGES { get; set; }
         public double PrecioUnitario { get; set; }
         public int IdTanque { get; set; }
     }
+
     public class ProductoCem : Producto
     {
         private int idProductoDespacho;
         public ProductoCem() { idProductoDespacho = 0; }
+        /// <summary>
+        /// Este valor es el que informa el despacho como valor de numero de producto y es diferente a ID
+        /// </summary>
         public int IdProductoDespacho
         {
             get => idProductoDespacho;
@@ -147,6 +161,7 @@ namespace CDS
         public int IdSurtidor { get; set; }
         public int IdManguera { get; set; }
     }
+
     public class DespachoCem : Despacho
     {
         public DespachoCem() { }

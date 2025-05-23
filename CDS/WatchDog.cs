@@ -20,7 +20,7 @@ namespace CDS
         public bool IsRunning { get => isRunning; set => isRunning = value; }
         public int StartTime { get; set; } = 10;            // 10 segundos
         public int ThresholdTime { get; set; } = 60 * 30;   // Minutos
-        public int ThresholdReSend { get; set; } = 60 * 5;  // Minutos
+        public int ThresholdReSend { get; set; } = 60 * 30; // Minutos
 
         public WatchDog(PumpController controller, IControllerProcess process)
         {

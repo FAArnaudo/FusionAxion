@@ -65,7 +65,9 @@ namespace CDS
                             CheckFlags();
 
                             if (CancellationToken.Token.IsCancellationRequested)
+                            {
                                 break;
+                            }
 
                             Thread.Sleep(1000 * Convert.ToInt32(Data.Timer));
                         }

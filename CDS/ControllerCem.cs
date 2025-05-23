@@ -210,7 +210,7 @@ namespace CDS
                     despacho.IdSurtidor = surtidor.ID;
 
                     UpdateProductos(despacho);
-
+                    /*
                     foreach (Manguera manguera in surtidor.Mangueras)
                     {
                         if (manguera.Producto.Descripcion.Equals(despacho.Producto))
@@ -219,7 +219,7 @@ namespace CDS
                             break;
                         }
                     }
-
+                    */
                     if (despacho.VentaFacturada)
                     {
                         DataTable tablaProductos = ConnectorSQLite.Instance.ExecuteSelectQuery($"SELECT * " +
@@ -257,8 +257,6 @@ namespace CDS
                     _ = ConnectorSQLite.Instance.ExecuteNonQuery(string.Format("INSERT INTO Despachos ({0}) VALUES ({1})", campos, row));
 
                     Log.Instance.WriteLog(string.Format("INSERT INTO Despachos ({0}) VALUES ({1})", campos, row), LogType.t_debug);
-
-                    Thread.Sleep(1000);
                 }
             }
             catch (Exception e)
@@ -443,6 +441,7 @@ namespace CDS
 
         private void UpdateProductos(DespachoCem despacho)
         {
+            /*
             foreach (ProductoCem producto in Station.Instance.Productos)
             {
                 if (producto.PrecioUnitario == despacho.PPU)
@@ -454,6 +453,24 @@ namespace CDS
                     despacho.IdProducto = producto.ID;
                     despacho.Producto = producto.Descripcion;
                     break;
+                }
+            }
+            */
+
+            foreach (Surtidor surtidor in Station.Instance.Surtidores)
+            {
+                if (despacho.IdSurtidor == surtidor.ID)
+                {
+                    foreach (Manguera manguera in surtidor.Mangueras)
+                    {
+                        if (despacho.PPU == manguera.Producto.PrecioUnitario)
+                        {
+                            despacho.IdProducto = manguera.Producto.ID;
+                            despacho.Producto = manguera.Producto.Descripcion;
+                            despacho.IdManguera = manguera.ID;
+                            return;
+                        }
+                    }
                 }
             }
         }
@@ -485,9 +502,9 @@ namespace CDS
                 string idList = string.Join(",", idsToDelete);
 
                 // Eliminar en orden: primero los hijos, luego el padre
-                ConnectorSQLite.Instance.ExecuteNonQuery($"DELETE FROM CierresPorManguera WHERE id IN ({idList})");
-                ConnectorSQLite.Instance.ExecuteNonQuery($"DELETE FROM CierresPorProducto WHERE id IN ({idList})");
-                ConnectorSQLite.Instance.ExecuteNonQuery($"DELETE FROM Cierres WHERE id IN ({idList})");
+                _ = ConnectorSQLite.Instance.ExecuteNonQuery($"DELETE FROM CierresPorManguera WHERE id IN ({idList})");
+                _ = ConnectorSQLite.Instance.ExecuteNonQuery($"DELETE FROM CierresPorProducto WHERE id IN ({idList})");
+                _ = ConnectorSQLite.Instance.ExecuteNonQuery($"DELETE FROM Cierres WHERE id IN ({idList})");
             }
         }
 

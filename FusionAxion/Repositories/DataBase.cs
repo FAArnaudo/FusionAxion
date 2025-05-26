@@ -14,6 +14,7 @@ namespace FusionAxion.Repositories
         {
             CreateDataBase();
         }
+
         private void CreateDataBase()
         {
             string folderPath = Path.Combine(ConfigurationModel.GetConfiguration().RutaProyNuevo, "CDS");

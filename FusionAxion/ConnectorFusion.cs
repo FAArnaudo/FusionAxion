@@ -138,6 +138,98 @@ namespace FusionAxion
             }
         }
 
+        public bool AxionDiscount(Fusion cFusion, int idSale, ref string descuento)
+        {
+            try
+            {
+                FusionSale fusionSale = new FusionSale();
+                _ = cFusion.GetSale(idSale, fusionSale);
+
+                descuento = fusionSale.GetPaymentInfo();
+
+                if (!string.IsNullOrWhiteSpace(descuento))
+                {
+                    Log.Instance.WriteLog($"Descuento obtenido:\n{descuento}\n", LogType.t_debug);
+                }
+                /*
+                // Tiene descuento
+                descuento = "AUC=055127143~CL=39444994~DCA=600.00~DCI=200000000000000000001~" +
+                "DCP=15.00%~DPN=FIDELIDAD ON~PT=200000000000000000001~" +
+                "TEXTD=(1015) - Bienvenido a ON! Disfruta un 15% de descuento!~TICKET=871621";
+                */
+            }
+            catch (Exception e)
+            {
+                Log.Instance.WriteLog($"Error al obtener descuentos. Excepcion {e.Message}", LogType.t_error);
+            }
+
+            return descuento.StartsWith("AUC");
+        }
+
+        public CierreDeTurno ComandoCierresDeTurno(Fusion cFusion)
+        {
+            CierreDeTurno cierreDeTurno;
+
+            bool flag;
+            string type, periodType;
+            type = "S"; // S - Shift
+
+            string status, message, errorCode, periodID;
+            status = "";
+            message = "";
+            errorCode = "";
+            periodID = "";
+            periodType = "";
+
+            flag = cFusion.ShiftClose(type, ref status, ref message, ref errorCode, ref periodID, ref periodType);
+            Log.Instance.WriteLog($"Ejecucion ShiftClose: {flag}", LogType.t_debug);
+
+            cierreDeTurno = new CierreDeTurno
+            {
+                Estado = status,
+                Message = message
+            };
+
+            if (flag && status.Equals("OK"))
+            {
+                Log.Instance.WriteLog($"Estado devuelto del cierre: {status}", LogType.t_debug);
+
+                cierreDeTurno.ID = Convert.ToInt32(periodID);
+
+                Station station = Station.Instance;
+
+                foreach (Surtidor surtidor in station.Surtidores)
+                {
+                    foreach (Manguera manguera in surtidor.Mangueras)
+                    {
+                        string totalVolumen = "";
+                        string totalMonto = "";
+                        if (cFusion.GetTotalizers(surtidor.ID, manguera.ID, ref totalVolumen, ref totalMonto) != 0)
+                        {
+                            TotalPorManguera totalPorManguera = new TotalPorManguera
+                            {
+                                NumeroDeManguera = manguera.ID,
+                                NumeroDeSurtidor = surtidor.ID,
+                                TotalVntasVolumen = ConvertDouble(totalVolumen),
+                                TotalVntasSinControlVolumen = ConvertDouble(totalVolumen),
+                                TotalVntasMonto = ConvertDouble(totalMonto),
+                                TotalVntasSinControlMonto = ConvertDouble(totalMonto)
+                            };
+
+                            cierreDeTurno.TotalesPorManguera.Add(totalPorManguera);
+                        }
+                    }
+                }
+            }
+            else
+            {
+                Log.Instance.WriteLog($"Type: {type}, state: {status}, Message: {message}, Error code: {errorCode}.", LogType.t_error);
+                cierreDeTurno.ErrorCode = errorCode;
+            }
+
+            return cierreDeTurno;
+        }
+
         private void GetCodigoSiges(Producto producto)
         {
             if (producto.Descripcion.Contains("SUPER") || producto.Descripcion.Equals("SUPER_BIO") ||

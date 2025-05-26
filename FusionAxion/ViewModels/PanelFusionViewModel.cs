@@ -21,6 +21,7 @@ namespace FusionAxion.ViewModels
         private ConfigurationView configurationView;
         private bool isViewVisible = true;
         private bool isClosed = false;
+        private readonly Controller controller;
 
         // Properties
         public DataModel CurrentData
@@ -108,13 +109,14 @@ namespace FusionAxion.ViewModels
             VerifyConnectionCommand = new ViewModelCommand(ExecuteVerifyConnectionCommand);
 
             DataBase dataBase = new DataBase();
+            controller = new Controller();
 
             LoadConfiguration();
         }
 
         private void ExecuteCloseCommand(object obj)
         {
-            while (!ControllerFusion.Instance.Disconect()) { }
+            controller.EndProcess();
 
             Application.Current.Shutdown();
         }
@@ -193,6 +195,8 @@ namespace FusionAxion.ViewModels
             //Genera los surtidores
             Log.Instance.WriteLog($"Generando botones para la vista.\n", LogType.t_info);
             GenerateSurtidoresButton(Station.Instance.NumeroDeSurtidores);
+
+            controller.Init();
         }
 
         private void GenerateSurtidoresButton(int count)

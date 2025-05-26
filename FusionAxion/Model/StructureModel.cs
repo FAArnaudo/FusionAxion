@@ -100,10 +100,10 @@ namespace FusionAxion
         }
         public int ID { get; set; }
         public Producto Product { get; set; }
-        public double CapacidadMaxima { get; set; }
-        public double VolumenDeProducto { get; set; }
-        public double VolumenDeAgua { get; set; }
-        public double VolumenVacio { get; set; }
+        public double CapacidadMaxima { get; set; } = 0;
+        public double VolumenDeProducto { get; set; } = 0;
+        public double VolumenDeAgua { get; set; } = 0;
+        public double VolumenVacio { get; set; } = 0;
     }
     public class Producto
     {
@@ -117,7 +117,7 @@ namespace FusionAxion
         public string Descripcion { get; set; }
         public int ID { get; set; }
         public int ID_SIGES { get; set; }
-        public double PrecioUnitario { get; set; }
+        public double PrecioUnitario { get; set; } = 0;
         public int IdTanque { get; set; }
     }
 
@@ -125,9 +125,9 @@ namespace FusionAxion
     {
         public Despacho() { }
         public int IdProducto { get; set; }
-        public double Monto { get; set; }
-        public double Volumen { get; set; }
-        public double PPU { get; set; }
+        public double Monto { get; set; } = 0;
+        public double Volumen { get; set; } = 0;
+        public double PPU { get; set; } = 0;
         public int IdDespacho { get; set; }
         public string Producto { get; set; }
         public int IdSurtidor { get; set; }
@@ -141,20 +141,22 @@ namespace FusionAxion
             TotalesPorManguera = new List<TotalPorManguera>();
         }
 
-        public int ID { get; set; }
+        public int ID { get; set; } = 0;
         public string FechaCierre { get; set; }
-        public double TotalesMonto { get; set; }
-        public double TotalesVolumen { get; set; }
+        public double TotalesMonto { get; set; } = 0;
+        public double TotalesVolumen { get; set; } = 0;
         public List<TotalPorManguera> TotalesPorManguera { get; set; }
         public string Estado { get; set; }
+        public string Message { get; set; }
+        public string ErrorCode { get; set; }
     }
 
     public class TotalMedioDePago
     {
         public TotalMedioDePago() { }
         public int NumeroDeMedioDePago { get; set; }
-        public double TotalMonto { get; set; }
-        public double TotalVolumen { get; set; }
+        public double TotalMonto { get; set; } = 0;
+        public double TotalVolumen { get; set; } = 0;
     }
 
     public class TotalPorProducto
@@ -163,9 +165,9 @@ namespace FusionAxion
         public int Periodo { get; set; }
         public int Nivel { get; set; }
         public int NumeroDeProducto { get; set; }
-        public double PrecioUnitario { get; set; }
-        public double TotalMonto { get; set; }
-        public double TotalVolumen { get; set; }
+        public double PrecioUnitario { get; set; } = 0;
+        public double TotalMonto { get; set; } = 0;
+        public double TotalVolumen { get; set; } = 0;
     }
 
     public class TotalPorManguera
@@ -173,22 +175,22 @@ namespace FusionAxion
         public TotalPorManguera() { }
         public int NumeroDeSurtidor { get; set; }
         public int NumeroDeManguera { get; set; }
-        public double TotalVntasMonto { get; set; }
-        public double TotalVntasVolumen { get; set; }
-        public double TotalVntasSinControlMonto { get; set; }
-        public double TotalVntasSinControlVolumen { get; set; }
-        public double TotalPruebasMonto { get; set; }
-        public double TotalPruebasVolumen { get; set; }
+        public double TotalVntasMonto { get; set; } = 0;
+        public double TotalVntasVolumen { get; set; } = 0;
+        public double TotalVntasSinControlMonto { get; set; } = 0;
+        public double TotalVntasSinControlVolumen { get; set; } = 0;
+        public double TotalPruebasMonto { get; set; } = 0;
+        public double TotalPruebasVolumen { get; set; } = 0;
     }
 
     public class TotalPorTanque
     {
         public TotalPorTanque() { }
         public int NumeroDeTanque { get; set; }
-        public double Producto { get; set; }
-        public double Agua { get; set; }
-        public double Vacio { get; set; }
-        public double Capacidad { get; set; }
+        public double Producto { get; set; } = 0;
+        public double Agua { get; set; } = 0;
+        public double Vacio { get; set; } = 0;
+        public double Capacidad { get; set; } = 0;
     }
 
     public enum CODIGO_PRODUCTOS

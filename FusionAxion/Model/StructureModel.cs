@@ -82,9 +82,11 @@ namespace FusionAxion
         {
             ID = 0;
             Producto = null;
+            Tanque = null;
         }
 
         public int ID { get; set; }
+        public Tanque Tanque { get; set; }
         public Producto Producto { get; set; }
     }
     public class Tanque
@@ -118,9 +120,7 @@ namespace FusionAxion
         public int ID { get; set; }
         public int ID_SIGES { get; set; }
         public double PrecioUnitario { get; set; } = 0;
-        public int IdTanque { get; set; }
     }
-
     public class Despacho
     {
         public Despacho() { }
@@ -133,7 +133,6 @@ namespace FusionAxion
         public int IdSurtidor { get; set; }
         public int IdManguera { get; set; }
     }
-
     public class CierreDeTurno
     {
         public CierreDeTurno()
@@ -150,7 +149,6 @@ namespace FusionAxion
         public string Message { get; set; }
         public string ErrorCode { get; set; }
     }
-
     public class TotalMedioDePago
     {
         public TotalMedioDePago() { }
@@ -158,7 +156,6 @@ namespace FusionAxion
         public double TotalMonto { get; set; } = 0;
         public double TotalVolumen { get; set; } = 0;
     }
-
     public class TotalPorProducto
     {
         public TotalPorProducto() { }
@@ -169,7 +166,6 @@ namespace FusionAxion
         public double TotalMonto { get; set; } = 0;
         public double TotalVolumen { get; set; } = 0;
     }
-
     public class TotalPorManguera
     {
         public TotalPorManguera() { }
@@ -182,7 +178,6 @@ namespace FusionAxion
         public double TotalPruebasMonto { get; set; } = 0;
         public double TotalPruebasVolumen { get; set; } = 0;
     }
-
     public class TotalPorTanque
     {
         public TotalPorTanque() { }

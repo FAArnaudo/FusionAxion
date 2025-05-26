@@ -12,11 +12,10 @@ namespace FusionAxion
 
         public Task MainProcess { get; set; } = null;
         public CancellationTokenSource CancellationToken { get; set; }
+        public bool IsRunning { get; set; } = false;
+        public bool HacerCierre { get; set; } = false;
 
-        public Controller()
-        {
-
-        }
+        public Controller() { }
 
         public void Init()
         {
@@ -29,33 +28,54 @@ namespace FusionAxion
 
         private void Run()
         {
-            while (CancellationToken.Token.IsCancellationRequested)
+            while (!CancellationToken.IsCancellationRequested)
             {
+                IsRunning = true;
                 try
                 {
-                    foreach (Surtidor surtidor in Station.Instance.Surtidores)
+                    ControllerFusion.Instance.ActualizarTanques();
+                    while (!HacerCierre)
                     {
-                        ControllerFusion.Instance.GrabarDespachos(surtidor);
+                        foreach (Surtidor surtidor in Station.Instance.Surtidores)
+                        {
+                            ControllerFusion.Instance.GrabarDespachos(surtidor);
+
+                            ControllerFusion.Instance.CheckDiscount();
+
+                            if (HacerCierre)
+                            {
+                                break;
+                            }
+
+                            Thread.Sleep(Convert.ToInt32(ConfigurationModel.GetConfiguration().Timer) * 1000);
+                        }
                     }
                 }
                 catch (TaskCanceledException ex)
                 {
-                    ControllerFusion.Instance.IsCanceled = false; ;
-                    Log.Instance.WriteLog($"Proceso finalizado. Excepcion: {ex.Message}\n", LogType.t_error);
+                    Log.Instance.WriteLog($"Proceso finalizado. Excepción: {ex.Message}\n", LogType.t_error);
+
+                    _ = ControllerFusion.Instance.Disconect();
                 }
                 catch (Exception ex)
                 {
                     Log.Instance.WriteLog($"Error en el metodo Run del proceso principal. Excepcion: {ex.Message}\n", LogType.t_error);
                 }
             }
+            IsRunning = false;
         }
 
         public void EndProcess()
         {
             if (MainProcess != null)
             {
-                CancellationToken?.Cancel();
                 ControllerFusion.Instance.IsCanceled = true;
+                CancellationToken?.Cancel();
+
+                while (IsRunning)
+                {
+                    Thread.Sleep(100);
+                }
 
                 MainProcess = null;
                 CancellationToken = null;

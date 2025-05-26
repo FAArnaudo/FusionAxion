@@ -4,27 +4,31 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Globalization;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace FusionAxion
 {
     public class ControllerFusion
     {
-        //private Fusion fusion = null;
+        // control lock object
         private readonly object fusionLock = new object();
+        // instancia inicial ControllerFusion
         private static ControllerFusion instance = null;
+        // invariant culture variable
+        private static readonly CultureInfo culture = CultureInfo.InvariantCulture;
         private Fusion Fusion { get; set; }
         private ConnectorFusion ConnectorFusion { get; set; } = null;
-        private static readonly CultureInfo culture = CultureInfo.InvariantCulture;
         public bool IsCanceled { get; set; } = false;
+
         private ControllerFusion()
         {
             ConnectorFusion = new ConnectorFusion();
             Fusion = new Fusion();
         }
 
+        /// <summary>
+        /// Unica instancia de la clase ControllerFusion
+        /// </summary>
         public static ControllerFusion Instance
         {
             get
@@ -53,6 +57,11 @@ namespace FusionAxion
             lock (fusionLock)
             {
                 isClose = Fusion.Close();
+
+                if (isClose)
+                {
+                    Fusion = null;
+                }
             }
 
             return isClose;
@@ -357,7 +366,7 @@ namespace FusionAxion
                             PPU = ConvertDouble(fusionSale.GetPPU()),
                             Producto = Fusion.GetConfig().GetGradeByID(fusionSale.GetGradeNr()),
                         };
-                        string fecha = fechaFormateada.ToString("dd-MM-yyyy HH:mm:ss");
+                        string fecha = fechaFormateada.ToString("yyyy-MM-dd HH:mm:ss");
                         debugMessage += $"fecha: {fecha}.";
 
                         Log.Instance.WriteLog($"Despacho obtenido\n" +
@@ -398,82 +407,90 @@ namespace FusionAxion
                                       $"Surtidor: {surtidor.ID}\n" +
                                       $"Excepción: {e.Message}, Debug: {debugMessage}", LogType.t_error);
             }
+
+            if (IsCanceled)
+            {
+                throw new TaskCanceledException();
+            }
         }
 
         public void CheckDiscount()
         {
-            DataTable tableDespachos = ConnectorSQLite.Instance.ExecuteSelectQuery($"SELECT * " +
+            DataTable tableDespachos = ConnectorSQLite.Instance.ExecuteSelectQuery($"SELECT id " +
                                                                                    $"FROM Despachos " +
-                                                                                   $"ORDER BY id ASC LIMIT 16");
+                                                                                   $"WHERE AUC = '0'" +
+                                                                                   $"ORDER BY id DESC LIMIT {Station.Instance.NumeroDeSurtidores}");
             string debugMessage = "";
             foreach (DataRow row in tableDespachos.Rows)
             {
                 try
                 {
-                    if (Convert.ToString(row["AUC"]) == "0")
+                    // Accedes al valor de la columna 'id' por su nombre
+                    int id = Convert.ToInt32(row["id"]);
+                    string descuento = "";
+                    debugMessage = $"ID: {id} - ";
+
+                    Log.Instance.WriteLog($"Verificando decuento del despacho ID: {id}\n", LogType.t_debug);
+
+                    if (ConnectorFusion.AxionDiscount(Fusion, id, ref descuento))
                     {
-                        // Accedes al valor de la columna 'id' por su nombre
-                        int id = Convert.ToInt32(row["id"]);
-                        string descuento = "";
-                        debugMessage = $"ID: {id} - ";
+                        string AUC = "";
+                        double DCA = 0;
+                        double DCP = 0;
+                        string DPN = "";
+                        string TEXTD = "";
 
-                        Log.Instance.WriteLog($"Verificando decuento del despacho ID: {id}\n", LogType.t_debug);
+                        // Usamos el método Split para dividir el string por el carácter "~"
+                        string[] partes = descuento.Split('~');
 
-                        if (ConnectorFusion.AxionDiscount(Fusion, id, ref descuento))
+                        // Ahora podemos recorrer el arreglo 'partes' para acceder a cada subcadena
+                        foreach (string parte in partes)
                         {
-                            string AUC = "";
-                            double DCA = 0;
-                            double DCP = 0;
-                            string DPN = "";
-                            string TEXTD = "";
+                            // Dividimos cada parte por el carácter "=" para separar el nombre del valor
+                            string[] claveValor = parte.Split('=');
 
-                            // Usamos el método Split para dividir el string por el carácter "~"
-                            string[] partes = descuento.Split('~');
+                            string clave = claveValor[0].Trim(); // La clave (nombre)
+                            string valor = claveValor[1].Trim(); // El valor
 
-                            // Ahora podemos recorrer el arreglo 'partes' para acceder a cada subcadena
-                            foreach (string parte in partes)
+                            switch (clave)
                             {
-                                // Dividimos cada parte por el carácter "=" para separar el nombre del valor
-                                string[] claveValor = parte.Split('=');
-
-                                string clave = claveValor[0].Trim(); // La clave (nombre)
-                                string valor = claveValor[1].Trim(); // El valor
-
-                                switch (clave)
-                                {
-                                    case "AUC":
-                                        AUC = valor;
-                                        break;
-                                    case "DCA":
-                                        DCA = ConvertDouble(valor);
-                                        break;
-                                    case "DCP":
-                                        DCP = ConvertDouble(valor.Substring(0, 5));
-                                        break;
-                                    case "DPN":
-                                        DPN = valor;
-                                        break;
-                                    case "TEXTD":
-                                        TEXTD = valor;
-                                        break;
-                                    case "TICKET":
-                                        break;
-                                    default:
-                                        break;
-                                }
+                                case "AUC":
+                                    AUC = valor;
+                                    break;
+                                case "DCA":
+                                    DCA = ConvertDouble(valor);
+                                    break;
+                                case "DCP":
+                                    DCP = ConvertDouble(valor.Substring(0, 5));
+                                    break;
+                                case "DPN":
+                                    DPN = valor;
+                                    break;
+                                case "TEXTD":
+                                    TEXTD = valor;
+                                    break;
+                                case "TICKET":
+                                    break;
+                                default:
+                                    break;
                             }
-                            _ = ConnectorSQLite.Instance.ExecuteNonQuery($"UPDATE Despachos " +
-                                                                         $"SET AUC = '{AUC}', " + 
-                                                                             $"DCA = {DCA}, " +
-                                                                             $"DCP = '{Convert.ToString(DCP)}', " +
-                                                                             $"DPN = '{DPN}', TXTD = '{TEXTD}' " +
-                                                                         $"WHERE id = {id}");
                         }
+                        _ = ConnectorSQLite.Instance.ExecuteNonQuery($"UPDATE Despachos " +
+                                                                     $"SET AUC = '{AUC}', " +
+                                                                         $"DCA = {DCA}, " +
+                                                                         $"DCP = '{Convert.ToString(DCP)}', " +
+                                                                         $"DPN = '{DPN}', TXTD = '{TEXTD}' " +
+                                                                     $"WHERE id = {id}");
                     }
                 }
                 catch (Exception e)
                 {
                     Log.Instance.WriteLog($"Error al obtener Descuentos. Excepción: {e.Message}, Mensaje: {debugMessage}\n", LogType.t_error);
+                }
+
+                if (IsCanceled)
+                {
+                    throw new TaskCanceledException();
                 }
             }
         }

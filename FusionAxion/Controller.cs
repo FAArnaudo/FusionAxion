@@ -53,7 +53,7 @@ namespace FusionAxion
                 }
                 catch (TaskCanceledException ex)
                 {
-                    Log.Instance.WriteLog($"Proceso finalizado. Excepción: {ex.Message}\n", LogType.t_error);
+                    Log.Instance.WriteLog($"Proceso finalizado. Excepción: {ex.Message}\n", LogType.t_info);
 
                     _ = ControllerFusion.Instance.Disconect();
                 }

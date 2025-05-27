@@ -88,9 +88,12 @@ namespace FusionAxion
                     case LogType.t_debug:
                         if (GetLogLevel() <= type)
                         {
-                            using (StreamWriter outputFile = new StreamWriter(Path.Combine(path, logFile), true))
+                            lock (_lockObject)
                             {
-                                outputFile.WriteLine(DateTime.Now.ToString("HH:mm:ss") + "  DEBUG:   " + message);
+                                using (StreamWriter outputFile = new StreamWriter(Path.Combine(path, logFile), true))
+                                {
+                                    outputFile.WriteLine(DateTime.Now.ToString("HH:mm:ss") + "  DEBUG:   " + message);
+                                }
                             }
                         }
                         break;

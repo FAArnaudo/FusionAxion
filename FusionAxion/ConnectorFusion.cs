@@ -35,12 +35,10 @@ namespace FusionAxion
             }
             catch (NullReferenceException e)
             {
-                Log.Instance.WriteLog($"Error al obtener la configuración de la estación - NullReferenceException. Excepción: {e.Message}.\n", LogType.t_error);
                 throw new NullReferenceException($"Error al obtener la configuración de la estación - NullReferenceException. Excepción: {e.Message}");
             }
             catch (Exception e)
             {
-                Log.Instance.WriteLog($"Error al obtener la configuración de la estación. Excepción: {e.Message}.\n", LogType.t_error);
                 throw new Exception($"Error al obtener la configuración de la estación. Excepción: {e.Message}");
             }
         }
@@ -123,14 +121,12 @@ namespace FusionAxion
 
                     foreach (Producto producto in productos)
                     {
-                        if (producto.ID == fusionHose.m_iGradeNr && producto.PrecioUnitario == 0)
+                        if (producto.ID == fusionHose.m_iGradeNr)
                         {
-                            producto.PrecioUnitario = ConvertDouble(fusionHose.m_strPPU);
-                            manguera.Producto = producto;
-                            break;
-                        }
-                        else if (producto.ID == fusionHose.m_iGradeNr)
-                        {
+                            if (producto.PrecioUnitario == 0)
+                            {
+                                producto.PrecioUnitario = ConvertDouble(fusionHose.m_strPPU);
+                            }
                             manguera.Producto = producto;
                             break;
                         }
@@ -152,7 +148,7 @@ namespace FusionAxion
             {
                 _ = Fusion.GetTankInfo(numeroTanque, fusionTank);
 
-                Log.Instance.WriteLog($"TANQUE {numeroTanque}: Producto: {fusionTank.GetProductNr()}", LogType.t_info);
+                Log.Instance.WriteLog($"TANQUE {numeroTanque}: Capacidad {fusionTank.TankVolumeCapacity()} - Producto {fusionTank.GetProductNr()}", LogType.t_info);
 
                 Tanque tanque = new Tanque
                 {

@@ -180,10 +180,10 @@ namespace FusionAxion
 
                     Log.Instance.WriteLog(string.Format("TANQUE: ({0}))", tanque.ID), LogType.t_info);
                 }
+                Log.Instance.WriteLog("\n", LogType.t_info);
             }
             catch (Exception e)
             {
-                Log.Instance.WriteLog($"Error en el metodo ConfigurarEstacion.\n\tExcepcion: {e.Message}.\n", LogType.t_error);
                 throw new Exception($"Error en el metodo ConfigurarEstacion.\n\tExcepcion: {e.Message}");
             }
         }
@@ -231,13 +231,13 @@ namespace FusionAxion
                                                                                     DateTime.Now.ToString("dd-MM-yyyy HH:mm:ss"),
                                                                                     tanque.ID));
                     }
-                    Log.Instance.WriteLog($"\n", LogType.t_info);
                 }
                 catch (Exception e)
                 {
                     Log.Instance.WriteLog($"Error al actualizar el tanque(id) : {tanque.ID}. Excepción: {e.Message}", LogType.t_error);
                 }
             }
+            Log.Instance.WriteLog($"\n", LogType.t_info);
         }
 
         public void GrabarDespachos()
@@ -333,11 +333,17 @@ namespace FusionAxion
             string debugMessage;
 
             debugMessage = "";
+            int i = 0;
             FusionSale fusionSale = new FusionSale();
 
             try
             {
-                if (Fusion.GetLastSale(surtidor.ID, fusionSale) == 1)
+                lock (fusionLock)
+                {
+                    i = Fusion.GetLastSale(surtidor.ID, fusionSale);
+                }
+
+                if (i == 1)
                 {
                     if (!fusionSale.GetAmount().Equals("0.00"))
                     {
@@ -418,8 +424,7 @@ namespace FusionAxion
         {
             DataTable tableDespachos = ConnectorSQLite.Instance.ExecuteSelectQuery($"SELECT id " +
                                                                                    $"FROM Despachos " +
-                                                                                   $"WHERE AUC = '0'" +
-                                                                                   $"ORDER BY id DESC LIMIT {Station.Instance.NumeroDeSurtidores}");
+                                                                                   $"WHERE AUC = '0' AND fecha >= datetime('now', '-10 minutes', 'localtime')");
             string debugMessage = "";
             foreach (DataRow row in tableDespachos.Rows)
             {

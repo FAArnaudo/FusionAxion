@@ -4,9 +4,46 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:FusionAxion.Views"
+        xmlns:viewModel="clr-namespace:FusionAxion.ViewModels"
         mc:Ignorable="d"
-        Title="Cierres" Height="450" Width="800">
-    <Grid>
-        
+        Title="Cierres" Height="450" Width="610"
+        ResizeMode="NoResize"
+        Icon="pack://application:,,,/Images/shift_close_48.ico">
+
+    <Window.DataContext>
+        <viewModel:CierreViewModel></viewModel:CierreViewModel>
+    </Window.DataContext>
+
+    <Grid Background="#2E3A3F">
+        <DataGrid ItemsSource="{Binding cierres}" AutoGenerateColumns="False"
+              Margin="5"
+              Background="#1F272B"
+              Foreground="White"
+              GridLinesVisibility="All"
+              HorizontalGridLinesBrush="#707B7F"
+              VerticalGridLinesBrush="#707B7F"
+              HeadersVisibility="All"
+              ColumnHeaderHeight="30"
+              RowBackground="#1F272B"
+              AlternatingRowBackground="#273034">
+            <!-- Declaración directa del estilo del encabezado -->
+            <DataGrid.ColumnHeaderStyle>
+                <Style TargetType="DataGridColumnHeader">
+                    <Setter Property="Background" Value="#39444A" />
+                    <Setter Property="Foreground" Value="White" />
+                    <Setter Property="FontWeight" Value="Bold" />
+                    <Setter Property="HorizontalContentAlignment" Value="Center" />
+                </Style>
+            </DataGrid.ColumnHeaderStyle>
+
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="ID" Binding="{Binding ID}" Width="50" IsReadOnly="True"/>
+                <DataGridTextColumn Header="Monto Total" Binding="{Binding TotalesMonto}" Width="100"/>
+                <DataGridTextColumn Header="Volumen Total" Binding="{Binding TotalesVolumen}" Width="100"/>
+                <DataGridTextColumn Header="Estado" Binding="{Binding Estado}" Width="100"/>
+                <DataGridTextColumn Header="Mensaje" Binding="{Binding Message}" Width="100"/>
+                <DataGridTextColumn Header="Fecha de Cierre" Binding="{Binding FechaCierre}" Width="140"/>
+            </DataGrid.Columns>
+        </DataGrid>
     </Grid>
 </Window>

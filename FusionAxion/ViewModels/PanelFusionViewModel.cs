@@ -185,17 +185,22 @@ namespace FusionAxion.ViewModels
 
         private void LoadConfiguration()
         {
+            Log.Instance.SetLogType(ConfigurationModel.GetConfiguration().Logger);
+
+            if (CurrentData == null)
+            {
+
+                //Obtiene la configuracion de la estacion
+                Log.Instance.WriteLog($"Obteniendo configuracion de la estación.\n", LogType.t_info);
+                ControllerFusion.Instance.ConfigurarEstacion();
+
+                //Genera los surtidores
+                Log.Instance.WriteLog($"Generando botones para la vista.\n", LogType.t_info);
+                GenerateSurtidoresButton(Station.Instance.NumeroDeSurtidores);
+            }
+
             //Obtiene los parametros de configuracion.
             CurrentData = ConfigurationModel.GetConfiguration();
-
-            //Obtiene la configuracion de la estacion
-            Log.Instance.WriteLog($"Obteniendo configuracion de la estación.\n", LogType.t_info);
-            ControllerFusion.Instance.ConfigurarEstacion();
-
-            //Genera los surtidores
-            Log.Instance.WriteLog($"Generando botones para la vista.\n", LogType.t_info);
-            GenerateSurtidoresButton(Station.Instance.NumeroDeSurtidores);
-
             controller.Init();
         }
 

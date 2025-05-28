@@ -132,6 +132,7 @@ namespace FusionAxion
         public string Producto { get; set; }
         public int IdSurtidor { get; set; }
         public int IdManguera { get; set; }
+        public string Fecha { get; set; }
     }
     public class CierreDeTurno
     {

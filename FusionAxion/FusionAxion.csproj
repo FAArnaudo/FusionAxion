@@ -101,7 +101,9 @@
     <Compile Include="Repositories\DataBase.cs" />
     <Compile Include="Repositories\RepositoryBase.cs" />
     <Compile Include="Repositories\ConnectorSQLite.cs" />
+    <Compile Include="ViewModels\CierreViewModel.cs" />
     <Compile Include="ViewModels\ConfigurationViewModel.cs" />
+    <Compile Include="ViewModels\DespachosViewModel.cs" />
     <Compile Include="ViewModels\PanelFusionViewModel.cs" />
     <Compile Include="ViewModels\ViewModelBase.cs" />
     <Compile Include="ViewModels\ViewModelCommand.cs" />
@@ -196,10 +198,14 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="dll\FusionClass.dll" />
+    <Resource Include="Images\shift_close_48.ico" />
+    <Resource Include="Images\fuel_controller48.ico" />
+    <Resource Include="Images\fuel_controller.ico" />
+    <Resource Include="Images\fuel_pump.ico" />
+    <Resource Include="Images\inter_axion.ico" />
+    <Resource Include="Images\oil_tank.ico" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Images\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>

@@ -7,6 +7,7 @@ namespace CDS
     {
         private static readonly string configFile = Environment.CurrentDirectory + "/Config.ini";
         public Configuration() { }
+        public static bool WatchDog { get; set; } = true;
 
         public static Data GetConfiguration()
         {

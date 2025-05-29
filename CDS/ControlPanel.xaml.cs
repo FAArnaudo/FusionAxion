@@ -19,6 +19,7 @@ using Label = System.Windows.Controls.Label;
 using MessageBox = System.Windows.MessageBox;
 using KeyEventArgs = System.Windows.Input.KeyEventArgs;
 using System.Diagnostics;
+using CheckBox = System.Windows.Controls.CheckBox;
 
 namespace CDS
 {
@@ -31,6 +32,7 @@ namespace CDS
         private StackPanel stackPanel;
         private Label label;
         private DispatcherTimer timer;
+        private CheckBox cb_watchDog;
 
         public Label Label { get; private set; }
         public PumpController PumpController { get; private set; }
@@ -265,6 +267,9 @@ namespace CDS
 
         private void Update_version()
         {
+            // Ocultamos el boton
+            B_Version.Visibility = Visibility.Hidden;
+
             // Obtener la ruta de la carpeta base (donde está el archivo ejecutable)
             string basePath = AppDomain.CurrentDomain.BaseDirectory;
 
@@ -276,7 +281,6 @@ namespace CDS
             {
                 // Si existe, leer el contenido del archivo
                 string contenido = File.ReadAllText(filePath);
-
                 L_Version.Content = contenido;
             }
         }
@@ -297,6 +301,17 @@ namespace CDS
                 }
             }
         }
+
+        private void Cb_watchDog_Checked(object sender, RoutedEventArgs e)
+        {
+            Configuration.WatchDog = true;
+        }
+
+        private void Cb_watchDog_Unchecked(object sender, RoutedEventArgs e)
+        {
+            Configuration.WatchDog = false;
+        }
+
         #endregion
         #region PROCESO EN SEGUNDO PLANO
         private void SetupNotifyIcon()
@@ -488,11 +503,23 @@ namespace CDS
                 btnActualizarTanques.Click += BtnActualizarTanques_Click;
                 #endregion
 
+                #region CHECK BOX WATCHDOG
+                cb_watchDog = new CheckBox
+                {
+                    Content = "Watch Dog",
+                    IsChecked = Configuration.WatchDog
+                };
+
+                cb_watchDog.Checked += Cb_watchDog_Checked;
+                cb_watchDog.Unchecked += Cb_watchDog_Unchecked;
+                #endregion
+
                 _ = stackPanel.Children.Add(label);
                 _ = stackPanel.Children.Add(textBlock);
                 _ = stackPanel.Children.Add(btnCIO);
                 _ = stackPanel.Children.Add(btnCierreAnterior);
                 _ = stackPanel.Children.Add(btnActualizarTanques);
+                _ = stackPanel.Children.Add(cb_watchDog);
             }
             else if (flagStation.Equals("AXION"))
             {

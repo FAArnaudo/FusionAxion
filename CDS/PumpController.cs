@@ -78,7 +78,7 @@ namespace CDS
 
         public void RestartProcess()
         {
-            UpdateProcess(Data);
+            _ = UpdateProcess(Data);
         }
 
         private void CheckController()
@@ -91,7 +91,7 @@ namespace CDS
                         Data = Data,
                     };
 
-                    watchdog = new WatchDog(this, ControllerProcess);
+                    watchdog = new WatchDog(ControllerProcess);
                     Task = Task.Run(() => ControllerProcess.RunProcess(Task, watchdog));
 
                     break;

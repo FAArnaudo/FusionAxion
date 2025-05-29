@@ -210,16 +210,7 @@ namespace CDS
                     despacho.IdSurtidor = surtidor.ID;
 
                     UpdateProductos(despacho);
-                    /*
-                    foreach (Manguera manguera in surtidor.Mangueras)
-                    {
-                        if (manguera.Producto.Descripcion.Equals(despacho.Producto))
-                        {
-                            despacho.IdManguera = manguera.ID;
-                            break;
-                        }
-                    }
-                    */
+
                     if (despacho.VentaFacturada)
                     {
                         DataTable tablaProductos = ConnectorSQLite.Instance.ExecuteSelectQuery($"SELECT * " +
@@ -441,22 +432,6 @@ namespace CDS
 
         private void UpdateProductos(DespachoCem despacho)
         {
-            /*
-            foreach (ProductoCem producto in Station.Instance.Productos)
-            {
-                if (producto.PrecioUnitario == despacho.PPU)
-                {
-                    _ = ConnectorSQLite.Instance.ExecuteNonQuery($"UPDATE Productos " + $"SET numero_despacho = {despacho.IdProducto} " + $"WHERE id_producto = {producto.ID}");
-
-                    producto.IdProductoDespacho = despacho.IdProducto;
-
-                    despacho.IdProducto = producto.ID;
-                    despacho.Producto = producto.Descripcion;
-                    break;
-                }
-            }
-            */
-
             foreach (Surtidor surtidor in Station.Instance.Surtidores)
             {
                 if (despacho.IdSurtidor == surtidor.ID)

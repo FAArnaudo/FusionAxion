@@ -575,7 +575,7 @@ namespace CDS
                         turno.TotalesPorManguera.Add(totalPorManguera);
                     }
                 }
-                 
+
                 for (int i = 0; i < Station.Instance.NumeroDeTanques; i++)
                 {
                     TotalPorTanque totalPorTanque = new TotalPorTanque
@@ -636,7 +636,7 @@ namespace CDS
                 string campos = "state";
                 string rows = "ERROR";
 
-                Connections.ExecuteNonQuery(string.Format("INSERT INTO Cierres ({0}) VALUES ({1})", campos, rows));
+                _ = Connections.ExecuteNonQuery(string.Format("INSERT INTO Cierres ({0}) VALUES ({1})", campos, rows));
 
                 throw new Exception(error);
             }
@@ -812,7 +812,7 @@ namespace CDS
                 // Crear directorio si no existe
                 if (!Directory.Exists(path))
                 {
-                    Directory.CreateDirectory(path);
+                    _ = Directory.CreateDirectory(path);
                 }
 
                 // Nombre del archivo del día actual
@@ -897,9 +897,9 @@ namespace CDS
                                   })
                     .ExecuteAndCapture(() =>
                     {
-                        using (var cts = new CancellationTokenSource(TimeSpan.FromSeconds(5 * 60))) // tiempo máximo total
+                        using (CancellationTokenSource cts = new CancellationTokenSource(TimeSpan.FromSeconds(5 * 60))) // tiempo máximo total
                         {
-                            var task = Task.Run(() =>
+                            Task task = Task.Run(() =>
                             {
                                 if (pipeClient == null)
                                 {
@@ -926,12 +926,13 @@ namespace CDS
                             task.Wait(cts.Token); // lanza OperationCanceledException si se pasa el tiempo
                         }
                     });
-                
+
                 if (policyResult.Outcome != OutcomeType.Successful)
                 {
                     _ = ConnectorSQLite.Instance.ExecuteNonQuery(
                         $"UPDATE CheckConnection SET isConnected = 0, fecha = '{DateTime.Now:dd-MM-yyyy HH:mm:ss}' WHERE idConnection = 1");
-                    Log.Instance.WriteLog($"Fin de intentos...\n", LogType.t_error);
+                    Station.Instance.GeneralMessage = $"No se ha podido conectar con el Pipe. Conexion = {policyResult.Outcome}";
+                    Log.Instance.WriteLog($"Fin de intentos... Excepción: {policyResult.FinalException.Message}\n", LogType.t_error);
                     ReloadData();
                 }
                 else

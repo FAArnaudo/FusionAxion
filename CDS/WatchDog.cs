@@ -13,18 +13,15 @@ namespace CDS
     public class WatchDog
     {
         private readonly IControllerProcess process;
-        private readonly PumpController pumpController;
         private Thread watchdogThread;
-        private bool isRunning;
 
-        public bool IsRunning { get => isRunning; set => isRunning = value; }
-        public int StartTime { get; set; } = 10;            // 10 segundos
-        public int ThresholdTime { get; set; } = 60 * 30;   // Minutos
-        public int ThresholdReSend { get; set; } = 60 * 30; // Minutos
+        public bool IsRunning { get; set; }
+        public int StartTime { get; set; } = 10;                // 10 segundos
+        public int ThresholdTime { get; set; } = 60 * 30;       // Minutos
+        public int ThresholdReSend { get; set; } = 60 * 60 * 2; // 2 horas
 
-        public WatchDog(PumpController controller, IControllerProcess process)
+        public WatchDog(IControllerProcess process)
         {
-            pumpController = controller;
             this.process = process;
         }
 
@@ -38,7 +35,7 @@ namespace CDS
             watchdogThread.Start();
         }
 
-        // WD tarda 1 minuto en comenzar controla el tiempo desde que 
+        // WD tarda {@StartTime} en comenzar a controlar el tiempo desde que inicia el sistema
         private void MonitorWorker()
         {
             while (IsRunning)
@@ -47,7 +44,7 @@ namespace CDS
 
                 if ((DateTime.Now - process.LastExecutionTime).TotalSeconds > ThresholdTime)
                 {
-                    Log.Instance.WriteLog("Watchdog detectó que el proceso no responde.\n", LogType.t_error);
+                    Log.Instance.WriteLog("Watchdog detectó que el programa no responde.\n", LogType.t_error);
                     RestartWorker();
                 }
             }
@@ -55,14 +52,11 @@ namespace CDS
 
         private void RestartWorker()
         {
-            //Log.Instance.WriteLog("Reiniciando proceso principal...\n", LogType.t_info);
-            //pumpController.RestartProcess();
             string message = $"Watchdog detectó que el proceso no responde.\n" +
                              $"Estacion: {Configuration.GetConfiguration().RazonSocial}.\n" +
                              $"<p>Importante:</p>" +
                              $"<p>- Revisar la conexion con Posservice</p>" +
                              $"<p>- Verificar que respondan los botones del CDS</p>" +
-                             $"<p>- Si no se encuentran problemas, es posible que se reconecte solo...</p>" +
                              $"<p>- {Station.Instance.GeneralMessage}</p>";
 
             string destinatario = ObtenerDestinatario();
@@ -70,8 +64,8 @@ namespace CDS
             {
                 destinatario = "federico.arnaudo@sistemasiges.com.ar";
             }
-            
-            EnviarCorreo(destinatario, "CDS", message);
+
+            EnviarCorreo(destinatario, "Falla en CDS", message);
             Thread.Sleep(1000 * ThresholdReSend);
         }
 

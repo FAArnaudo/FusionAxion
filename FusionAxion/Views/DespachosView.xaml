@@ -6,8 +6,8 @@
         xmlns:local="clr-namespace:FusionAxion.Views"
         xmlns:viewModel="clr-namespace:FusionAxion.ViewModels"
         mc:Ignorable="d"
-        ResizeMode="NoResize"
         Title="Despachos" Height="450" Width="850"
+        ResizeMode="NoResize"
         Icon="pack://application:,,,/Images/fuel_controller48.ico">
 
     <Window.DataContext>
@@ -15,7 +15,7 @@
     </Window.DataContext>
     
     <Grid Background="#2E3A3F">
-        <DataGrid ItemsSource="{Binding datos}" AutoGenerateColumns="False"
+        <DataGrid ItemsSource="{Binding Datos}" AutoGenerateColumns="False"
               Margin="5"
               Background="#1F272B"
               Foreground="White"
@@ -41,7 +41,7 @@
                 <DataGridTextColumn Header="Surtidor" Binding="{Binding IdSurtidor}" Width="80"/>
                 <DataGridTextColumn Header="Manguera" Binding="{Binding IdManguera}" Width="80"/>
                 <DataGridTextColumn Header="Producto" Binding="{Binding Producto}" Width="130"/>
-                <DataGridTextColumn Header="Precio Unitario" Binding="{Binding PPU}" Width="90"/>
+                <DataGridTextColumn Header="Precio Unitario" Binding="{Binding PPU}" Width="100"/>
                 <DataGridTextColumn Header="Monto" Binding="{Binding Monto}" Width="80"/>
                 <DataGridTextColumn Header="Volumen" Binding="{Binding Volumen}" Width="80"/>
                 <DataGridTextColumn Header="Fecha del Despacho" Binding="{Binding Fecha}" Width="130"/>

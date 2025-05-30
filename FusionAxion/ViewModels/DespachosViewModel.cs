@@ -11,24 +11,15 @@ namespace FusionAxion.ViewModels
 {
     public class DespachosViewModel : ViewModelBase
     {
-        public ObservableCollection<Despacho> datos { get; set; }
-        public string Fecha
-        {
-            get => Fecha;
-            set
-            {
-                Fecha = value;
-                OnPropertyChanged(nameof(Fecha));
-            }
-        }
+        public ObservableCollection<Despacho> Datos { get; set; }
 
         public DespachosViewModel()
         {
-            datos = new ObservableCollection<Despacho>();
-            CargarDespachos();
+            Datos = new ObservableCollection<Despacho>();
+            CargarDatos();
         }
 
-        private void CargarDespachos()
+        private void CargarDatos()
         {
             DataTable data = ConnectorSQLite.Instance.ExecuteSelectQuery($"SELECT id, surtidor, manguera, descripcion, PPU, monto, volumen, fecha " +
                                                                          $"FROM Despachos " +
@@ -52,9 +43,9 @@ namespace FusionAxion.ViewModels
                         Monto = Convert.ToDouble(row["monto"]),
                         Volumen = Convert.ToDouble(row["volumen"]),
                         Fecha = fecha.ToString("dd-MM-yyyy HH:mm:ss")
-                };
+                    };
 
-                    datos.Add(dato);
+                    Datos.Add(dato);
                 }
             }
         }

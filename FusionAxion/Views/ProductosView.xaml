@@ -4,9 +4,43 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:FusionAxion.Views"
+        xmlns:viewModel="clr-namespace:FusionAxion.ViewModels"
         mc:Ignorable="d"
-        Title="Productos" Height="450" Width="800">
-    <Grid>
-        
+        Title="Productos" Height="450" Width="400"
+        ResizeMode="NoResize"
+        Icon="pack://application:,,,/Images/fuel_product_48.ico">
+    
+    <Window.DataContext>
+        <viewModel:ProductosViewModel></viewModel:ProductosViewModel>
+    </Window.DataContext>
+
+    <Grid Background="#2E3A3F">
+        <DataGrid ItemsSource="{Binding Datos}" AutoGenerateColumns="False"
+              Margin="5"
+              Background="#1F272B"
+              Foreground="White"
+              GridLinesVisibility="All"
+              HorizontalGridLinesBrush="#707B7F"
+              VerticalGridLinesBrush="#707B7F"
+              HeadersVisibility="All"
+              ColumnHeaderHeight="30"
+              RowBackground="#1F272B"
+              AlternatingRowBackground="#273034">
+            <!-- Declaración directa del estilo del encabezado -->
+            <DataGrid.ColumnHeaderStyle>
+                <Style TargetType="DataGridColumnHeader">
+                    <Setter Property="Background" Value="#39444A" />
+                    <Setter Property="Foreground" Value="White" />
+                    <Setter Property="FontWeight" Value="Bold" />
+                    <Setter Property="HorizontalContentAlignment" Value="Center" />
+                </Style>
+            </DataGrid.ColumnHeaderStyle>
+
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="ID Producto" Binding="{Binding ID}" Width="130"/>
+                <DataGridTextColumn Header="Producto" Binding="{Binding Descripcion}" Width="130"/>
+                <DataGridTextColumn Header="Precio Unitario" Binding="{Binding PrecioUnitario}" Width="100"/>
+            </DataGrid.Columns>
+        </DataGrid>
     </Grid>
 </Window>

@@ -106,6 +106,7 @@ namespace FusionAxion
         public double VolumenDeProducto { get; set; } = 0;
         public double VolumenDeAgua { get; set; } = 0;
         public double VolumenVacio { get; set; } = 0;
+        public string Fecha { get; set; }
     }
     public class Producto
     {

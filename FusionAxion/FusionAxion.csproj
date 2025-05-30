@@ -105,6 +105,9 @@
     <Compile Include="ViewModels\ConfigurationViewModel.cs" />
     <Compile Include="ViewModels\DespachosViewModel.cs" />
     <Compile Include="ViewModels\PanelFusionViewModel.cs" />
+    <Compile Include="ViewModels\ProductosViewModel.cs" />
+    <Compile Include="ViewModels\SurtidoresViewModel.cs" />
+    <Compile Include="ViewModels\TaquesViewModel.cs" />
     <Compile Include="ViewModels\ViewModelBase.cs" />
     <Compile Include="ViewModels\ViewModelCommand.cs" />
     <Compile Include="Views\CierresView.xaml.cs">
@@ -198,6 +201,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="dll\FusionClass.dll" />
+    <Resource Include="Images\fuel_product_48.ico" />
     <Resource Include="Images\shift_close_48.ico" />
     <Resource Include="Images\fuel_controller48.ico" />
     <Resource Include="Images\fuel_controller.ico" />

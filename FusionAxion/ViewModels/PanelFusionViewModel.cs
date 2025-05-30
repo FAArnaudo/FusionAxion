@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
@@ -189,7 +190,6 @@ namespace FusionAxion.ViewModels
 
             if (CurrentData == null)
             {
-
                 //Obtiene la configuracion de la estacion
                 Log.Instance.WriteLog($"Obteniendo configuracion de la estación.\n", LogType.t_info);
                 ControllerFusion.Instance.ConfigurarEstacion();
@@ -197,11 +197,18 @@ namespace FusionAxion.ViewModels
                 //Genera los surtidores
                 Log.Instance.WriteLog($"Generando botones para la vista.\n", LogType.t_info);
                 GenerateSurtidoresButton(Station.Instance.NumeroDeSurtidores);
+
+                Timer timer = new Timer(Callback, null, 0, 30000);
             }
 
             //Obtiene los parametros de configuracion.
             CurrentData = ConfigurationModel.GetConfiguration();
             controller.Init();
+        }
+
+        private void Callback(object state)
+        {
+            UpdateLabelConnection();
         }
 
         private void GenerateSurtidoresButton(int count)

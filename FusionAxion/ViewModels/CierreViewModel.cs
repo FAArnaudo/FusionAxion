@@ -11,15 +11,15 @@ namespace FusionAxion.ViewModels
 {
     public class CierreViewModel : ViewModelBase
     {
-        public ObservableCollection<CierreDeTurno> cierres { get; set; }
+        public ObservableCollection<CierreDeTurno> Datos { get; set; }
 
         public CierreViewModel()
         {
-            cierres = new ObservableCollection<CierreDeTurno>();
-            CargarCierres();
+            Datos = new ObservableCollection<CierreDeTurno>();
+            CargarDatos();
         }
 
-        private void CargarCierres()
+        private void CargarDatos()
         {
             DataTable data = ConnectorSQLite.Instance.ExecuteSelectQuery($"SELECT id, monto_contado, volumen_contado, state, message, fecha " +
                                                                                 $"FROM Cierres " +
@@ -41,7 +41,7 @@ namespace FusionAxion.ViewModels
                         FechaCierre = fecha.ToString("dd-MM-yyyy HH:mm:ss")
                     };
 
-                    cierres.Add(cierreDeTurno);
+                    Datos.Add(cierreDeTurno);
                 }
             }
         }

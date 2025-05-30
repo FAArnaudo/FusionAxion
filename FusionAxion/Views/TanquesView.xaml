@@ -4,9 +4,44 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:FusionAxion.Views"
+        xmlns:viewModel="clr-namespace:FusionAxion.ViewModels"
         mc:Ignorable="d"
-        Title="Tanques" Height="450" Width="800">
-    <Grid>
-        
+        Title="Tanques" Height="450" Width="500"
+        ResizeMode="NoResize"
+        Icon="pack://application:,,,/Images/oil_tank.ico">
+
+    <Window.DataContext>
+        <viewModel:TanquesViewModel></viewModel:TanquesViewModel>
+    </Window.DataContext>
+
+    <Grid Background="#2E3A3F">
+        <DataGrid ItemsSource="{Binding Datos}" AutoGenerateColumns="False"
+              Margin="5"
+              Background="#1F272B"
+              Foreground="White"
+              GridLinesVisibility="All"
+              HorizontalGridLinesBrush="#707B7F"
+              VerticalGridLinesBrush="#707B7F"
+              HeadersVisibility="All"
+              ColumnHeaderHeight="30"
+              RowBackground="#1F272B"
+              AlternatingRowBackground="#273034">
+            <!-- Declaración directa del estilo del encabezado -->
+            <DataGrid.ColumnHeaderStyle>
+                <Style TargetType="DataGridColumnHeader">
+                    <Setter Property="Background" Value="#39444A" />
+                    <Setter Property="Foreground" Value="White" />
+                    <Setter Property="FontWeight" Value="Bold" />
+                    <Setter Property="HorizontalContentAlignment" Value="Center" />
+                </Style>
+            </DataGrid.ColumnHeaderStyle>
+
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Tanque" Binding="{Binding ID}" Width="80"/>
+                <DataGridTextColumn Header="Volumen de Producto" Binding="{Binding VolumenDeProducto}" Width="130"/>
+                <DataGridTextColumn Header="Capacidad Maxima" Binding="{Binding CapacidadMaxima}" Width="130"/>
+                <DataGridTextColumn Header="ultima actualización" Binding="{Binding Fecha}" Width="130"/>
+            </DataGrid.Columns>
+        </DataGrid>
     </Grid>
 </Window>

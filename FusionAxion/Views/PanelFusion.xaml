@@ -56,12 +56,6 @@
         <Grid Width="140" Height="448" Background="#34495E"
               HorizontalAlignment="Left" VerticalAlignment="Bottom">
             <StackPanel x:Name="SPPanel">
-                <!--#region TEXT BLOCK IP-->
-                <TextBlock Width="120" Height="25" Foreground="#ECF0F1"
-                           HorizontalAlignment="Center" Margin="0,8,0,0"
-                           Text="{Binding CurrentData.IP}"
-                           FontSize="18" TextAlignment="Center"></TextBlock>
-                <!--#endregion-->
                 <!--#region BUTTON CAMBIAR CONFIGURACION-->
                 <Button Name="BtnCambiarConfig"
                         Width="110" Height="45"
@@ -147,6 +141,12 @@
                         Conexión
                     </TextBlock>
                 </Button>
+                <!--#endregion-->
+                <!--#region TEXT BLOCK IP-->
+                <TextBlock Width="120" Height="25" Foreground="#ECF0F1"
+                           HorizontalAlignment="Center" Margin="0,8,0,0"
+                           Text="{Binding CurrentData.IP}"
+                           FontSize="18" TextAlignment="Center"></TextBlock>
                 <!--#endregion-->
                 <!--#region LABEL STATE-->
                 <Label x:Name="LStatus"

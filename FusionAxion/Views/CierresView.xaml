@@ -15,17 +15,17 @@
     </Window.DataContext>
 
     <Grid Background="#2E3A3F">
-        <DataGrid ItemsSource="{Binding cierres}" AutoGenerateColumns="False"
-              Margin="5"
-              Background="#1F272B"
-              Foreground="White"
-              GridLinesVisibility="All"
-              HorizontalGridLinesBrush="#707B7F"
-              VerticalGridLinesBrush="#707B7F"
-              HeadersVisibility="All"
-              ColumnHeaderHeight="30"
-              RowBackground="#1F272B"
-              AlternatingRowBackground="#273034">
+        <DataGrid ItemsSource="{Binding Datos}" AutoGenerateColumns="False"
+                  Margin="5"
+                  Background="#1F272B"
+                  Foreground="White"
+                  GridLinesVisibility="All"
+                  HorizontalGridLinesBrush="#707B7F"
+                  VerticalGridLinesBrush="#707B7F"
+                  HeadersVisibility="All"
+                  ColumnHeaderHeight="30"
+                  RowBackground="#1F272B"
+                  AlternatingRowBackground="#273034">
             <!-- Declaración directa del estilo del encabezado -->
             <DataGrid.ColumnHeaderStyle>
                 <Style TargetType="DataGridColumnHeader">

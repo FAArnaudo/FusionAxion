@@ -36,19 +36,7 @@ namespace FusionAxion
                     ControllerFusion.Instance.ActualizarTanques();
                     while (!HacerCierre)
                     {
-                        foreach (Surtidor surtidor in Station.Instance.Surtidores)
-                        {
-                            ControllerFusion.Instance.GrabarDespachos(surtidor);
-
-                            ControllerFusion.Instance.CheckDiscount();
-
-                            if (HacerCierre)
-                            {
-                                break;
-                            }
-
-                            Thread.Sleep(Convert.ToInt32(ConfigurationModel.GetConfiguration().Timer) * 1000);
-                        }
+                        MonitorearSurtidores();
                     }
                 }
                 catch (TaskCanceledException ex)
@@ -63,6 +51,23 @@ namespace FusionAxion
                 }
             }
             IsRunning = false;
+        }
+
+        public void MonitorearSurtidores()
+        {
+            foreach (Surtidor surtidor in Station.Instance.Surtidores)
+            {
+                ControllerFusion.Instance.GrabarDespachos(surtidor);
+
+                ControllerFusion.Instance.CheckDiscount();
+
+                if (HacerCierre)
+                {
+                    break;
+                }
+
+                Thread.Sleep(Convert.ToInt32(ConfigurationModel.GetConfiguration().Timer) * 1000);
+            }
         }
 
         public void EndProcess()

@@ -86,41 +86,10 @@ namespace FusionAxion
                 ConnectorFusion.ComandoConfiguracionDeLaEstacion(Fusion);
             }
 
-            Station station = Station.Instance;
-
             try
             {
                 ActualizarSurtidores();
                 ActualizarProductos();
-
-                /*foreach (Tanque tanque in station.Tanques)
-                {
-                    string campos = "id_tanque,volumen_actual,capacidad_maxima";
-                    string volumenDeProducto = tanque.VolumenDeProducto.ToString("F2", CultureInfo.InvariantCulture);
-                    string capacidadMaxima = tanque.CapacidadMaxima.ToString("F2", CultureInfo.InvariantCulture);
-
-                    string rows = string.Format("{0},'{1}',{2}",
-                                                 tanque.ID,
-                                                 volumenDeProducto,
-                                                 capacidadMaxima);
-
-                    DataTable tablaTanques = ConnectorSQLite.Instance.ExecuteSelectQuery("SELECT * " +
-                                                                                         "FROM Tanques " +
-                                                                                        $"WHERE id_tanque = {tanque.ID}");
-
-                    _ = tablaTanques.Rows.Count == 0
-                        ? ConnectorSQLite.Instance.ExecuteNonQuery(string.Format("INSERT INTO Tanques ({0}) VALUES ({1})", campos, rows))
-                        : ConnectorSQLite.Instance.ExecuteNonQuery(string.Format("UPDATE Tanques " +
-                                                                                 "SET volumen_actual = ('{0}'), capacidad_maxima = ({1}) " +
-                                                                                 "WHERE id_tanque = ({2})",
-                                                                                  volumenDeProducto,
-                                                                                  capacidadMaxima,
-                                                                                  tanque.ID));
-
-                    Log.Instance.WriteLog(string.Format("TANQUE: ({0}))", tanque.ID), LogType.t_info);
-                }
-                Log.Instance.WriteLog("\n", LogType.t_info);
-                */
             }
             catch (Exception e)
             {
@@ -354,9 +323,7 @@ namespace FusionAxion
 
         public void GrabarDespachos(Surtidor surtidor)
         {
-            string debugMessage;
-
-            debugMessage = "";
+            string debugMessage = "";
             int i = 0;
             FusionSale fusionSale = new FusionSale();
 
@@ -367,67 +334,63 @@ namespace FusionAxion
                     i = Fusion.GetLastSale(surtidor.ID, fusionSale);
                 }
 
-                if (i == 1)
+                if (i == 1 && fusionSale.GetSaleID() != 0 && !(fusionSale.GetAmount().Equals("0.00") || fusionSale.GetVolume().Equals("0.00000")))
                 {
-                    if (!fusionSale.GetAmount().Equals("0.00"))
+                    string fechaHora = fusionSale.GetDateOfTransaction().Trim() + " " + fusionSale.GetInitTimeOfTransaction().Trim();
+                    debugMessage += $"fechaHora: {fechaHora} - ";
+
+                    bool exito = DateTime.TryParseExact(fechaHora, "yyyyMMdd HHmmss", null, DateTimeStyles.None, out DateTime fechaFormateada);
+
+                    if (!exito)
                     {
+                        fechaFormateada = DateTime.Now;
+                        Log.Instance.WriteLog($"Error de formato: {fechaFormateada}.", LogType.t_debug);
+                    }
 
-                        string fechaHora = fusionSale.GetDateOfTransaction().Trim() + " " + fusionSale.GetInitTimeOfTransaction().Trim();
-                        debugMessage += $"fechaHora: {fechaHora} - ";
+                    debugMessage += $"dechaFormateada: {fechaFormateada} - ";
 
-                        bool exito = DateTime.TryParseExact(fechaHora, "yyyyMMdd HHmmss", null, DateTimeStyles.None, out DateTime fechaFormateada);
+                    Despacho despacho = new Despacho()
+                    {
+                        IdDespacho = fusionSale.GetSaleID(),
+                        IdSurtidor = fusionSale.GetPumpNr(),
+                        IdManguera = fusionSale.GetHoseNr(),
+                        IdProducto = fusionSale.GetGradeNr(),
+                        Monto = ConvertDouble(fusionSale.GetAmount()),
+                        Volumen = ConvertDouble(fusionSale.GetVolume()),
+                        PPU = ConvertDouble(fusionSale.GetPPU()),
+                        Producto = Fusion.GetConfig().GetGradeByID(fusionSale.GetGradeNr()),
+                    };
+                    string fecha = fechaFormateada.ToString("yyyy-MM-dd HH:mm:ss");
+                    debugMessage += $"fecha: {fecha}.";
 
-                        if (!exito)
-                        {
-                            fechaFormateada = DateTime.Now;
-                            Log.Instance.WriteLog($"Error de formato: {fechaFormateada}.", LogType.t_debug);
-                        }
+                    Log.Instance.WriteLog($"Despacho obtenido\n" +
+                                          $"ID: {despacho.IdDespacho}\n" +
+                                          $"Monto: {despacho.Monto}\n" +
+                                          $"Volumen: {despacho.Volumen}", LogType.t_debug);
 
-                        debugMessage += $"dechaFormateada: {fechaFormateada} - ";
+                    DataTable tablaDespachos = ConnectorSQLite.Instance.ExecuteSelectQuery($"SELECT * " +
+                                                                                           $"FROM Despachos " +
+                                                                                           $"WHERE id = {despacho.IdDespacho} AND surtidor = {surtidor.ID}");
 
-                        Despacho despacho = new Despacho()
-                        {
-                            IdDespacho = fusionSale.GetSaleID(),
-                            IdSurtidor = fusionSale.GetPumpNr(),
-                            IdManguera = fusionSale.GetHoseNr(),
-                            IdProducto = fusionSale.GetGradeNr(),
-                            Monto = ConvertDouble(fusionSale.GetAmount()),
-                            Volumen = ConvertDouble(fusionSale.GetVolume()),
-                            PPU = ConvertDouble(fusionSale.GetPPU()),
-                            Producto = Fusion.GetConfig().GetGradeByID(fusionSale.GetGradeNr()),
-                        };
-                        string fecha = fechaFormateada.ToString("yyyy-MM-dd HH:mm:ss");
-                        debugMessage += $"fecha: {fecha}.";
+                    /// Procesamiento de la ultima venta
+                    if (tablaDespachos.Rows.Count == 0)
+                    {
+                        /// Agregar a Base de Datos
+                        bool despacho_pedido = false;
+                        string campos = "id,surtidor,manguera,producto,PPU,volumen,monto,descripcion,despacho_pedido,fecha";
+                        string row = string.Format("{0},{1},{2},'{3}',{4},{5},{6},'{7}',{8},'{9}'",
+                                                    despacho.IdDespacho,
+                                                    despacho.IdSurtidor,
+                                                    despacho.IdManguera,
+                                                    despacho.Producto,
+                                                    despacho.PPU.ToString(CultureInfo.InvariantCulture),
+                                                    despacho.Volumen.ToString(CultureInfo.InvariantCulture),
+                                                    despacho.Monto.ToString(CultureInfo.InvariantCulture),
+                                                    despacho.Producto,
+                                                    despacho_pedido,
+                                                    fecha);
 
-                        Log.Instance.WriteLog($"Despacho obtenido\n" +
-                                              $"ID: {despacho.IdDespacho}\n" +
-                                              $"Monto: {despacho.Monto}\n" +
-                                              $"Volumen: {despacho.Volumen}", LogType.t_debug);
-
-                        DataTable tablaDespachos = ConnectorSQLite.Instance.ExecuteSelectQuery($"SELECT * " +
-                                                                                               $"FROM Despachos " +
-                                                                                               $"WHERE id = {despacho.IdDespacho} AND surtidor = {surtidor.ID}");
-
-                        /// Procesamiento de la ultima venta
-                        if (tablaDespachos.Rows.Count == 0)
-                        {
-                            /// Agregar a Base de Datos
-                            bool despacho_pedido = false;
-                            string campos = "id,surtidor,manguera,producto,PPU,volumen,monto,descripcion,despacho_pedido,fecha";
-                            string row = string.Format("{0},{1},{2},'{3}',{4},{5},{6},'{7}',{8},'{9}'",
-                                                        despacho.IdDespacho,
-                                                        despacho.IdSurtidor,
-                                                        despacho.IdManguera,
-                                                        despacho.Producto,
-                                                        despacho.PPU.ToString(CultureInfo.InvariantCulture),
-                                                        despacho.Volumen.ToString(CultureInfo.InvariantCulture),
-                                                        despacho.Monto.ToString(CultureInfo.InvariantCulture),
-                                                        despacho.Producto,
-                                                        despacho_pedido,
-                                                        fecha);
-
-                            _ = ConnectorSQLite.Instance.ExecuteNonQuery(string.Format("INSERT INTO Despachos ({0}) VALUES ({1})", campos, row));
-                        }
+                        _ = ConnectorSQLite.Instance.ExecuteNonQuery(string.Format("INSERT INTO Despachos ({0}) VALUES ({1})", campos, row));
                     }
                 }
             }

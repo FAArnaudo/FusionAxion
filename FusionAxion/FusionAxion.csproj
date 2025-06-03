@@ -103,6 +103,7 @@
     <Compile Include="Repositories\ConnectorSQLite.cs" />
     <Compile Include="ViewModels\CierreViewModel.cs" />
     <Compile Include="ViewModels\ConfigurationViewModel.cs" />
+    <Compile Include="ViewModels\DespachosPorSurtidorViewModel.cs" />
     <Compile Include="ViewModels\DespachosViewModel.cs" />
     <Compile Include="ViewModels\PanelFusionViewModel.cs" />
     <Compile Include="ViewModels\ProductosViewModel.cs" />
@@ -116,6 +117,9 @@
     <Compile Include="Views\ConfigurationView.xaml.cs">
       <DependentUpon>ConfigurationView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\DespachosPorSurtidorView.xaml.cs">
+      <DependentUpon>DespachosPorSurtidorView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\ProductosView.xaml.cs">
       <DependentUpon>ProductosView.xaml</DependentUpon>
     </Compile>
@@ -126,6 +130,10 @@
       <DependentUpon>TanquesView.xaml</DependentUpon>
     </Compile>
     <Page Include="Views\CierresView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\DespachosPorSurtidorView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -201,6 +209,8 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="dll\FusionClass.dll" />
+    <Resource Include="Images\inter_axion_48op2.ico" />
+    <Resource Include="Images\panel_fusion_48.ico" />
     <Resource Include="Images\fuel_product_48.ico" />
     <Resource Include="Images\shift_close_48.ico" />
     <Resource Include="Images\fuel_controller48.ico" />

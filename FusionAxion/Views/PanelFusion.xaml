@@ -7,7 +7,7 @@
         xmlns:viewModel="clr-namespace:FusionAxion.ViewModels"
         mc:Ignorable="d"
         WindowStyle="None"
-        Title="Controlador de Surtidores" Height="478" Width="780"
+        Title="Controlador de Surtidores" Height="483" Width="780"
         ResizeMode="CanMinimize" MouseDown="Window_MouseDown">
 
     <Window.DataContext>
@@ -24,7 +24,7 @@
 
     <Grid x:Name="GMain">
         <!--#region GRID TOP-->
-        <Grid Width="780" Height="30" Background="#2C3E50"
+        <Grid Width="780" Height="35" Background="#2C3E50"
               VerticalAlignment="Top">
             <!--#region BUTTONS-->
             <Button Grid.Row="0" Grid.Column="2" Name="BtnCerrar"
@@ -44,12 +44,17 @@
             <!--#endregion-->
             <!--#region TITLE-->
             <TextBlock Text="InterAxion"
-                           Height="30" Width="94"
-                           HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="44,0,0,0"
-                           FontSize="20" Foreground="White"></TextBlock>
+                           Height="35" Width="120"
+                           HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="50,0,0,0"
+                           FontSize="26" Foreground="White"></TextBlock>
             <!--#endregion-->
             <!--#region IMAGE-->
-            <!--#endregion-->
+            <Image Source="pack://application:,,,/Images/panel_fusion_48.ico"
+                   HorizontalAlignment="Left" VerticalAlignment="Center"
+                   Height="35" Width="35" Margin="10,0,0,0">
+                
+            </Image>
+                <!--#endregion-->
         </Grid>
         <!--#endregion-->
         <!--#region GRID PANEL-->
@@ -177,13 +182,17 @@
                 </ItemsControl.ItemsPanel>
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <Button Content="{Binding Label}"
-                                Command="{Binding Command}"
-                                CommandParameter="{Binding }"
+                        <Button Command="{Binding Command}"
+                                CommandParameter="{Binding Label}"
                                 Height="{Binding Height}" Width="{Binding Width}"
                                 Background="{Binding Background}" Foreground="White"
                                 HorizontalAlignment="Center"
-                                VerticalAlignment="Center"/>
+                                VerticalAlignment="Center">
+                            <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
+                                <Image Source="pack://application:,,,/Images/fuel_pump.ico" Width="60" Height="60" Margin="0,0,5,0"/>
+                                <TextBlock Text="{Binding Label}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>

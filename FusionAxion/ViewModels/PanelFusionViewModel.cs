@@ -219,7 +219,7 @@ namespace FusionAxion.ViewModels
             {
                 SurtidoresButton.Add(new ButtonModel
                 {
-                    Label = $"Surtidor {i}",
+                    Label = $"{i}",
                     Command = new ViewModelCommand(ExecuteButtonCommand),
                 });
             }
@@ -241,11 +241,13 @@ namespace FusionAxion.ViewModels
             }
         }
 
-        private void ExecuteButtonCommand(object obj)
+        private void ExecuteButtonCommand(object parameter)
         {
-            if (obj is ButtonModel button)
+            if (parameter is string numeroTexto && int.TryParse(numeroTexto, out int surtidor))
             {
-                _ = MessageBox.Show($"Botón {button.Label} presionado");
+                DespachosPorSurtidorView despachosPorSurtidorView = new DespachosPorSurtidorView();
+                despachosPorSurtidorView.DataContext = new DespachosPorSurtidorViewModel(surtidor);
+                despachosPorSurtidorView.Show();
             }
         }
     }

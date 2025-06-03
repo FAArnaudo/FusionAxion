@@ -336,32 +336,9 @@ namespace FusionAxion
 
                 if (i == 1 && fusionSale.GetSaleID() != 0 && !(fusionSale.GetAmount().Equals("0.00") || fusionSale.GetVolume().Equals("0.00000")))
                 {
-                    string fechaHora = fusionSale.GetDateOfTransaction().Trim() + " " + fusionSale.GetInitTimeOfTransaction().Trim();
-                    debugMessage += $"fechaHora: {fechaHora} - ";
+                    Despacho despacho = new Despacho();
 
-                    bool exito = DateTime.TryParseExact(fechaHora, "yyyyMMdd HHmmss", null, DateTimeStyles.None, out DateTime fechaFormateada);
-
-                    if (!exito)
-                    {
-                        fechaFormateada = DateTime.Now;
-                        Log.Instance.WriteLog($"Error de formato: {fechaFormateada}.", LogType.t_debug);
-                    }
-
-                    debugMessage += $"dechaFormateada: {fechaFormateada} - ";
-
-                    Despacho despacho = new Despacho()
-                    {
-                        IdDespacho = fusionSale.GetSaleID(),
-                        IdSurtidor = fusionSale.GetPumpNr(),
-                        IdManguera = fusionSale.GetHoseNr(),
-                        IdProducto = fusionSale.GetGradeNr(),
-                        Monto = ConvertDouble(fusionSale.GetAmount()),
-                        Volumen = ConvertDouble(fusionSale.GetVolume()),
-                        PPU = ConvertDouble(fusionSale.GetPPU()),
-                        Producto = Fusion.GetConfig().GetGradeByID(fusionSale.GetGradeNr()),
-                    };
-                    string fecha = fechaFormateada.ToString("yyyy-MM-dd HH:mm:ss");
-                    debugMessage += $"fecha: {fecha}.";
+                    DespachosFill(fusionSale, despacho, ref debugMessage);
 
                     Log.Instance.WriteLog($"Despacho obtenido\n" +
                                           $"ID: {despacho.IdDespacho}\n" +
@@ -388,7 +365,7 @@ namespace FusionAxion
                                                     despacho.Monto.ToString(CultureInfo.InvariantCulture),
                                                     despacho.Producto,
                                                     despacho_pedido,
-                                                    fecha);
+                                                    despacho.Fecha);
 
                         _ = ConnectorSQLite.Instance.ExecuteNonQuery(string.Format("INSERT INTO Despachos ({0}) VALUES ({1})", campos, row));
                     }
@@ -405,6 +382,34 @@ namespace FusionAxion
             {
                 throw new TaskCanceledException();
             }
+        }
+
+        public void DespachosFill(FusionSale fusionSale, Despacho despacho, ref string debugMessage)
+        {
+            string fechaHora = fusionSale.GetDateOfTransaction().Trim() + " " + fusionSale.GetInitTimeOfTransaction().Trim();
+            debugMessage += $"fechaHora: {fechaHora} - ";
+
+            bool exito = DateTime.TryParseExact(fechaHora, "yyyyMMdd HHmmss", null, DateTimeStyles.None, out DateTime fechaFormateada);
+
+            if (!exito)
+            {
+                fechaFormateada = DateTime.Now;
+                Log.Instance.WriteLog($"Error de formato: {fechaFormateada}.", LogType.t_debug);
+            }
+
+            debugMessage += $"dechaFormateada: {fechaFormateada} - ";
+
+            despacho.IdDespacho = fusionSale.GetSaleID();
+            despacho.IdSurtidor = fusionSale.GetPumpNr();
+            despacho.IdManguera = fusionSale.GetHoseNr();
+            despacho.IdProducto = fusionSale.GetGradeNr();
+            despacho.Monto = ConvertDouble(fusionSale.GetAmount());
+            despacho.Volumen = ConvertDouble(fusionSale.GetVolume());
+            despacho.PPU = ConvertDouble(fusionSale.GetPPU());
+            despacho.Producto = Fusion.GetConfig().GetGradeByID(fusionSale.GetGradeNr());
+            despacho.Fecha = fechaFormateada.ToString("yyyy-MM-dd HH:mm:ss");
+
+            debugMessage += $"fecha: {despacho.Fecha}.";
         }
 
         public void CheckDiscount()
@@ -625,6 +630,7 @@ namespace FusionAxion
                 _ = ConnectorSQLite.Instance.ExecuteNonQuery(string.Format("INSERT INTO CierresPorManguera ({0}) VALUES ({1})", fields, values));
             }
         }
+
         private double ConvertDouble(string value)
         {
             return double.TryParse(value, NumberStyles.Any, culture, out double result) ? result : result;

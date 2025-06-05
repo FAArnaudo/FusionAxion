@@ -223,44 +223,18 @@ namespace FusionAxion
             periodType = "";
 
             flag = cFusion.ShiftClose(type, ref status, ref message, ref errorCode, ref periodID, ref periodType);
-            Log.Instance.WriteLog($"Ejecucion ShiftClose: {flag}", LogType.t_debug);
+            Log.Instance.WriteLog($"Ejecucion de ShiftClose: {status}", LogType.t_debug);
 
             cierreDeTurno = new CierreDeTurno
             {
                 Estado = status,
-                Message = message
+                Message = message,
+                ID = int.TryParse(periodID, out int result) ? result : 0
             };
 
             if (flag && status.Equals("OK"))
             {
-                Log.Instance.WriteLog($"Estado devuelto del cierre: {status}", LogType.t_debug);
-
-                cierreDeTurno.ID = Convert.ToInt32(periodID);
-
-                Station station = Station.Instance;
-
-                foreach (Surtidor surtidor in station.Surtidores)
-                {
-                    foreach (Manguera manguera in surtidor.Mangueras)
-                    {
-                        string totalVolumen = "";
-                        string totalMonto = "";
-                        if (cFusion.GetTotalizers(surtidor.ID, manguera.ID, ref totalVolumen, ref totalMonto) != 0)
-                        {
-                            TotalPorManguera totalPorManguera = new TotalPorManguera
-                            {
-                                NumeroDeManguera = manguera.ID,
-                                NumeroDeSurtidor = surtidor.ID,
-                                TotalVntasVolumen = ConvertDouble(totalVolumen),
-                                TotalVntasSinControlVolumen = ConvertDouble(totalVolumen),
-                                TotalVntasMonto = ConvertDouble(totalMonto),
-                                TotalVntasSinControlMonto = ConvertDouble(totalMonto)
-                            };
-
-                            cierreDeTurno.TotalesPorManguera.Add(totalPorManguera);
-                        }
-                    }
-                }
+                CierreTurnoFill(cFusion, cierreDeTurno);
             }
             else
             {
@@ -269,6 +243,32 @@ namespace FusionAxion
             }
 
             return cierreDeTurno;
+        }
+
+        private void CierreTurnoFill(Fusion cFusion, CierreDeTurno cierreDeTurno)
+        {
+            foreach (Surtidor surtidor in Station.Instance.Surtidores)
+            {
+                foreach (Manguera manguera in surtidor.Mangueras)
+                {
+                    string totalVolumen = "";
+                    string totalMonto = "";
+                    if (cFusion.GetTotalizers(surtidor.ID, manguera.ID, ref totalVolumen, ref totalMonto) != 0)
+                    {
+                        TotalPorManguera totalPorManguera = new TotalPorManguera
+                        {
+                            NumeroDeManguera = manguera.ID,
+                            NumeroDeSurtidor = surtidor.ID,
+                            TotalVntasVolumen = ConvertDouble(totalVolumen),
+                            TotalVntasSinControlVolumen = ConvertDouble(totalVolumen),
+                            TotalVntasMonto = ConvertDouble(totalMonto),
+                            TotalVntasSinControlMonto = ConvertDouble(totalMonto)
+                        };
+
+                        cierreDeTurno.TotalesPorManguera.Add(totalPorManguera);
+                    }
+                }
+            }
         }
 
         private void GetCodigoSiges(Producto producto)

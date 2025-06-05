@@ -495,8 +495,12 @@ namespace FusionAxion
         public void GrabarCierre()
         {
             _ = ConnectorSQLite.Instance.ExecuteNonQuery("UPDATE cierreBandera SET hacerCierre = 0");
+            CierreDeTurno cierre;
 
-            CierreDeTurno cierre = ConnectorFusion.ComandoCierresDeTurno(Fusion);
+            lock (fusionLock)
+            {
+                cierre = ConnectorFusion.ComandoCierresDeTurno(Fusion);
+            }
 
             int bufferLimit = 999999;
             string campos = "";

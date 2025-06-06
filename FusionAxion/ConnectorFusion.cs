@@ -238,7 +238,7 @@ namespace FusionAxion
             }
             else
             {
-                Log.Instance.WriteLog($"Type: {type}, state: {status}, Message: {message}, Error code: {errorCode}.", LogType.t_error);
+                Log.Instance.WriteLog($"Tipo de Cierre: {type}, estado: {status}, mensaje: {message}, codigo de error: {errorCode}.", LogType.t_error);
                 cierreDeTurno.ErrorCode = errorCode;
             }
 

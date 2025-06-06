@@ -502,101 +502,28 @@ namespace FusionAxion
                 cierre = ConnectorFusion.ComandoCierresDeTurno(Fusion);
             }
 
-            int bufferLimit = 999999;
-            string campos = "";
-            string rows = "";
-            int lastID = 0;
-
             try
             {
-                // Obtengo el ultimo id de la tabla Cierres
-                DataTable tablaCierres = ConnectorSQLite.Instance.ExecuteSelectQuery("SELECT max(id) FROM Cierres");
+                DataTable cierreAnterior = ConnectorSQLite.Instance.ExecuteSelectQuery("SELECT id_cierre, state FROM Cierres " +
+                                                                                       "WHERE id_cierre = (SELECT MAX(id_cierre) FROM Cierres) " +
+                                                                                       "UNION ALL " +
+                                                                                       "SELECT 0 AS id_cierre, 0 AS state " +
+                                                                                       "WHERE NOT EXISTS (SELECT 1 FROM Cierres)");
 
-                if (tablaCierres != null)
+                if (cierreAnterior.Rows[0]["state"].ToString().Equals("OK") && cierre.Estado.Equals("OK"))
                 {
-                    lastID = Convert.ToInt32(tablaCierres.Rows[0][0]);
-                }
 
-                if (cierre.Estado.Equals("OK"))
-                {
-                    // Esta consulta SQL verifica si hay datos en la tabla y devuelve 1 si hay al menos un registro o 0 si está vacía.
-                    bool hasData = Convert.ToBoolean(Convert.ToInt32(ConnectorSQLite.Instance.ExecuteSelectQuery("SELECT CASE WHEN COUNT(*) > 0 THEN 1 ELSE 0 END AS HasData FROM Cierres").Rows[0][0]));
-
-                    //  Comprobamos si hay datos guardados
-                    if (hasData)
-                    {
-                        DataTable ultimoCierrePorManguera = ConnectorSQLite.Instance.ExecuteSelectQuery($"SELECT * FROM CierresPorManguera WHERE id = {lastID}");
-
-                        List<TotalPorManguera> totalesPorManguera = new List<TotalPorManguera>();
-
-                        for (int manguera = 0; manguera < cierre.TotalesPorManguera.Count; manguera++)
-                        {
-                            TotalPorManguera totalPorManguera = new TotalPorManguera
-                            {
-                                NumeroDeManguera = cierre.TotalesPorManguera[manguera].NumeroDeManguera,
-                                NumeroDeSurtidor = cierre.TotalesPorManguera[manguera].NumeroDeSurtidor,
-                            };
-
-                            double volumenAnteriorAcumulado = 0;
-                            double montoAnteriorAcumulado = 0;
-
-                            foreach (DataRow dataRow in ultimoCierrePorManguera.Rows)
-                            {
-                                if (Convert.ToInt32(dataRow["surtidor"]) == cierre.TotalesPorManguera[manguera].NumeroDeSurtidor && Convert.ToInt32(dataRow["manguera"]) == cierre.TotalesPorManguera[manguera].NumeroDeManguera)
-                                {
-                                    volumenAnteriorAcumulado = Convert.ToDouble(dataRow["volumen_acumulado"]);
-                                    montoAnteriorAcumulado = Convert.ToDouble(dataRow["monto_acumulado"]);
-                                    break;
-                                }
-                            }
-
-                            if (cierre.TotalesPorManguera[manguera].TotalVntasVolumen - volumenAnteriorAcumulado >= 0)
-                            {
-                                cierre.TotalesPorManguera[manguera].TotalVntasVolumen -= volumenAnteriorAcumulado;
-                            }
-                            else
-                            {
-                                cierre.TotalesPorManguera[manguera].TotalVntasVolumen = cierre.TotalesPorManguera[manguera].TotalVntasVolumen + bufferLimit - volumenAnteriorAcumulado;
-                            }
-
-                            cierre.TotalesPorManguera[manguera].TotalVntasMonto -= montoAnteriorAcumulado;
-                        }
-                    }
-
-                    InsertShift(cierre);
-                }
-                else
-                {
-                    string message = "";
-
-                    switch (cierre.ErrorCode)
-                    {
-                        case "SHI0001":
-                            message = "El periodo a cerrar no tiene datos.";
-                            break;
-                        case "SHI0002":
-                            message = "Error al aplicar el cierre de periodo a la base de datos.";
-                            break;
-                        default:
-                            message = $"Error no identificado: {cierre.Message}";
-                            break;
-                    }
-
-                    cierre.Message = message;
-
-                    //campos = "state,message";
-
-                    //rows = string.Format("'{0}','{1}'", cierre.Estado, message);
-
-                    //_ = ConnectorSQLite.Instance.ExecuteNonQuery(string.Format("INSERT INTO Cierres ({0}) VALUES ({1})", campos, rows));
-
-                    InsertShift(cierre);
                 }
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                throw new Exception($"Error en el Cierre de turno. Excepción: {e.Message}");
+                throw new Exception($"Error en el metodo Grabar Cierre. Excepción: {ex.Message}");
             }
+        }
+
+        private void TotalesPorMangueraFill(CierreDeTurno cierre, DataTable ultimoCierrePorManguera)
+        {
+            int bufferLimit = 999999;
         }
 
         private void InsertShift(CierreDeTurno cierre)
@@ -610,10 +537,7 @@ namespace FusionAxion
 
             _ = ConnectorSQLite.Instance.ExecuteNonQuery(string.Format("INSERT INTO Cierres ({0}) VALUES ({1})", fields, values));
 
-            // Traer ID del cierre para poder referenciar los detalles
-            DataTable tablaCierres = ConnectorSQLite.Instance.ExecuteSelectQuery("SELECT max(id) FROM Cierres");
-
-            int id = Convert.ToInt32(tablaCierres.Rows[0][0]);
+            int id = cierre.ID;
 
             // Grabar CierresPorManguera
             fields = "id,surtidor,manguera,monto,volumen,monto_acumulado,volumen_acumulado";

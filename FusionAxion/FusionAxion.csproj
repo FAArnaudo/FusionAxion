@@ -209,6 +209,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="dll\FusionClass.dll" />
+    <Resource Include="Images\fuel_pump_96.ico" />
     <Resource Include="Images\inter_axion_48op2.ico" />
     <Resource Include="Images\panel_fusion_48.ico" />
     <Resource Include="Images\fuel_product_48.ico" />

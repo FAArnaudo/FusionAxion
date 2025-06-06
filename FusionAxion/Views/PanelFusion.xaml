@@ -28,14 +28,14 @@
               VerticalAlignment="Top">
             <!--#region BUTTONS-->
             <Button Grid.Row="0" Grid.Column="2" Name="BtnCerrar"
-                    Width="35" Height="30"
+                    Width="35" Height="35"
                     HorizontalAlignment="Right" VerticalAlignment="Center"
                     Background="#1B1448" BorderBrush="#007ED6"
                     Style="{DynamicResource ButtonStyle}" Command="{Binding CloseCommand}">
                 <TextBlock Text="X" Foreground="White" FontSize="20"></TextBlock>
             </Button>
             <Button Grid.Row="0" Grid.Column="2" Name="BtnMinimizar"
-                    Width="35" Height="30"
+                    Width="35" Height="35"
                     HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,35,0"
                     Background="#1B1448" BorderBrush="#007ED6"
                     Style="{DynamicResource ButtonStyle}" Click="BtnMinimizar_Click">
@@ -50,11 +50,11 @@
             <!--#endregion-->
             <!--#region IMAGE-->
             <Image Source="pack://application:,,,/Images/panel_fusion_48.ico"
-                   HorizontalAlignment="Left" VerticalAlignment="Center"
-                   Height="35" Width="35" Margin="10,0,0,0">
+                   HorizontalAlignment="Left" VerticalAlignment="Top"
+                   Height="30" Width="35" Margin="10,0,0,0">
                 
             </Image>
-                <!--#endregion-->
+            <!--#endregion-->
         </Grid>
         <!--#endregion-->
         <!--#region GRID PANEL-->
@@ -174,7 +174,7 @@
             <!--#region SURTIDORES-->
             <ItemsControl ItemsSource="{Binding SurtidoresButton}"
                           Height="450"
-                          VerticalAlignment="Bottom" Background="#91a6ab" Margin="0,-2,0,0" Grid.RowSpan="2">
+                          VerticalAlignment="Bottom" Background="#91a6ab" Grid.RowSpan="2">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
                         <UniformGrid Rows="4" Columns="8"/>
@@ -189,7 +189,7 @@
                                 HorizontalAlignment="Center"
                                 VerticalAlignment="Center">
                             <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
-                                <Image Source="pack://application:,,,/Images/fuel_pump.ico" Width="60" Height="60" Margin="0,0,5,0"/>
+                                <Image Source="pack://application:,,,/Images/fuel_pump_96.ico" Width="60" Height="60" Margin="0,0,5,0"/>
                                 <TextBlock Text="{Binding Label}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                             </StackPanel>
                         </Button>

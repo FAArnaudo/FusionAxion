@@ -14,7 +14,7 @@ namespace FusionAxion.Model
         public string Label { get; set; } = "";
         public int Height { get; set; } = 100;
         public int Width { get; set; } = 70;
-        public string Background { get; set; } = "#123456";
+        public string Background { get; set; } = "Transparent"; // azul "#123456"
         public ICommand Command { get; set; }
 
         public ButtonModel() { }

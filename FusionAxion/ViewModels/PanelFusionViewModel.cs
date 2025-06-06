@@ -245,8 +245,10 @@ namespace FusionAxion.ViewModels
         {
             if (parameter is string numeroTexto && int.TryParse(numeroTexto, out int surtidor))
             {
-                DespachosPorSurtidorView despachosPorSurtidorView = new DespachosPorSurtidorView();
-                despachosPorSurtidorView.DataContext = new DespachosPorSurtidorViewModel(surtidor);
+                DespachosPorSurtidorView despachosPorSurtidorView = new DespachosPorSurtidorView
+                {
+                    DataContext = new DespachosPorSurtidorViewModel(surtidor)
+                };
                 despachosPorSurtidorView.Show();
             }
         }

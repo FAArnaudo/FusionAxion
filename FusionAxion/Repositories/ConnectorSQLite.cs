@@ -118,7 +118,6 @@ namespace FusionAxion.Repositories
                         int result = Convert.ToInt32(cmd.ExecuteScalar());
                         return result == 1;
                     }
-
                 }
                 catch (Exception ex)
                 {

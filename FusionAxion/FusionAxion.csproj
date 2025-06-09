@@ -98,8 +98,10 @@
     <Compile Include="Model\LabelModel.cs" />
     <Compile Include="Model\StructureModel.cs" />
     <Compile Include="Repositories\DataBase.cs" />
+    <Compile Include="Repositories\IDatabaseProvider.cs" />
     <Compile Include="Repositories\RepositoryBase.cs" />
     <Compile Include="Repositories\ConnectorSQLite.cs" />
+    <Compile Include="Repositories\SQLiteProvider.cs" />
     <Compile Include="ViewModels\ConfigurationViewModel.cs" />
     <Compile Include="ViewModels\PanelFusionViewModel.cs" />
     <Compile Include="ViewModels\ViewModelBase.cs" />

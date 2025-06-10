@@ -20,13 +20,16 @@ namespace CDS
 
         public override bool VerificarConexión()
         {
-            if (ConnectorCem.PoleoEnLinea(ProtocolCommand.PoleoEnLineaCommand))
+            bool poleo = ConnectorCem.PoleoEnLinea(ProtocolCommand.PoleoEnLineaCommand);
+
+            if (poleo)
             {
                 _ = ConnectorSQLite.Instance.ExecuteNonQuery($"UPDATE CheckConnection SET isConnected = 1, fecha = '{DateTime.Now:dd-MM-yyyy HH:mm:ss}' WHERE idConnection = 1");
                 return true;
             }
             else
             {
+                Station.Instance.GeneralMessage = $"No se puede establecer la conexión con el Posservice.\n";
                 _ = ConnectorSQLite.Instance.ExecuteNonQuery($"UPDATE CheckConnection SET isConnected = 0, fecha = '{DateTime.Now:dd-MM-yyyy HH:mm:ss}' WHERE idConnection = 1");
                 return false;
             }
@@ -193,9 +196,13 @@ namespace CDS
 
             despacho = ConnectorCem.ComandoInformacionDeDespacho(command);
 
-            if (despacho == null || despacho.IdDespacho == 0)
+            if (despacho.IdDespacho == 0)
             {
                 return;
+            }
+            else if (despacho == null)
+            {
+                throw new Exception();
             }
 
             try

@@ -18,7 +18,6 @@ using Image = System.Windows.Controls.Image;
 using Label = System.Windows.Controls.Label;
 using MessageBox = System.Windows.MessageBox;
 using KeyEventArgs = System.Windows.Input.KeyEventArgs;
-using System.Diagnostics;
 using CheckBox = System.Windows.Controls.CheckBox;
 
 namespace CDS
@@ -39,7 +38,6 @@ namespace CDS
 
         public ControlPanel()
         {
-            BuscarPrograma("CDS");
             InitializeComponent();
             PumpController = new PumpController();
             Loaded += ControlPanel_Loaded;
@@ -594,24 +592,5 @@ namespace CDS
             _ = DockPanelBot.Children.Add(Label);
         }
         #endregion
-
-        public void BuscarPrograma(string prog)
-        {
-            try
-            {
-                Process[] pname = Process.GetProcessesByName(prog);
-                if (pname.Length > 1)
-                {
-                    _ = MessageBox.Show("El programa ya esta abierto");
-                    Process[] procesos = Process.GetProcessesByName(prog);
-                    procesos[0].Kill();
-                }
-
-            }
-            catch (Exception e)
-            {
-                Log.Instance.WriteLog($"Error buscando el programa existente. Excepcion: {e.Message}", LogType.t_error);
-            }
-        }
     }
 }

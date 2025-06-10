@@ -46,6 +46,7 @@ namespace CDS
             }
             catch (Exception e)
             {
+                Station.Instance.GeneralMessage = $"Error al verificar la conexión con el controlador. Excepción: {e.Message}\n";
                 throw new Exception($"Error al obtener la conexión con el controlador CEM. Excepción: {e.Message}.\n");
             }
         }
@@ -217,6 +218,7 @@ namespace CDS
             }
             catch (Exception e)
             {
+                Station.Instance.GeneralMessage = $"Error al obtener la configuración de la estación. Excepción: {e.Message}\n";
                 throw new Exception($"Error al obtener la configuración de la estación. Excepción: {e.Message}\n");
             }
 

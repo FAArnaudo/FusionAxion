@@ -18,7 +18,7 @@ namespace CDS
         public bool IsRunning { get; set; }
         public int StartTime { get; set; } = 10;                // 10 segundos
         public int ThresholdTime { get; set; } = 60 * 30;       // Minutos
-        public int ThresholdReSend { get; set; } = 60 * 60 * 2; // 2 horas
+        public int ThresholdReSend { get; set; } = 60 * 60 * 4; // 2 horas
 
         public WatchDog(IControllerProcess process)
         {
@@ -42,27 +42,28 @@ namespace CDS
             {
                 Thread.Sleep(1000 * StartTime);
 
-                if ((DateTime.Now - process.LastExecutionTime).TotalSeconds > ThresholdTime)
+                if ((DateTime.Now - process.LastExecutionTime).TotalSeconds > ThresholdTime && Configuration.WatchDog)
                 {
                     Log.Instance.WriteLog("Watchdog detectó que el programa no responde.\n", LogType.t_error);
-                    RestartWorker();
+                    SendAlert();
                 }
             }
         }
 
-        private void RestartWorker()
+        private void SendAlert()
         {
-            string message = $"Watchdog detectó que el proceso no responde.\n" +
+            string message = $"El proceso principal del CDS se encuentra inactivo.\n" +
                              $"Estacion: {Configuration.GetConfiguration().RazonSocial}.\n" +
-                             $"<p>Importante:</p>" +
-                             $"<p>- Revisar la conexion con Posservice</p>" +
-                             $"<p>- Verificar que respondan los botones del CDS</p>" +
-                             $"<p>- {Station.Instance.GeneralMessage}</p>";
+                             $"<p>Importante: Antes de reiniciar el programa verifique...</p>" +
+                             $"<p>- La conexion con Posservice. Si no se puede reestablecer la conexión, desabilitar el CheckBox 'Watch Dog' " +
+                             $"para evitar la sobrecarga de tickets.</p>" +
+                             $"<p>Error detectado: {Station.Instance.GeneralMessage}</p>" +
+                             $"<p>En caso de ser el posservice, notificar a la estación.</p>";
 
             string destinatario = ObtenerDestinatario();
             if (destinatario == null)
             {
-                destinatario = "federico.arnaudo@sistemasiges.com.ar";
+                destinatario = "soporte@sistemasiges.com.ar";
             }
 
             EnviarCorreo(destinatario, "Falla en CDS", message);
@@ -72,10 +73,10 @@ namespace CDS
         public void EnviarCorreo(string destinatario, string asunto, string cuerpo)
         {
             // Configuración del servidor SMTP
-            string smtpServidor = "smtp.gmail.com"; // Cambia esto por el servidor SMTP que uses
-            int puerto = 587; // El puerto típico es 587 (para TLS), 465 (para SSL) o 25 (para conexión sin cifrado)
+            string smtpServidor = "smtp.gmail.com";     // Cambia esto por el servidor SMTP que uses
+            int puerto = 587;                           // El puerto típico es 587 (para TLS), 465 (para SSL) o 25 (para conexión sin cifrado)
             string usuario = "federico.arnaudo@sistemasiges.com.ar"; // Tu dirección de correo electrónico
-            string contrasena = "ipmp txqk lomv jokg"; // Tu contraseña de correo electrónico
+            string contrasena = "ipmp txqk lomv jokg";  // Tu contraseña de correo electrónico
 
             try
             {
@@ -84,16 +85,16 @@ namespace CDS
                 {
                     Port = puerto,
                     Credentials = new NetworkCredential(usuario, contrasena),
-                    EnableSsl = true // Habilita el uso de SSL para seguridad
+                    EnableSsl = true    // Habilita el uso de SSL para seguridad
                 };
 
                 // Crear el objeto MailMessage con la información del mensaje
                 MailMessage mensaje = new MailMessage
                 {
                     From = new MailAddress(usuario), // El remitente
-                    Subject = asunto, // El asunto del correo
-                    Body = cuerpo, // El cuerpo del correo
-                    IsBodyHtml = true // Si el cuerpo es en formato HTML
+                    Subject = asunto,   // El asunto del correo
+                    Body = cuerpo,      // El cuerpo del correo
+                    IsBodyHtml = true   // Si el cuerpo es en formato HTML
                 };
 
                 // Agregar el destinatario
